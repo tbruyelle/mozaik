@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"runtime"
 	"time"
 
@@ -26,6 +27,10 @@ type renderLoopControl struct {
 
 var (
 	window mandala.Window
+	g      *Game
+	// Background rotate state
+	bgRotate     = float32(0)
+	windowRadius float64
 )
 
 func newRenderLoopControl() *renderLoopControl {
@@ -38,13 +43,34 @@ func newRenderLoopControl() *renderLoopControl {
 }
 
 func draw() {
-	gl.ClearColor(1.0, 0.0, 0.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT)
+	//renderBackground()
+}
+
+func renderBackground() {
+	gl.LoadIdentity()
+	gl.PushMatrix()
+	w, h := window.GetSize()
+	gl.Translatef(float32(w/2), float32(h/2), 0)
+	bgRotate += 1
+	gl.Rotatef(bgRotate, 0, 0, 1)
+	gl.Begin(gl.TRIANGLES)
+	gl.Color3ub(255, 218, 58)
+	for i := float64(0); i <= BgSegments; i++ {
+		if math.Mod(i, 2) == 0 {
+			gl.Vertex2i(0, 0)
+		}
+		a := 2 * math.Pi * i / BgSegments
+		gl.Vertex2d(math.Sin(a)*windowRadius, math.Cos(a)*windowRadius)
+	}
+	gl.End()
+	gl.PopMatrix()
 }
 
 // Run runs renderLoop. The loop renders a frame and swaps the buffer
 // at each tick received.
 func renderLoopFunc(control *renderLoopControl) loop.LoopFunc {
+
 	return func(loop loop.Loop) error {
 		var window mandala.Window
 		// Lock/unlock the loop to the current OS thread. This is
@@ -71,6 +97,19 @@ func renderLoopFunc(control *renderLoopControl) loop.LoopFunc {
 
 				mandala.Logf("Restarting rendering loop...")
 				ticker = time.NewTicker(time.Duration(1e9 / int(FRAMES_PER_SECOND)))
+
+				// Compute window radius
+				windowRadius = math.Sqrt(math.Pow(float64(height), 2) + math.Pow(float64(width), 2))
+
+				gl.Init()
+				gl.ClearColor(0.9, 0.85, 0.46, 0.0)
+
+				// Use window coordinates
+				gl.MatrixMode(gl.PROJECTION)
+				gl.LoadIdentity()
+				gl.Ortho(0, WindowWidth, WindowHeight, 0, 0, 1)
+				gl.MatrixMode(gl.MODELVIEW)
+				gl.LoadIdentity()
 
 			// At each tick render a frame and swap buffers.
 			case <-ticker.C:
