@@ -1,0 +1,10 @@
+{
+    "AppName": "MyApp",
+    "LibName": "myapp",
+    "TestLibName": "myapp_testrunner",
+    "Domain":  "net.mandala",
+    "TestDomain": "net.mandala.test"
+}
+
+
+
