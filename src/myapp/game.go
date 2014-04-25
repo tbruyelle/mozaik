@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"git.tideland.biz/goas/loop"
-	gl "github.com/go-gl/gl"
+	gl "github.com/remogatto/opengles2"
 	"github.com/remogatto/mandala"
 )
 
