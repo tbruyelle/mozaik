@@ -43,28 +43,11 @@ func newRenderLoopControl() *renderLoopControl {
 }
 
 func draw() {
+// Draw
+	gl.ClearColor(0.9, 0.85, 0.46, 0.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT)
-	//renderBackground()
-}
-
-func renderBackground() {
-	gl.LoadIdentity()
-	gl.PushMatrix()
-	w, h := window.GetSize()
-	gl.Translatef(float32(w/2), float32(h/2), 0)
-	bgRotate += 1
-	gl.Rotatef(bgRotate, 0, 0, 1)
-	gl.Begin(gl.TRIANGLES)
-	gl.Color3ub(255, 218, 58)
-	for i := float64(0); i <= BgSegments; i++ {
-		if math.Mod(i, 2) == 0 {
-			gl.Vertex2i(0, 0)
-		}
-		a := 2 * math.Pi * i / BgSegments
-		gl.Vertex2d(math.Sin(a)*windowRadius, math.Cos(a)*windowRadius)
-	}
-	gl.End()
-	gl.PopMatrix()
+	w := g.world
+	w.background.Draw()
 }
 
 // Run runs renderLoop. The loop renders a frame and swaps the buffer
@@ -101,15 +84,12 @@ func renderLoopFunc(control *renderLoopControl) loop.LoopFunc {
 				// Compute window radius
 				windowRadius = math.Sqrt(math.Pow(float64(height), 2) + math.Pow(float64(width), 2))
 
-				gl.Init()
-				gl.ClearColor(0.9, 0.85, 0.46, 0.0)
-
-				// Use window coordinates
-				gl.MatrixMode(gl.PROJECTION)
-				gl.LoadIdentity()
-				gl.Ortho(0, WindowWidth, WindowHeight, 0, 0, 1)
-				gl.MatrixMode(gl.MODELVIEW)
-				gl.LoadIdentity()
+					gl.Init()
+	gl.Disable(gl.DEPTH_TEST)
+	// antialiasing
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	gl.Enable(gl.LINE_SMOOTH)
 
 			// At each tick render a frame and swap buffers.
 			case <-ticker.C:
