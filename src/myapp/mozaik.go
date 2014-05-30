@@ -5,7 +5,10 @@ const (
 	WindowHeight         = 704
 	BlockSize            = 128
 	BlockRadius          = 10
+	BlockPadding         = 0
+	BlockCornerSegments  = 6
 	SwitchSize           = 48
+	SwitchSegments       = 20
 	DashboardHeight      = 128
 	XMin                 = 32
 	YMin                 = 32
@@ -15,6 +18,7 @@ const (
 	SignatureBlockRadius = 6
 	LineWidth            = 2
 	SignatureLineWidth   = 1
+	BgSegments=24
 )
 
 type World struct {

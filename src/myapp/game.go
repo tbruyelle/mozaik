@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"git.tideland.biz/goas/loop"
-	gl "github.com/remogatto/opengles2"
 	"github.com/remogatto/mandala"
+	gl "github.com/remogatto/opengles2"
 )
 
 const (
@@ -43,7 +43,7 @@ func newRenderLoopControl() *renderLoopControl {
 }
 
 func draw() {
-// Draw
+	// Draw
 	gl.ClearColor(0.9, 0.85, 0.46, 0.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT)
 	w := g.world
@@ -84,12 +84,12 @@ func renderLoopFunc(control *renderLoopControl) loop.LoopFunc {
 				// Compute window radius
 				windowRadius = math.Sqrt(math.Pow(float64(height), 2) + math.Pow(float64(width), 2))
 
-					gl.Init()
-	gl.Disable(gl.DEPTH_TEST)
-	// antialiasing
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-	gl.Enable(gl.LINE_SMOOTH)
+				//gl.Init()
+				gl.Disable(gl.DEPTH_TEST)
+				// antialiasing
+				gl.Enable(gl.BLEND)
+				gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+				//gl.Enable(gl.LINE_SMOOTH)
 
 			// At each tick render a frame and swap buffers.
 			case <-ticker.C:

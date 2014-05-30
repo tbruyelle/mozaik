@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/go-gl/gl"
-	glfw "github.com/go-gl/glfw3"
 	"io/ioutil"
 	"math"
 	"strconv"
 	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -96,11 +96,6 @@ var (
 	sizeVertex = int(unsafe.Sizeof(Vertex{}))
 )
 
-func showVersion() {
-	//maj, min, v := glfw.GetVersion()
-	//fmt.Println("version=", maj, min, v)
-	fmt.Println("version=", glfw.GetVersionString())
-}
 func NewProgram(shaders ...gl.Shader) gl.Program {
 	prg := gl.CreateProgram()
 	for _, shader := range shaders {
@@ -133,15 +128,5 @@ func loadShader(type_ gl.GLenum, file string) gl.Shader {
 	if err != nil {
 		panic(err)
 	}
-	return compileShader(type_,string(b))
-}
-
-func rotateOffsets(x, y float32) (float32, float32) {
-	const fLoopDuration = float64(5)
-	const fScale = 3.14159 * 2 / fLoopDuration
-
-	fElapsedTime := glfw.GetTime()
-	fCurrTimeThroughLoop := math.Mod(fElapsedTime, fLoopDuration)
-	return float32(math.Cos(fCurrTimeThroughLoop*fScale) * 0.5),
-		float32(math.Sin(fCurrTimeThroughLoop*fScale) * 0.5)
+	return compileShader(type_, string(b))
 }
