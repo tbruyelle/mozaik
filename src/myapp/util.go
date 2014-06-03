@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"github.com/go-gl/gl"
+	"github.com/tbruyelle/gl"
 	"io/ioutil"
-	"math"
 	"strconv"
 	"strings"
-	"time"
 	"unsafe"
 )
 

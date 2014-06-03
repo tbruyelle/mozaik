@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/go-gl/gl"
+	"github.com/tbruyelle/gl"
 	"github.com/remogatto/mathgl"
 )
 
