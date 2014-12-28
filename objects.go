@@ -12,18 +12,23 @@ const (
 attribute vec4 position;
 attribute vec4 color;
 
+varying vec4 theColor;
+
 uniform mat4 modelViewProjection;
 
 void main() {
 	gl_Position = modelViewProjection * position;
+	theColor = color;
 }`
 
 	FShaderBasic = `#version 100
 
-uniform vec4 color;
+precision mediump float;
+
+varying vec4 theColor;
 
 void main() {
-	gl_FragColor = color;
+	gl_FragColor = theColor;
 }`
 )
 
