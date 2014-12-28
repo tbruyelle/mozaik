@@ -32,7 +32,7 @@ type BlockModel struct {
 	block *Block
 }
 
-func getBlockColor(b *Block) Color {
+func blockColor(b *Block) Color {
 	switch b.Color {
 	case Red:
 		return RedColor
@@ -55,7 +55,7 @@ func getBlockColor(b *Block) Color {
 func NewBlockModel(b *Block, size, radius float32) *BlockModel {
 	model := &BlockModel{block: b}
 
-	c := getBlockColor(b)
+	c := blockColor(b)
 	s := size - radius
 	// Inner square
 	innervs := []Vertex{
