@@ -14,7 +14,7 @@ type Model interface {
 }
 
 type ModelBase struct {
-	mode         int
+	mode         gl.Enum
 	buf          gl.Buffer
 	vertices     []Vertex
 	sizeVertices int
@@ -33,7 +33,7 @@ type ModelGroup struct {
 	modelView, projection *f32.Mat4
 }
 
-func (t *ModelGroup) Add(mode int, vertices []Vertex, vshaderf, fshaderf string) {
+func (t *ModelGroup) Add(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf string) {
 	m := &ModelBase{}
 	m.Init(mode, vertices, vshaderf, fshaderf)
 	t.models = append(t.models, m)
@@ -48,7 +48,7 @@ func (t *ModelGroup) Add(mode int, vertices []Vertex, vshaderf, fshaderf string)
 //	t.modelView = t.modelViewBackup
 //}
 
-func (t *ModelBase) Init(mode int, vertices []Vertex, vshaderf, fshaderf string) {
+func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf string) {
 	t.mode = mode
 	t.vertices = vertices
 	t.vertexCount = len(t.vertices)
@@ -113,7 +113,13 @@ func (t *ModelBase) Draw() {
 
 	mvp := &f32.Mat4{}
 	mvp.Mul(t.modelView, t.projection)
-	gl.UniformMatrix4fv(t.uniformMVP, ([16]float32)(mvp))
+	f := make([]float32, 16)
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			f[i*4+j] = mvp[i][j]
+		}
+	}
+	gl.UniformMatrix4fv(t.uniformMVP, f)
 	//t.uniformMVP.UniformMatrix4f(false, (*[16]float32)(&mvp))
 
 	gl.DrawArrays(t.mode, 0, t.vertexCount)
@@ -131,9 +137,9 @@ func (t *ModelGroup) Draw() {
 }
 
 func (t *ModelBase) Destroy() {
-	t.buffer.Delete()
+	gl.DeleteBuffer(t.buf)
 	//t.vao.Delete()
-	t.prg.Delete()
+	gl.DeleteProgram(t.prg)
 }
 
 func (t *ModelGroup) Destroy() {

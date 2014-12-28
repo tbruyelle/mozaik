@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	VShaderBasic = `#version 330 core
+	VShaderBasic = `
+	#version 330 core
 
 	layout(location=0) in vec4 position;
 	layout(location=1) in vec4 color;
@@ -19,9 +20,11 @@ const (
 	void main() {
 		theColor = color;
 		gl_Position = modelViewProjection * position;
-	}`
+	}
+	`
 
-	FShaderBasic = `#version 330 core
+	FShaderBasic = `
+	#version 330 core
 
 	smooth in vec4 theColor;
 
@@ -29,7 +32,8 @@ const (
 
 	void main() {
 		outputColor = theColor;
-	}`
+	}
+	`
 )
 
 type BlockModel struct {
@@ -144,55 +148,58 @@ func NewSwitchModel(sw *Switch) *SwitchModel {
 	model.Init(gl.TRIANGLE_FAN, vs, VShaderBasic, FShaderBasic)
 
 	v := SwitchSize / 2
-	model.modelView = gl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul(f32.Translate(float32(sw.X+v), float32(sw.Y+v), 0))
+
+	//model.modelView = gl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul(f32.Translate(float32(sw.X+v), float32(sw.Y+v), 0))
+	model.modelView = translate(float32(sw.X+v), float32(sw.Y+v), 0)
 	return model
 }
 
 var (
-	topLeftModelView     = f32.Translate(-BlockSize, -BlockSize, 0)
-	topRightModelView    = f32.Translate(0, -BlockSize, 0)
-	bottomRightModelView = f32.Identity()
-	bottomLeftModelView  = f32.Translate(-BlockSize, 0, 0)
+	topLeftModelView     = translate(-BlockSize, -BlockSize, 0)
+	topRightModelView    = translate(0, -BlockSize, 0)
+	bottomRightModelView = identity()
+	bottomLeftModelView  = translate(-BlockSize, 0, 0)
 )
 
 // TODO the switch number
 func (t *SwitchModel) Draw() {
 	modelViewBackup := t.modelView
 	s := t.sw
-	var rotatemv f32.Mat4
+	var rotatemv *f32.Mat4
 	if s.rotate == 0 {
-		rotatemv = f32.Identity()
+		rotatemv = identity()
 	} else {
-		rotatemv = f32.HomogRotate3D(t.sw.rotate, [3]float32{0, 0, 1})
+		rotatemv = rotate(s.rotate)
 	}
-	var scalemv f32.Mat4
+	var scalemv *f32.Mat4
 	if s.scale == 0 {
-		scalemv = f32.Identity()
+		scalemv = identity()
 	} else {
-		scalemv = f32.Scale3D(s.scale, s.scale, 0)
+		scalemv = scale(s.scale)
 	}
-	blockmv := scalemv.Mul(rotatemv)
+	blockmv := &f32.Mat4{}
+	blockmv.Mul(scalemv, rotatemv)
 
 	// Draw the associated blocks
 	// top left block
-	t.drawBlock(g.level.blocks[s.line][s.col], blockmv.Mul(topLeftModelView))
+	t.drawBlock(g.level.blocks[s.line][s.col], mul(blockmv, topLeftModelView))
 	// top right block
-	t.drawBlock(g.level.blocks[s.line][s.col+1], blockmv.Mul(topRightModelView))
+	t.drawBlock(g.level.blocks[s.line][s.col+1], mul(blockmv, topRightModelView))
 	// bottom right block
-	t.drawBlock(g.level.blocks[s.line+1][s.col+1], blockmv.Mul(bottomRightModelView))
+	t.drawBlock(g.level.blocks[s.line+1][s.col+1], mul(blockmv, bottomRightModelView))
 	// bottom left block
-	t.drawBlock(g.level.blocks[s.line+1][s.col], blockmv.Mul(bottomLeftModelView))
+	t.drawBlock(g.level.blocks[s.line+1][s.col], mul(blockmv, bottomLeftModelView))
 
 	t.ModelBase.Draw()
 
 	t.modelView = modelViewBackup
 }
 
-func (t *SwitchModel) drawBlock(b *Block, modelView f32.Mat4) {
+func (t *SwitchModel) drawBlock(b *Block, modelView *f32.Mat4) {
 	if !b.Rendered {
 		b.Rendered = true
 		bm := g.world.blocks[b]
-		bm.modelView = t.modelView.Mul(modelView)
+		bm.modelView.Mul(t.modelView, modelView)
 		bm.Draw()
 	}
 }
@@ -224,7 +231,7 @@ func (t *Background) Draw() {
 		t.angle += 0.03
 	}
 	modelViewBackup := t.modelView
-	t.modelView = t.modelView.Mul(f32.HomogRotate3D(-t.angle, [3]float32{0, 0, 1}))
+	t.modelView.Mul(t.modelView, rotate(-t.angle))
 
 	t.ModelBase.Draw()
 

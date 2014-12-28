@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"golang.org/x/mobile/app"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -148,9 +149,9 @@ func (l *Level) TriggerSwitchName(name string) {
 	}
 }
 func (l *Level) TriggerSwitch(i int) {
-			l.switches[i].Rotate()
-			l.rotated = append(l.rotated, i)
-		}
+	l.switches[i].Rotate()
+	l.rotated = append(l.rotated, i)
+}
 
 func (l *Level) findSwitch(x, y int) (int, *Switch) {
 	for i, s := range l.switches {
@@ -194,7 +195,11 @@ func ctoa(c ColorDef) string {
 
 // LoadLevel loads the level number in parameter
 func LoadLevel(level int) Level {
-	b, err := ioutil.ReadFile(fmt.Sprintf("./levels/%d", level))
+	f, err := app.Open(fmt.Sprintf("./levels/%d", level))
+	if err != nil {
+		panic(err)
+	}
+	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		panic(err)
 	}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"golang.org/x/mobile/gl"
+	"golang.org/x/mobile/f32"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -39,6 +39,36 @@ func Sequence(seqSize, ind int) int {
 	}
 	return r
 
+}
+
+func identity() *f32.Mat4 {
+	id := &f32.Mat4{}
+	id.Identity()
+	return id
+}
+
+func translate(Tx, Ty, Tz float32) *f32.Mat4 {
+	ret := &f32.Mat4{}
+	ret.Translate(identity(), Tx, Ty, Tx)
+	return ret
+}
+
+func rotate(angle float32) *f32.Mat4 {
+	ret := &f32.Mat4{}
+	ret.Rotate(identity(), f32.Radian(angle), &f32.Vec3{0, 0, 1})
+	return ret
+}
+
+func scale(scale float32) *f32.Mat4 {
+	ret := &f32.Mat4{}
+	ret.Scale(identity(), scale, scale, 0)
+	return ret
+}
+
+func mul(m1 *f32.Mat4, m2 *f32.Mat4) *f32.Mat4 {
+	ret := &f32.Mat4{}
+	ret.Mul(m1, m2)
+	return ret
 }
 
 func readVertexFile(file string) []Vertex {
@@ -92,38 +122,3 @@ var (
 	sizeCoords = sizeFloat * 4
 	sizeVertex = int(unsafe.Sizeof(Vertex{}))
 )
-
-func NewProgram(shaders ...gl.Shader) gl.Program {
-	prg := gl.CreateProgram()
-	for _, shader := range shaders {
-		prg.AttachShader(shader)
-	}
-	prg.Link()
-	if prg.Get(gl.LINK_STATUS) != gl.TRUE {
-		panic("linker error: " + prg.GetInfoLog())
-	}
-	prg.Validate()
-	for _, shader := range shaders {
-		prg.DetachShader(shader)
-		shader.Delete()
-	}
-	return prg
-}
-
-func compileShader(type_ int, source string) gl.Shader {
-	shader := gl.CreateShader(type_)
-	shader.Source(source)
-	shader.Compile()
-	if shader.Get(gl.COMPILE_STATUS) != gl.TRUE {
-		panic("shader compile error for source " + source + "\n" + shader.GetInfoLog())
-	}
-	return shader
-}
-
-func loadShader(type_ int, file string) gl.Shader {
-	b, err := ioutil.ReadFile(file)
-	if err != nil {
-		panic(err)
-	}
-	return compileShader(type_, string(b))
-}
