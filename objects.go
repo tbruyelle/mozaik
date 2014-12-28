@@ -7,33 +7,24 @@ import (
 )
 
 const (
-	VShaderBasic = `
-	#version 330 core
+	VShaderBasic = `#version 100
 
-	layout(location=0) in vec4 position;
-	layout(location=1) in vec4 color;
+attribute vec4 position;
+attribute vec4 color;
 
-	smooth out vec4 theColor;
+uniform mat4 modelViewProjection;
 
-	uniform mat4 modelViewProjection;
+void main() {
+	gl_Position = modelViewProjection * position;
+}`
 
-	void main() {
-		theColor = color;
-		gl_Position = modelViewProjection * position;
-	}
-	`
+	FShaderBasic = `#version 100
 
-	FShaderBasic = `
-	#version 330 core
+uniform vec4 color;
 
-	smooth in vec4 theColor;
-
-	out vec4 outputColor;
-
-	void main() {
-		outputColor = theColor;
-	}
-	`
+void main() {
+	gl_FragColor = color;
+}`
 )
 
 type BlockModel struct {

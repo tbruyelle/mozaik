@@ -21,7 +21,7 @@ type ModelBase struct {
 	vertexCount  int
 	prg          gl.Program
 	position     gl.Attrib
-	color        gl.Attrib
+	color        gl.Uniform
 	//	vao                   gl.VertexArray
 	uniformMVP            gl.Uniform
 	modelView, projection *f32.Mat4
@@ -66,7 +66,7 @@ func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf str
 	gl.BufferData2(gl.ARRAY_BUFFER, gl.STATIC_DRAW, t.sizeVertices, vertices)
 
 	t.position = gl.GetAttribLocation(t.prg, "position")
-	t.color = gl.GetAttribLocation(t.prg, "color")
+	t.color = gl.GetUniformLocation(t.prg, "color")
 	t.uniformMVP = gl.GetUniformLocation(t.prg, "modelViewProjection")
 
 	// the projection matrix
@@ -102,13 +102,13 @@ func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf str
 func (t *ModelBase) Draw() {
 	gl.UseProgram(t.prg)
 
+	gl.Uniform4f(t.color, 0, 0.5, 0, 1)
+
 	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
 
 	gl.EnableVertexAttribArray(t.position)
 	gl.VertexAttribPointer(t.position, sizeVertex, gl.FLOAT, false, 0, 0)
 
-	gl.EnableVertexAttribArray(t.color)
-	gl.VertexAttribPointer(t.color, sizeVertex, gl.FLOAT, false, 0, sizeCoords)
 	//t.vao.Bind()
 
 	mvp := &f32.Mat4{}
@@ -125,7 +125,6 @@ func (t *ModelBase) Draw() {
 	gl.DrawArrays(t.mode, 0, t.vertexCount)
 
 	gl.DisableVertexAttribArray(t.position)
-	gl.DisableVertexAttribArray(t.color)
 	//t.vao.Unbind()
 }
 
