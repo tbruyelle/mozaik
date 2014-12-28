@@ -120,7 +120,7 @@ func (t *ModelBase) Draw() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
 
 	gl.EnableVertexAttribArray(t.position)
-	gl.VertexAttribPointer(t.position, sizeVertex, gl.FLOAT, false, 0, 0)
+	gl.VertexAttribPointer(t.position, 4, gl.FLOAT, false, 0, 0)
 
 	gl.DrawArrays(t.mode, 0, t.vertexCount)
 
