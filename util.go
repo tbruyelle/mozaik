@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tbruyelle/gl"
+	"golang.org/x/mobile/gl"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -110,7 +110,7 @@ func NewProgram(shaders ...gl.Shader) gl.Program {
 	return prg
 }
 
-func compileShader(type_ gl.GLenum, source string) gl.Shader {
+func compileShader(type_ int, source string) gl.Shader {
 	shader := gl.CreateShader(type_)
 	shader.Source(source)
 	shader.Compile()
@@ -120,7 +120,7 @@ func compileShader(type_ gl.GLenum, source string) gl.Shader {
 	return shader
 }
 
-func loadShader(type_ gl.GLenum, file string) gl.Shader {
+func loadShader(type_ int, file string) gl.Shader {
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		panic(err)

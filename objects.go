@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/tbruyelle/gl"
-	"github.com/remogatto/mathgl"
+	"golang.org/x/mobile/f32"
+	"golang.org/x/mobile/gl"
 	"math"
 )
 
@@ -144,55 +144,55 @@ func NewSwitchModel(sw *Switch) *SwitchModel {
 	model.Init(gl.TRIANGLE_FAN, vs, VShaderBasic, FShaderBasic)
 
 	v := SwitchSize / 2
-	model.modelView = mathgl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul4(mathgl.Translate3D(float32(sw.X+v), float32(sw.Y+v), 0))
+	model.modelView = gl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul(f32.Translate(float32(sw.X+v), float32(sw.Y+v), 0))
 	return model
 }
 
 var (
-	topLeftModelView     = mathgl.Translate3D(-BlockSize, -BlockSize, 0)
-	topRightModelView    = mathgl.Translate3D(0, -BlockSize, 0)
-	bottomRightModelView = mathgl.Ident4f()
-	bottomLeftModelView  = mathgl.Translate3D(-BlockSize, 0, 0)
+	topLeftModelView     = f32.Translate(-BlockSize, -BlockSize, 0)
+	topRightModelView    = f32.Translate(0, -BlockSize, 0)
+	bottomRightModelView = f32.Identity()
+	bottomLeftModelView  = f32.Translate(-BlockSize, 0, 0)
 )
 
 // TODO the switch number
 func (t *SwitchModel) Draw() {
 	modelViewBackup := t.modelView
 	s := t.sw
-	var rotatemv mathgl.Mat4f
+	var rotatemv f32.Mat4
 	if s.rotate == 0 {
-		rotatemv = mathgl.Ident4f()
+		rotatemv = f32.Identity()
 	} else {
-		rotatemv = mathgl.HomogRotate3D(t.sw.rotate, [3]float32{0, 0, 1})
+		rotatemv = f32.HomogRotate3D(t.sw.rotate, [3]float32{0, 0, 1})
 	}
-	var scalemv mathgl.Mat4f
+	var scalemv f32.Mat4
 	if s.scale == 0 {
-		scalemv = mathgl.Ident4f()
+		scalemv = f32.Identity()
 	} else {
-		scalemv = mathgl.Scale3D(s.scale, s.scale, 0)
+		scalemv = f32.Scale3D(s.scale, s.scale, 0)
 	}
-	blockmv := scalemv.Mul4(rotatemv)
+	blockmv := scalemv.Mul(rotatemv)
 
 	// Draw the associated blocks
 	// top left block
-	t.drawBlock(g.level.blocks[s.line][s.col], blockmv.Mul4(topLeftModelView))
+	t.drawBlock(g.level.blocks[s.line][s.col], blockmv.Mul(topLeftModelView))
 	// top right block
-	t.drawBlock(g.level.blocks[s.line][s.col+1], blockmv.Mul4(topRightModelView))
+	t.drawBlock(g.level.blocks[s.line][s.col+1], blockmv.Mul(topRightModelView))
 	// bottom right block
-	t.drawBlock(g.level.blocks[s.line+1][s.col+1], blockmv.Mul4(bottomRightModelView))
+	t.drawBlock(g.level.blocks[s.line+1][s.col+1], blockmv.Mul(bottomRightModelView))
 	// bottom left block
-	t.drawBlock(g.level.blocks[s.line+1][s.col], blockmv.Mul4(bottomLeftModelView))
+	t.drawBlock(g.level.blocks[s.line+1][s.col], blockmv.Mul(bottomLeftModelView))
 
 	t.ModelBase.Draw()
 
 	t.modelView = modelViewBackup
 }
 
-func (t *SwitchModel) drawBlock(b *Block, modelView mathgl.Mat4f) {
+func (t *SwitchModel) drawBlock(b *Block, modelView f32.Mat4) {
 	if !b.Rendered {
 		b.Rendered = true
 		bm := g.world.blocks[b]
-		bm.modelView = t.modelView.Mul4(modelView)
+		bm.modelView = t.modelView.Mul(modelView)
 		bm.Draw()
 	}
 }
@@ -224,7 +224,7 @@ func (t *Background) Draw() {
 		t.angle += 0.03
 	}
 	modelViewBackup := t.modelView
-	t.modelView = t.modelView.Mul4(mathgl.HomogRotate3D(-t.angle, [3]float32{0, 0, 1}))
+	t.modelView = t.modelView.Mul(f32.HomogRotate3D(-t.angle, [3]float32{0, 0, 1}))
 
 	t.ModelBase.Draw()
 
