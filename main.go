@@ -1,6 +1,3 @@
-// +build !android
-// +build !darwin
-
 package main
 
 import (

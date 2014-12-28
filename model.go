@@ -104,11 +104,6 @@ func (t *ModelBase) Draw() {
 
 	gl.Uniform4f(t.color, 0, 0.5, 0, 1)
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
-
-	gl.EnableVertexAttribArray(t.position)
-	gl.VertexAttribPointer(t.position, sizeVertex, gl.FLOAT, false, 0, 0)
-
 	//t.vao.Bind()
 
 	mvp := &f32.Mat4{}
@@ -121,6 +116,11 @@ func (t *ModelBase) Draw() {
 	}
 	gl.UniformMatrix4fv(t.uniformMVP, f)
 	//t.uniformMVP.UniformMatrix4f(false, (*[16]float32)(&mvp))
+
+	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
+
+	gl.EnableVertexAttribArray(t.position)
+	gl.VertexAttribPointer(t.position, sizeVertex, gl.FLOAT, false, 0, 0)
 
 	gl.DrawArrays(t.mode, 0, t.vertexCount)
 
