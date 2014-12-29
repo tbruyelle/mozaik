@@ -39,15 +39,6 @@ func (t *ModelGroup) Add(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf str
 	t.models = append(t.models, m)
 }
 
-//func (t *ModelBase) pushModelView(modelView mathf32.Mat4) {
-//	t.modelViewBackup = t.modelView
-//	t.modelView = modelView.Mul4(t.modelView)
-//}
-//
-//func (t *ModelBase) popModelView() {
-//	t.modelView = t.modelViewBackup
-//}
-
 func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf string) {
 	t.mode = mode
 	t.vertices = vertices
@@ -124,7 +115,6 @@ func (t *ModelBase) Draw() {
 
 	gl.DisableVertexAttribArray(t.position)
 	gl.DisableVertexAttribArray(t.color)
-	//t.vao.Unbind()
 }
 
 func (t *ModelGroup) Draw() {

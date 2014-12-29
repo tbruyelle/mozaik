@@ -48,8 +48,14 @@ func identity() *f32.Mat4 {
 }
 
 func translate(Tx, Ty, Tz float32) *f32.Mat4 {
+	//return &f32.Mat4{
+	//	{1, 0, 0, Tx},
+	//	{0, 1, 0, Ty},
+	//	{0, 0, 1, Tz},
+	//	{0, 0, 0, 1},
+	//}
 	ret := &f32.Mat4{}
-	ret.Translate(identity(), Tx, Ty, Tx)
+	ret.Translate(identity(), Tx, Ty, Tz)
 	return ret
 }
 

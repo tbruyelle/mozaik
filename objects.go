@@ -150,7 +150,8 @@ func NewSwitchModel(sw *Switch) *SwitchModel {
 	//model.modelView = gl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul(f32.Translate(float32(sw.X+v), float32(sw.Y+v), 0))
 	fmt.Println("switch x y", sw.X, sw.Y, "v=", v)
 	model.modelView = ortho2D(0, windowWidth, windowHeight, 0)
-	model.modelView.Mul(model.modelView, translate(float32(sw.X)+v, float32(sw.Y)+v, 0))
+	model.modelView.Translate(model.modelView, float32(sw.X)+v, float32(sw.Y)+v, 0)
+	fmt.Println("modelview", model.modelView.String())
 	return model
 }
 
@@ -180,16 +181,16 @@ func (t *SwitchModel) Draw() {
 	blockmv := &f32.Mat4{}
 	blockmv.Mul(scalemv, rotatemv)
 
-	// Draw the associated blocks
-	// top left block
-	t.drawBlock(g.level.blocks[s.line][s.col], mul(blockmv, topLeftModelView))
-	// top right block
-	t.drawBlock(g.level.blocks[s.line][s.col+1], mul(blockmv, topRightModelView))
-	// bottom right block
-	t.drawBlock(g.level.blocks[s.line+1][s.col+1], mul(blockmv, bottomRightModelView))
-	// bottom left block
-	t.drawBlock(g.level.blocks[s.line+1][s.col], mul(blockmv, bottomLeftModelView))
-
+	//	// Draw the associated blocks
+	//	// top left block
+	//	t.drawBlock(g.level.blocks[s.line][s.col], mul(blockmv, topLeftModelView))
+	//	// top right block
+	//	t.drawBlock(g.level.blocks[s.line][s.col+1], mul(blockmv, topRightModelView))
+	//	// bottom right block
+	//	t.drawBlock(g.level.blocks[s.line+1][s.col+1], mul(blockmv, bottomRightModelView))
+	//	// bottom left block
+	//	t.drawBlock(g.level.blocks[s.line+1][s.col], mul(blockmv, bottomLeftModelView))
+	//
 	t.ModelBase.Draw()
 
 	t.modelView = &modelViewBackup
