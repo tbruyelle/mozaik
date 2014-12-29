@@ -102,8 +102,6 @@ func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf str
 func (t *ModelBase) Draw() {
 	gl.UseProgram(t.prg)
 
-	//t.vao.Bind()
-
 	mvp := &f32.Mat4{}
 	mvp.Mul(t.modelView, t.projection)
 	f := make([]float32, 16)
@@ -125,6 +123,7 @@ func (t *ModelBase) Draw() {
 	gl.DrawArrays(t.mode, 0, t.vertexCount)
 
 	gl.DisableVertexAttribArray(t.position)
+	gl.DisableVertexAttribArray(t.color)
 	//t.vao.Unbind()
 }
 

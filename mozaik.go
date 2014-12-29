@@ -48,25 +48,6 @@ func compute(val float32, factor float32) float32 {
 }
 
 func (w *World) Reset() {
-	// Compute dimensions according to current window size
-	windowWidth, windowHeight = geom.Width.Px(), geom.Height.Px()
-	widthFactor := windowWidth / WindowWidth
-	heightFactor := windowHeight / WindowHeight
-
-	blockSize = compute(BlockSize, widthFactor)
-	fmt.Println("size", BlockSize, blockSize)
-	blockRadius = compute(BlockRadius, widthFactor)
-	blockPadding = compute(BlockPadding, widthFactor)
-	switchSize = compute(SwitchSize, widthFactor)
-	dashboardHeight = compute(DashboardHeight, heightFactor)
-	xMin = compute(XMin, widthFactor)
-	yMin = compute(YMin, heightFactor)
-	xMax = compute(XMax, widthFactor)
-	yMax = compute(YMax, heightFactor)
-	signatureBlockSize = compute(SignatureBlockSize, widthFactor)
-	signatureBlockRadius = compute(SignatureBlockRadius, widthFactor)
-	signatureLineWidth = compute(SignatureLineWidth, widthFactor)
-	lineWidth = compute(LineWidth, widthFactor)
 
 	// Clean
 	if len(w.switches) > 0 {
@@ -109,10 +90,35 @@ func NewGame() *Game {
 }
 
 func (g *Game) Start() {
+	g.ComputeSizes()
 	// Load first level
 	g.level = LoadLevel(g.currentLevel)
 	g.world.background = NewBackground()
 	g.world.Reset()
+}
+
+func (g *Game) ComputeSizes() {
+	// Compute dimensions according to current window size
+	windowWidth, windowHeight = geom.Width.Px(), geom.Height.Px()
+	fmt.Println("window", windowWidth, windowHeight)
+	widthFactor := windowWidth / WindowWidth
+	heightFactor := windowHeight / WindowHeight
+
+	blockSize = compute(BlockSize, widthFactor)
+	fmt.Println("size", BlockSize, blockSize)
+	blockRadius = compute(BlockRadius, widthFactor)
+	blockPadding = compute(BlockPadding, widthFactor)
+	switchSize = compute(SwitchSize, widthFactor)
+	fmt.Println("switch", SwitchSize, switchSize)
+	dashboardHeight = compute(DashboardHeight, heightFactor)
+	xMin = compute(XMin, widthFactor)
+	yMin = compute(YMin, heightFactor)
+	xMax = compute(XMax, widthFactor)
+	yMax = compute(YMax, heightFactor)
+	signatureBlockSize = compute(SignatureBlockSize, widthFactor)
+	signatureBlockRadius = compute(SignatureBlockRadius, widthFactor)
+	signatureLineWidth = compute(SignatureLineWidth, widthFactor)
+	lineWidth = compute(LineWidth, widthFactor)
 }
 
 func (g *Game) Stop() {
