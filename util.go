@@ -77,20 +77,17 @@ func mul(m1 *f32.Mat4, m2 *f32.Mat4) *f32.Mat4 {
 	return ret
 }
 
-func ortho(left, right, bottom, top, near, far float32) *f32.Mat4 {
-	rml, tmb, fmn := (right - left), (top - bottom), (far - near)
-
+func ortho(w, h float32) *f32.Mat4 {
 	return &f32.Mat4{
-		{float32(2. / rml), 0, 0, 0},
-		{0, float32(2. / tmb), 0, 0},
-		{0, 0, float32(-2. / fmn), 0},
-		{float32(-(right + left) / rml), float32(-(top + bottom) / tmb), float32(-(far + near) / fmn), 1},
+		{2. / h, 0, 0, 0},
+		{0, 2. / w, 0, 0},
+		{0, 0, -1, 0},
+		{-1, -1, 0, 1},
 	}
-}
-
-// Equivalent to Ortho with the near and far planes being -1 and 1, respectively
-func ortho2D(left, right, top, bottom float32) *f32.Mat4 {
-	return ortho(left, right, top, bottom, -1, 1)
+	//( 2.0/768.0, 0.0, 0.0, -1.0,
+	//  0.0, 2.0/1024.0, 0.0, -1.0,
+	//  0.0, 0.0, -1.0, 0.0,
+	//  0.0, 0.0, 0.0, 1.0);  )
 }
 
 func readVertexFile(file string) []Vertex {
