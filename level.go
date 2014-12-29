@@ -195,7 +195,7 @@ func ctoa(c ColorDef) string {
 
 // LoadLevel loads the level number in parameter
 func LoadLevel(level int) Level {
-	f, err := app.Open(fmt.Sprintf("./levels/%d", level))
+	f, err := app.Open(fmt.Sprintf("levels/%d", level))
 	if err != nil {
 		panic(err)
 	}

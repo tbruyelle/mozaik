@@ -11,9 +11,9 @@ license that can be found in the LICENSE file.
 	android:versionName="1.0">
 
 	<uses-sdk android:minSdkVersion="9" />
-	<application android:label="Snake" android:hasCode="false">
+	<application android:label="Mozaik" android:hasCode="false">
 	<activity android:name="android.app.NativeActivity"
-		android:label="Snake"
+		android:label="Mozaik"
 		android:configChanges="orientation|keyboardHidden">
 		<meta-data android:name="android.app.lib_name" android:value="mozaik" />
 		<intent-filter>
