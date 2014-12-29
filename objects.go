@@ -136,30 +136,31 @@ func NewSwitchModel(sw *Switch) *SwitchModel {
 	model := &SwitchModel{sw: sw}
 
 	vs := []Vertex{NewVertex(0, 0, 0, WhiteColor)}
-	vv := float64(SwitchSize / 2)
+	vv := float64(switchSize / 2)
 	for i := float64(0); i <= SwitchSegments; i++ {
 		a := 2 * math.Pi * i / SwitchSegments
 		vs = append(vs, NewVertex(float32(math.Sin(a)*vv), float32(math.Cos(a)*vv), 0, WhiteColor))
 	}
 	model.Init(gl.TRIANGLE_FAN, vs, VShaderBasic, FShaderBasic)
 
-	v := SwitchSize / 2
+	v := switchSize / 2
 
 	//model.modelView = gl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul(f32.Translate(float32(sw.X+v), float32(sw.Y+v), 0))
-	model.modelView = translate(float32(sw.X+v), float32(sw.Y+v), 0)
+	model.modelView = ortho2D(0, windowWidth, windowHeight, 0)
+	model.modelView.Mul(model.modelView, translate(float32(sw.X)+v, float32(sw.Y)+v, 0))
 	return model
 }
 
 var (
-	topLeftModelView     = translate(-BlockSize, -BlockSize, 0)
-	topRightModelView    = translate(0, -BlockSize, 0)
+	topLeftModelView     = translate(-blockSize, -blockSize, 0)
+	topRightModelView    = translate(0, -blockSize, 0)
 	bottomRightModelView = identity()
-	bottomLeftModelView  = translate(-BlockSize, 0, 0)
+	bottomLeftModelView  = translate(-blockSize, 0, 0)
 )
 
 // TODO the switch number
 func (t *SwitchModel) Draw() {
-	modelViewBackup := t.modelView
+	modelViewBackup := *t.modelView
 	s := t.sw
 	var rotatemv *f32.Mat4
 	if s.rotate == 0 {
@@ -188,7 +189,7 @@ func (t *SwitchModel) Draw() {
 
 	t.ModelBase.Draw()
 
-	t.modelView = modelViewBackup
+	t.modelView = &modelViewBackup
 }
 
 func (t *SwitchModel) drawBlock(b *Block, modelView *f32.Mat4) {

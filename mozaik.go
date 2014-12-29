@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+
+	"golang.org/x/mobile/geom"
+)
+
 const (
 	WindowWidth          = 576
 	WindowHeight         = 704
@@ -18,7 +24,17 @@ const (
 	SignatureBlockRadius = 6
 	LineWidth            = 2
 	SignatureLineWidth   = 1
-	BgSegments=24
+	BgSegments           = 24
+)
+
+var (
+	windowWidth, windowHeight                float32
+	blockSize, blockRadius, blockPadding     float32
+	switchSize                               float32
+	dashboardHeight                          float32
+	xMin, yMin, xMax, yMax                   float32
+	signatureBlockSize, signatureBlockRadius float32
+	lineWidth, signatureLineWidth            float32
 )
 
 type World struct {
@@ -27,7 +43,31 @@ type World struct {
 	blocks     map[*Block]*BlockModel
 }
 
+func compute(val float32, factor float32) float32 {
+	return val * factor
+}
+
 func (w *World) Reset() {
+	// Compute dimensions according to current window size
+	windowWidth, windowHeight = geom.Width.Px(), geom.Height.Px()
+	widthFactor := windowWidth / WindowWidth
+	heightFactor := windowHeight / WindowHeight
+
+	blockSize = compute(BlockSize, widthFactor)
+	fmt.Println("size", BlockSize, blockSize)
+	blockRadius = compute(BlockRadius, widthFactor)
+	blockPadding = compute(BlockPadding, widthFactor)
+	switchSize = compute(SwitchSize, widthFactor)
+	dashboardHeight = compute(DashboardHeight, heightFactor)
+	xMin = compute(XMin, widthFactor)
+	yMin = compute(YMin, heightFactor)
+	xMax = compute(XMax, widthFactor)
+	yMax = compute(YMax, heightFactor)
+	signatureBlockSize = compute(SignatureBlockSize, widthFactor)
+	signatureBlockRadius = compute(SignatureBlockRadius, widthFactor)
+	signatureLineWidth = compute(SignatureLineWidth, widthFactor)
+	lineWidth = compute(LineWidth, widthFactor)
+
 	// Clean
 	if len(w.switches) > 0 {
 		for _, s := range w.switches {
@@ -48,7 +88,7 @@ func (w *World) Reset() {
 		for j := 0; j < len(g.level.blocks[i]); j++ {
 			b := g.level.blocks[i][j]
 			if b != nil {
-				w.blocks[b] = NewBlockModel(b, BlockSize, BlockRadius)
+				w.blocks[b] = NewBlockModel(b, blockSize, blockRadius)
 			}
 		}
 	}
