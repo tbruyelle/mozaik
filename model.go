@@ -61,12 +61,10 @@ func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf str
 	t.uniformMVP = gl.GetUniformLocation(t.prg, "modelViewProjection")
 
 	// the projection matrix
-	t.projection = &f32.Mat4{}
-	t.projection.Identity()
+	t.projection = identity()
 
 	// the model view
-	t.modelView = &f32.Mat4{}
-	t.modelView.Identity()
+	t.modelView = identity()
 
 	// Create VBO
 	//	t.buffer = gl.GenBuffer()

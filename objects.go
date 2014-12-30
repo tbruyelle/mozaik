@@ -63,6 +63,10 @@ func NewBlockModel(b *Block, size, radius float32) *BlockModel {
 
 	c := blockColor(b)
 	s := size - radius
+
+	model.modelView = identity()
+	model.projection = identity()
+
 	// Inner square
 	innervs := []Vertex{
 		NewVertex(radius, radius, 0, c),
@@ -178,16 +182,16 @@ func (t *SwitchModel) Draw() {
 	blockmv := &f32.Mat4{}
 	blockmv.Mul(scalemv, rotatemv)
 
-	//	// Draw the associated blocks
-	//	// top left block
-	//	t.drawBlock(g.level.blocks[s.line][s.col], mul(blockmv, topLeftModelView))
-	//	// top right block
-	//	t.drawBlock(g.level.blocks[s.line][s.col+1], mul(blockmv, topRightModelView))
-	//	// bottom right block
-	//	t.drawBlock(g.level.blocks[s.line+1][s.col+1], mul(blockmv, bottomRightModelView))
-	//	// bottom left block
-	//	t.drawBlock(g.level.blocks[s.line+1][s.col], mul(blockmv, bottomLeftModelView))
-	//
+	// Draw the associated blocks
+	// top left block
+	t.drawBlock(g.level.blocks[s.line][s.col], mul(blockmv, topLeftModelView))
+	// top right block
+	t.drawBlock(g.level.blocks[s.line][s.col+1], mul(blockmv, topRightModelView))
+	// bottom right block
+	t.drawBlock(g.level.blocks[s.line+1][s.col+1], mul(blockmv, bottomRightModelView))
+	// bottom left block
+	t.drawBlock(g.level.blocks[s.line+1][s.col], mul(blockmv, bottomLeftModelView))
+
 	t.ModelBase.Draw()
 
 	t.modelView = &modelViewBackup
