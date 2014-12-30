@@ -95,7 +95,7 @@ func flatten(m *f32.Mat4) []float32 {
 	f := make([]float32, 16)
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
-			f[j*4+i] = m[i][j]
+			f[i*4+j] = m[i][j]
 		}
 	}
 	return f
