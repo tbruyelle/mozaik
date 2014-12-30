@@ -90,18 +90,23 @@ func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf str
 	//	//t.vao.Unbind()
 }
 
+// flatten returns column based flatten matrix.
+func flatten(m *f32.Mat4) []float32 {
+	f := make([]float32, 16)
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			f[j*4+i] = m[i][j]
+		}
+	}
+	return f
+}
+
 func (t *ModelBase) Draw() {
 	gl.UseProgram(t.prg)
 
 	mvp := &f32.Mat4{}
 	mvp.Mul(t.modelView, t.projection)
-	f := make([]float32, 16)
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			f[i*4+j] = mvp[i][j]
-		}
-	}
-	gl.UniformMatrix4fv(t.uniformMVP, f)
+	gl.UniformMatrix4fv(t.uniformMVP, flatten(mvp))
 	//t.uniformMVP.UniformMatrix4f(false, (*[16]float32)(&mvp))
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
