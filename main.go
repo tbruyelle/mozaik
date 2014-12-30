@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"time"
 
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/app/debug"
@@ -10,9 +11,14 @@ import (
 	"golang.org/x/mobile/gl"
 )
 
+const (
+	FRAMES_PER_SECOND = 30
+)
+
 var (
 	g            *Game
 	windowRadius float64
+	ticker       *time.Ticker
 )
 
 func main() {
@@ -43,25 +49,30 @@ func draw() {
 	// Keep until golang.org/x/mogile/x11.go handle Start callback
 	if g == nil {
 		initialize()
+		ticker = time.NewTicker(time.Duration(1e9 / int(FRAMES_PER_SECOND)))
 	}
 
-	gl.ClearColor(0.9, 0.85, 0.46, 0.0)
-	gl.Clear(gl.COLOR_BUFFER_BIT)
-	w := g.world
-	w.background.Draw()
-	if g.level.rotating != nil {
-		// Start draw the rotating switch
-		for _, swm := range w.switches {
-			if swm.sw == g.level.rotating {
-				swm.Draw()
+	select {
+	case <-ticker.C:
+
+		gl.ClearColor(0.9, 0.85, 0.46, 0.0)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
+		w := g.world
+		w.background.Draw()
+		if g.level.rotating != nil {
+			// Start draw the rotating switch
+			for _, swm := range w.switches {
+				if swm.sw == g.level.rotating {
+					swm.Draw()
+				}
 			}
 		}
+		// Draw the remaining switches
+		for _, swm := range w.switches {
+			swm.Draw()
+		}
+		debug.DrawFPS()
 	}
-	// Draw the remaining switches
-	for _, swm := range w.switches {
-		swm.Draw()
-	}
-	debug.DrawFPS()
 }
 
 func touch(t event.Touch) {
