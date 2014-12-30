@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 
 	"golang.org/x/mobile/f32"
@@ -148,9 +147,7 @@ func NewSwitchModel(sw *Switch) *SwitchModel {
 	v := switchSize / 2
 
 	//model.modelView = gl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul(f32.Translate(float32(sw.X+v), float32(sw.Y+v), 0))
-	fmt.Println("switch x y", sw.X, sw.Y, "v=", v)
-	model.modelView = ortho2D(0, windowWidth, windowHeight, 0)
-	fmt.Println("ortho", model.modelView)
+	model.modelView = ortho(windowWidth, windowHeight)
 	model.modelView.Translate(model.modelView, float32(sw.X)+v, float32(sw.Y)+v, 0)
 	return model
 }
