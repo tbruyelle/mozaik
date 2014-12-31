@@ -213,9 +213,9 @@ func (t *SwitchModel) Draw() {
 func (t *SwitchModel) drawBlock(b *Block, modelView *f32.Mat4) {
 	if !b.Rendered {
 		b.Rendered = true
-		bm := g.world.blocks[b]
-		bm.modelView.Mul(t.modelView, modelView)
-		bm.Draw()
+		//bm := g.world.blocks[b]
+		//bm.modelView.Mul(t.modelView, modelView)
+		//bm.Draw()
 	}
 }
 

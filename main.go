@@ -29,9 +29,7 @@ func main() {
 }
 
 func initialize() {
-	g = NewGame()
 	width, height := geom.Width.Px(), geom.Height.Px()
-
 	gl.Viewport(0, 0, int(width), int(height))
 
 	// Compute window radius
@@ -42,6 +40,8 @@ func initialize() {
 	// antialiasing
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+	g = NewGame()
 	g.Start()
 }
 
@@ -73,15 +73,13 @@ func draw() {
 		if g.level.rotating != nil {
 			// Start draw the rotating switch
 			for _, swm := range w.switches {
-				if swm.sw == g.level.rotating {
-					swm.Draw()
-				}
+				_ = swm
+				//if swm.sw == g.level.rotating {
+				// FIXME			swm.Draw()
+				//}
 			}
 		}
-		// Draw the remaining switches
-		for _, swm := range w.switches {
-			swm.Draw()
-		}
+		w.eng.Render(w.scene, 0)
 		debug.DrawFPS()
 	}
 }
