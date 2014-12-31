@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	"golang.org/x/mobile/f32"
@@ -39,6 +40,7 @@ type BlockModel struct {
 }
 
 func blockColor(b *Block) Color {
+	_ = fmt.Sprint
 	switch b.Color {
 	case Red:
 		return RedColor
@@ -164,7 +166,6 @@ func NewSwitchModel(sw *Switch) *SwitchModel {
 		vs = append(vs, NewVertex(float32(math.Sin(a)*vv), float32(math.Cos(a)*vv), 0, WhiteColor))
 	}
 	model.Init(gl.TRIANGLE_FAN, vs, VShaderBasic, FShaderBasic)
-
 	v := switchSize / 2
 	model.modelView = ortho(windowWidth, windowHeight)
 	model.modelView.Translate(model.modelView, float32(sw.X)+v, float32(sw.Y)+v, 0)
@@ -179,7 +180,7 @@ func (t *SwitchModel) Draw() {
 	if s.rotate == 0 {
 		rotatemv = identity()
 	} else {
-		rotatemv = rotate(s.rotate)
+		rotatemv = rotate(-s.rotate)
 	}
 	var scalemv *f32.Mat4
 	if s.scale == 0 {
@@ -196,7 +197,6 @@ func (t *SwitchModel) Draw() {
 	bottomRightModelView := identity()
 	bottomLeftModelView := translate(-blockSize, 0, 0)
 	// top left block
-
 	t.drawBlock(g.level.blocks[s.line][s.col], mul(blockmv, topLeftModelView))
 	// top right block
 	t.drawBlock(g.level.blocks[s.line][s.col+1], mul(blockmv, topRightModelView))
@@ -246,7 +246,7 @@ func (t *Background) Draw() {
 		t.angle += 0.02
 	}
 	modelViewBackup := *t.modelView
-	t.modelView.Mul(t.modelView, rotate(-t.angle))
+	t.modelView.Mul(t.modelView, rotate(t.angle))
 
 	t.ModelBase.Draw()
 

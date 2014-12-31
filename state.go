@@ -50,7 +50,7 @@ func NewRotateState() State {
 }
 
 const (
-	rotateTicks         = 12
+	rotateTicks         = 10
 	rotateRevertTicks   = 6
 	rotateDegree        = math.Pi / 2
 	halfRotate          = rotateDegree / 2
@@ -71,12 +71,14 @@ func scaleStep(rotate float32) float32 {
 }
 
 func (s RotateState) Enter(g *Game, sw *Switch) {
+	fmt.Println("RotateState.Enter")
 	g.level.rotating = sw
 	sw.rotate = 0
 	sw.scale = 1
 }
 
 func (s RotateState) Exit(g *Game, sw *Switch) {
+	fmt.Println("RotateState.Exit")
 	g.level.RotateSwitch(sw)
 	g.level.rotating = nil
 	sw.rotate = 0

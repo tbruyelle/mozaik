@@ -135,6 +135,7 @@ func (l *Level) PressSwitch(x, y int) {
 	// Handle click only when no switch are rotating
 	if l.rotating == nil {
 		if i, s := l.findSwitch(x, y); s != nil {
+			fmt.Println("find switch", s)
 			l.TriggerSwitch(i)
 		}
 	}

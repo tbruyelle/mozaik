@@ -54,6 +54,9 @@ func draw() {
 
 	select {
 	case <-ticker.C:
+		// Update all component states
+		g.Update()
+
 		// Reinit blocks as not renderered
 		for i := 0; i < len(g.level.blocks); i++ {
 			for j := 0; j < len(g.level.blocks[i]); j++ {
@@ -84,4 +87,7 @@ func draw() {
 }
 
 func touch(t event.Touch) {
+	if t.Type == event.TouchEnd {
+		g.Click(int(t.Loc.X.Px()), int(t.Loc.Y.Px()))
+	}
 }
