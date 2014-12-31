@@ -54,6 +54,14 @@ func draw() {
 
 	select {
 	case <-ticker.C:
+		// Reinit blocks as not renderered
+		for i := 0; i < len(g.level.blocks); i++ {
+			for j := 0; j < len(g.level.blocks[i]); j++ {
+				if g.level.blocks[i][j] != nil {
+					g.level.blocks[i][j].Rendered = false
+				}
+			}
+		}
 
 		gl.ClearColor(0.9, 0.85, 0.46, 0.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)

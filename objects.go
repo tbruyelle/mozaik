@@ -34,7 +34,7 @@ void main() {
 )
 
 type BlockModel struct {
-	ModelGroup
+	ModelBase
 	block *Block
 }
 
@@ -61,76 +61,93 @@ func blockColor(b *Block) Color {
 func NewBlockModel(b *Block, size, radius float32) *BlockModel {
 	model := &BlockModel{block: b}
 
-	c := blockColor(b)
-	s := size - radius
-
-	model.modelView = identity()
 	model.projection = identity()
+	model.modelView = identity()
 
-	// Inner square
-	innervs := []Vertex{
-		NewVertex(radius, radius, 0, c),
-		NewVertex(radius, s, 0, c),
-		NewVertex(s, radius, 0, c),
-		NewVertex(s, s, 0, c),
+	c := blockColor(b)
+	vs := []Vertex{
+		NewVertex(0, 0, 0, c),
+		NewVertex(0, size, 0, c),
+		NewVertex(size, 0, 0, c),
+		NewVertex(size, size, 0, c),
 	}
-	model.Add(gl.TRIANGLE_STRIP, innervs, VShaderBasic, FShaderBasic)
-	// Bottom square
-	topvs := []Vertex{
-		NewVertex(radius, s, 0, c),
-		NewVertex(radius, size, 0, c),
-		NewVertex(s, s, 0, c),
-		NewVertex(s, size, 0, c),
-	}
-	model.Add(gl.TRIANGLE_STRIP, topvs, VShaderBasic, FShaderBasic)
-	// Top square
-	bottomvs := []Vertex{
-		NewVertex(radius, radius, 0, c),
-		NewVertex(radius, 0, 0, c),
-		NewVertex(s, radius, 0, c),
-		NewVertex(s, 0, 0, c),
-	}
-	model.Add(gl.TRIANGLE_STRIP, bottomvs, VShaderBasic, FShaderBasic)
-	// Right square
-	leftvs := []Vertex{
-		NewVertex(s, radius, 0, c),
-		NewVertex(size, radius, 0, c),
-		NewVertex(s, s, 0, c),
-		NewVertex(size, s, 0, c),
-	}
-	model.Add(gl.TRIANGLE_STRIP, leftvs, VShaderBasic, FShaderBasic)
-	// Left square
-	rightvs := []Vertex{
-		NewVertex(radius, radius, 0, c),
-		NewVertex(0, radius, 0, c),
-		NewVertex(radius, s, 0, c),
-		NewVertex(0, s, 0, c),
-	}
-	model.Add(gl.TRIANGLE_STRIP, rightvs, VShaderBasic, FShaderBasic)
-	// Bottom right corner
-	addCorner(model, c, s, s, radius, 0)
-	// Bottom left corner
-	addCorner(model, c, radius, s, radius, 1)
-	// Top left corner
-	addCorner(model, c, radius, radius, radius, 2)
-	// Top right corner
-	addCorner(model, c, s, radius, radius, 3)
-
+	model.Init(gl.TRIANGLE_STRIP, vs, VShaderBasic, FShaderBasic)
 	return model
 }
 
-func addCorner(model *BlockModel, c Color, x, y, radius, start float32) {
-
-	max := float64(BlockCornerSegments * (start + 1))
-	vs := []Vertex{NewVertex(x, y, 0, c)}
-	for i := float64(start * BlockCornerSegments); i <= max; i++ {
-		a := math.Pi / 2 * i / BlockCornerSegments
-		xr := math.Cos(a) * float64(radius)
-		yr := math.Sin(a) * float64(radius)
-		vs = append(vs, NewVertex(x+float32(xr), y+float32(yr), 0, c))
-	}
-	model.Add(gl.TRIANGLE_FAN, vs, VShaderBasic, FShaderBasic)
-}
+//func NewBlockModel2(b *Block, size, radius float32) *BlockModel {
+//	model := &BlockModel{block: b}
+//
+//	c := blockColor(b)
+//	s := size - radius
+//
+//	model.modelView = identity()
+//	model.projection = identity()
+//
+//	// Inner square
+//	innervs := []Vertex{
+//		NewVertex(radius, radius, 0, c),
+//		NewVertex(radius, s, 0, c),
+//		NewVertex(s, radius, 0, c),
+//		NewVertex(s, s, 0, c),
+//	}
+//	model.Add(gl.TRIANGLE_STRIP, innervs, VShaderBasic, FShaderBasic)
+//	// Bottom square
+//	topvs := []Vertex{
+//		NewVertex(radius, s, 0, c),
+//		NewVertex(radius, size, 0, c),
+//		NewVertex(s, s, 0, c),
+//		NewVertex(s, size, 0, c),
+//	}
+//	model.Add(gl.TRIANGLE_STRIP, topvs, VShaderBasic, FShaderBasic)
+//	// Top square
+//	bottomvs := []Vertex{
+//		NewVertex(radius, radius, 0, c),
+//		NewVertex(radius, 0, 0, c),
+//		NewVertex(s, radius, 0, c),
+//		NewVertex(s, 0, 0, c),
+//	}
+//	model.Add(gl.TRIANGLE_STRIP, bottomvs, VShaderBasic, FShaderBasic)
+//	// Right square
+//	leftvs := []Vertex{
+//		NewVertex(s, radius, 0, c),
+//		NewVertex(size, radius, 0, c),
+//		NewVertex(s, s, 0, c),
+//		NewVertex(size, s, 0, c),
+//	}
+//	model.Add(gl.TRIANGLE_STRIP, leftvs, VShaderBasic, FShaderBasic)
+//	// Left square
+//	rightvs := []Vertex{
+//		NewVertex(radius, radius, 0, c),
+//		NewVertex(0, radius, 0, c),
+//		NewVertex(radius, s, 0, c),
+//		NewVertex(0, s, 0, c),
+//	}
+//	model.Add(gl.TRIANGLE_STRIP, rightvs, VShaderBasic, FShaderBasic)
+//	// Bottom right corner
+//	addCorner(model, c, s, s, radius, 0)
+//	// Bottom left corner
+//	addCorner(model, c, radius, s, radius, 1)
+//	// Top left corner
+//	addCorner(model, c, radius, radius, radius, 2)
+//	// Top right corner
+//	addCorner(model, c, s, radius, radius, 3)
+//
+//	return model
+//}
+//
+//func addCorner(model *BlockModel, c Color, x, y, radius, start float32) {
+//
+//	max := float64(BlockCornerSegments * (start + 1))
+//	vs := []Vertex{NewVertex(x, y, 0, c)}
+//	for i := float64(start * BlockCornerSegments); i <= max; i++ {
+//		a := math.Pi / 2 * i / BlockCornerSegments
+//		xr := math.Cos(a) * float64(radius)
+//		yr := math.Sin(a) * float64(radius)
+//		vs = append(vs, NewVertex(x+float32(xr), y+float32(yr), 0, c))
+//	}
+//	model.Add(gl.TRIANGLE_FAN, vs, VShaderBasic, FShaderBasic)
+//}
 
 type SwitchModel struct {
 	ModelBase
@@ -149,19 +166,10 @@ func NewSwitchModel(sw *Switch) *SwitchModel {
 	model.Init(gl.TRIANGLE_FAN, vs, VShaderBasic, FShaderBasic)
 
 	v := switchSize / 2
-
-	//model.modelView = gl.Ortho2D(0, WindowWidth, WindowHeight, 0).Mul(f32.Translate(float32(sw.X+v), float32(sw.Y+v), 0))
 	model.modelView = ortho(windowWidth, windowHeight)
 	model.modelView.Translate(model.modelView, float32(sw.X)+v, float32(sw.Y)+v, 0)
 	return model
 }
-
-var (
-	topLeftModelView     = translate(-blockSize, -blockSize, 0)
-	topRightModelView    = translate(0, -blockSize, 0)
-	bottomRightModelView = identity()
-	bottomLeftModelView  = translate(-blockSize, 0, 0)
-)
 
 // TODO the switch number
 func (t *SwitchModel) Draw() {
@@ -183,7 +191,12 @@ func (t *SwitchModel) Draw() {
 	blockmv.Mul(scalemv, rotatemv)
 
 	// Draw the associated blocks
+	topLeftModelView := translate(-blockSize, -blockSize, 0)
+	topRightModelView := translate(0, -blockSize, 0)
+	bottomRightModelView := identity()
+	bottomLeftModelView := translate(-blockSize, 0, 0)
 	// top left block
+
 	t.drawBlock(g.level.blocks[s.line][s.col], mul(blockmv, topLeftModelView))
 	// top right block
 	t.drawBlock(g.level.blocks[s.line][s.col+1], mul(blockmv, topRightModelView))
