@@ -79,7 +79,7 @@ func NewWorld() *World {
 		for j := 0; j < len(g.level.blocks[i]); j++ {
 			b := g.level.blocks[i][j]
 			if b != nil {
-				n := w.newNode(0, blockSize, blockSize, 0, 0)
+				n := w.newNode(int(b.Color), blockSize, blockSize, float32(j)*blockSize, float32(i)*blockSize)
 				w.blocks[b] = n
 			}
 		}
@@ -139,7 +139,7 @@ func (w *World) loadTextures() {
 		texBlockBlue:      sprite.SubTex{t, image.Rect(texBlockSize*2, 0, texBlockSize*3, texBlockSize)},
 		texBlockGreen:     sprite.SubTex{t, image.Rect(texBlockSize*3, 0, texBlockSize*4, texBlockSize)},
 		texBlockPink:      sprite.SubTex{t, image.Rect(0, texBlockSize, texBlockSize, texBlockSize*2)},
-		texBlockOrange:    sprite.SubTex{t, image.Rect(texBlockSize, texBlockSize, texBlockSize*2, texBlockSize*3)},
+		texBlockOrange:    sprite.SubTex{t, image.Rect(texBlockSize, texBlockSize, texBlockSize*2, texBlockSize*2)},
 		texBlockLightBlue: sprite.SubTex{t, image.Rect(texBlockSize*2, texBlockSize, texBlockSize*3, texBlockSize*2)},
 	}
 }
