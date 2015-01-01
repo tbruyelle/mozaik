@@ -86,7 +86,7 @@ func NewWorld() *World {
 	}
 	for _, sw := range g.level.switches {
 		_ = sw
-		w.switches = append(w.switches, w.newNode(0, switchSize, switchSize, 256, 256))
+		w.switches = append(w.switches, w.newNode(texSwitch1, switchSize, switchSize, 256, 256))
 	}
 	return w
 }
@@ -111,10 +111,20 @@ const (
 	texBlockPink
 	texBlockOrange
 	texBlockLightBlue
+	texSwitch1
+	texSwitch2
+	texSwitch3
+	texSwitch4
+	texSwitch5
+	texSwitch6
+	texSwitch7
+	texSwitch8
+	texSwitch9
 )
 
 const (
-	texBlockSize = 128
+	TexBlockSize  = 128
+	TexSwitchSize = 48
 )
 
 func (w *World) loadTextures() {
@@ -134,13 +144,22 @@ func (w *World) loadTextures() {
 	}
 
 	w.texs = []sprite.SubTex{
-		texBlockRed:       sprite.SubTex{t, image.Rect(0, 0, texBlockSize, texBlockSize)},
-		texBlockYellow:    sprite.SubTex{t, image.Rect(texBlockSize, 0, texBlockSize*2, texBlockSize)},
-		texBlockBlue:      sprite.SubTex{t, image.Rect(texBlockSize*2, 0, texBlockSize*3, texBlockSize)},
-		texBlockGreen:     sprite.SubTex{t, image.Rect(texBlockSize*3, 0, texBlockSize*4, texBlockSize)},
-		texBlockPink:      sprite.SubTex{t, image.Rect(0, texBlockSize, texBlockSize, texBlockSize*2)},
-		texBlockOrange:    sprite.SubTex{t, image.Rect(texBlockSize, texBlockSize, texBlockSize*2, texBlockSize*2)},
-		texBlockLightBlue: sprite.SubTex{t, image.Rect(texBlockSize*2, texBlockSize, texBlockSize*3, texBlockSize*2)},
+		texBlockRed:       sprite.SubTex{t, image.Rect(0, 0, TexBlockSize, TexBlockSize)},
+		texBlockYellow:    sprite.SubTex{t, image.Rect(TexBlockSize, 0, TexBlockSize*2, TexBlockSize)},
+		texBlockBlue:      sprite.SubTex{t, image.Rect(TexBlockSize*2, 0, TexBlockSize*3, TexBlockSize)},
+		texBlockGreen:     sprite.SubTex{t, image.Rect(TexBlockSize*3, 0, TexBlockSize*4, TexBlockSize)},
+		texBlockPink:      sprite.SubTex{t, image.Rect(0, TexBlockSize, TexBlockSize, TexBlockSize*2)},
+		texBlockOrange:    sprite.SubTex{t, image.Rect(TexBlockSize, TexBlockSize, TexBlockSize*2, TexBlockSize*2)},
+		texBlockLightBlue: sprite.SubTex{t, image.Rect(TexBlockSize*2, TexBlockSize, TexBlockSize*3, TexBlockSize*2)},
+		texSwitch1:        sprite.SubTex{t, image.Rect(0, TexBlockSize*2, TexSwitchSize, TexBlockSize*2+TexSwitchSize)},
+		texSwitch2:        sprite.SubTex{t, image.Rect(0, TexBlockSize*2, TexSwitchSize, TexBlockSize*2+TexSwitchSize)},
+		texSwitch3:        sprite.SubTex{t, image.Rect(TexSwitchSize*2, TexBlockSize*2, TexSwitchSize*3, TexBlockSize*2+TexSwitchSize)},
+		texSwitch4:        sprite.SubTex{t, image.Rect(TexSwitchSize*3, TexBlockSize*2, TexSwitchSize*4, TexBlockSize*2+TexSwitchSize)},
+		texSwitch5:        sprite.SubTex{t, image.Rect(TexSwitchSize*4, TexBlockSize*2, TexSwitchSize*5, TexBlockSize*2+TexSwitchSize)},
+		texSwitch6:        sprite.SubTex{t, image.Rect(TexSwitchSize*5, TexBlockSize*2, TexSwitchSize*6, TexBlockSize*2+TexSwitchSize)},
+		texSwitch7:        sprite.SubTex{t, image.Rect(TexSwitchSize*6, TexBlockSize*2, TexSwitchSize*7, TexBlockSize*2+TexSwitchSize)},
+		texSwitch8:        sprite.SubTex{t, image.Rect(TexSwitchSize*7, TexBlockSize*2, TexSwitchSize*8, TexBlockSize*2+TexSwitchSize)},
+		texSwitch9:        sprite.SubTex{t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9, TexBlockSize*2+TexSwitchSize)},
 	}
 }
 
