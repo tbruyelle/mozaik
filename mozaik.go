@@ -84,9 +84,10 @@ func NewWorld() *World {
 			}
 		}
 	}
+	v := switchSize / 2
 	for _, sw := range g.level.switches {
 		_ = sw
-		w.switches = append(w.switches, w.newNode(texSwitch1, switchSize, switchSize, 256, 256))
+		w.switches = append(w.switches, w.newNode(texSwitch1, switchSize, switchSize, sw.X+v, sw.Y+v))
 	}
 	return w
 }

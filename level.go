@@ -87,8 +87,8 @@ func (l *Level) addSwitch(line, col int) {
 
 	s := &Switch{
 		line: line, col: col,
-		X:    int(xMin) + (col+1)*int(blockSize) + col*int(blockPadding)*2 - int(switchSize/2),
-		Y:    int(yMin) + (line+1)*int(blockSize) + line*int(blockPadding)*2 - int(switchSize/2),
+		X:    xMin + float32(col+1)*blockSize + float32(col)*blockPadding*2 - switchSize/2,
+		Y:    yMin + float32(line+1)*blockSize + float32(line)*blockPadding*2 - switchSize/2,
 		name: determineName(line, col),
 	}
 	s.ChangeState(NewIdleState())
@@ -156,7 +156,7 @@ func (l *Level) TriggerSwitch(i int) {
 
 func (l *Level) findSwitch(x, y int) (int, *Switch) {
 	for i, s := range l.switches {
-		if x >= s.X && x <= s.X+SwitchSize && y >= s.Y && y <= s.Y+SwitchSize {
+		if x >= int(s.X) && x <= int(s.X)+SwitchSize && y >= int(s.Y) && y <= int(s.Y)+SwitchSize {
 			return i, s
 		}
 	}
