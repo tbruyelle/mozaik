@@ -5,6 +5,8 @@ import (
 	"image"
 	"log"
 
+	_ "image/png"
+
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/f32"
 	"golang.org/x/mobile/geom"
