@@ -79,23 +79,23 @@ func NewWorld() *World {
 		for j := 0; j < len(g.level.blocks[i]); j++ {
 			b := g.level.blocks[i][j]
 			if b != nil {
-				n := w.newNode(w.texs[0], blockSize, blockSize, 0, 0)
+				n := w.newNode(0, blockSize, blockSize, 0, 0)
 				w.blocks[b] = n
 			}
 		}
 	}
 	for _, sw := range g.level.switches {
 		_ = sw
-		w.switches = append(w.switches, w.newNode(w.texs[0], switchSize, switchSize, 256, 256))
+		w.switches = append(w.switches, w.newNode(0, switchSize, switchSize, 256, 256))
 	}
 	return w
 }
 
-func (w *World) newNode(t sprite.SubTex, width, height, x, y float32) *sprite.Node {
+func (w *World) newNode(tex int, width, height, x, y float32) *sprite.Node {
 	n := &sprite.Node{}
 	w.eng.Register(n)
 	w.scene.AppendChild(n)
-	w.eng.SetSubTex(n, t)
+	w.eng.SetSubTex(n, w.texs[tex])
 	w.eng.SetTransform(n, f32.Affine{
 		{width, 0, x},
 		{0, height, y},
@@ -158,9 +158,9 @@ func NewGame() *Game {
 
 func (g *Game) Start() {
 	g.ComputeSizes()
+	g.level = LoadLevel(g.currentLevel)
 	g.world = NewWorld()
 	// Load first level
-	g.level = LoadLevel(g.currentLevel)
 	g.world.background = NewBackground()
 }
 
