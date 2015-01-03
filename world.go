@@ -55,10 +55,10 @@ func (sw *Switch) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	case "9":
 		e.SetSubTex(n, g.world.texs[texSwitch9])
 	}
-	//v := switchSize / 2
+	v := switchSize / 2
 	e.SetTransform(n, f32.Affine{
-		{switchSize, 0, sw.X},
-		{0, switchSize, sw.Y},
+		{switchSize, 0, sw.X - v},
+		{0, switchSize, sw.Y - v},
 	})
 }
 
@@ -107,7 +107,7 @@ func NewWorld() *World {
 		n.Arranger = sw
 		// for each switch add the corresponding block nodes
 		w.addBlock(sw, sw.line, sw.col, -blockSize, -blockSize)
-		w.addBlock(sw, sw.line, sw.col+1, -blockSize, 0)
+		w.addBlock(sw, sw.line, sw.col+1, 0, -blockSize)
 		w.addBlock(sw, sw.line+1, sw.col+1, 0, 0)
 		w.addBlock(sw, sw.line+1, sw.col, -blockSize, 0)
 	}

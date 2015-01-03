@@ -87,8 +87,8 @@ func (l *Level) addSwitch(line, col int) {
 
 	s := &Switch{
 		line: line, col: col,
-		X:    xMin + float32(col+1)*blockSize + float32(col)*blockPadding*2 - switchSize/2,
-		Y:    yMin + float32(line+1)*blockSize + float32(line)*blockPadding*2 - switchSize/2,
+		X:    xMin + float32(col+1)*blockSize + float32(col)*blockPadding*2,
+		Y:    yMin + float32(line+1)*blockSize + float32(line)*blockPadding*2,
 		name: determineName(line, col),
 	}
 	s.ChangeState(NewIdleState())
