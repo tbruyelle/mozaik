@@ -66,21 +66,23 @@ type BlockArranger struct {
 	sw *Switch
 	// the block position according to the switch
 	x, y int
+	// translation according to the switch
+	tx, ty float32
 }
 
 func (ba *BlockArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	// find the corresponding block
 	b := g.level.blocks[ba.x][ba.y]
-	if b.Rendered {
-		// TODO put a nil texture
-		e.SetSubTex(n, sprite.SubTex{})
-	} else {
-		e.SetSubTex(n, g.world.texs[b.Color])
-	}
+	//	if b.Rendered {
+	//		// TODO put a nil texture
+	//		e.SetSubTex(n, sprite.SubTex{})
+	//	} else {
+	e.SetSubTex(n, g.world.texs[b.Color])
 	e.SetTransform(n, f32.Affine{
-		{blockSize, 0, 0},
-		{0, blockSize, 0},
+		{blockSize, 0, ba.sw.X + ba.tx},
+		{0, blockSize, ba.sw.Y + ba.ty},
 	})
+	//}
 }
 
 func NewWorld() *World {
@@ -104,19 +106,18 @@ func NewWorld() *World {
 		w.switches = append(w.switches, n)
 		n.Arranger = sw
 		// for each switch add the corresponding block nodes
-		w.addBlock(n, sw, sw.line, sw.col)
-		w.addBlock(n, sw, sw.line, sw.col+1)
-		w.addBlock(n, sw, sw.line+1, sw.col+1)
-		w.addBlock(n, sw, sw.line+1, sw.col)
-
+		w.addBlock(sw, sw.line, sw.col, -blockSize, -blockSize)
+		w.addBlock(sw, sw.line, sw.col+1, -blockSize, 0)
+		w.addBlock(sw, sw.line+1, sw.col+1, 0, 0)
+		w.addBlock(sw, sw.line+1, sw.col, -blockSize, 0)
 	}
 	return w
 }
 
-func (w *World) addBlock(n *sprite.Node, sw *Switch, x, y int) {
+func (w *World) addBlock(sw *Switch, x, y int, tx, ty float32) {
 	b := w.newNode()
-	b.Arranger = &BlockArranger{sw: sw, x: sw.line, y: sw.col}
-	n.AppendChild(b)
+	b.Arranger = &BlockArranger{sw: sw, x: sw.line, y: sw.col, tx: tx, ty: ty}
+	w.scene.AppendChild(b)
 }
 
 func (w *World) newNode() *sprite.Node {
