@@ -2,16 +2,9 @@ package main
 
 import (
 	"fmt"
-	"image"
-	"log"
-
 	_ "image/png"
 
-	"golang.org/x/mobile/app"
-	"golang.org/x/mobile/f32"
 	"golang.org/x/mobile/geom"
-	"golang.org/x/mobile/sprite"
-	"golang.org/x/mobile/sprite/glsprite"
 )
 
 const (
@@ -34,135 +27,6 @@ const (
 	SignatureLineWidth   = 1
 	BgSegments           = 24
 )
-
-var (
-	windowWidth, windowHeight                float32
-	blockSize, blockRadius, blockPadding     float32
-	switchSize                               float32
-	dashboardHeight                          float32
-	xMin, yMin, xMax, yMax                   float32
-	signatureBlockSize, signatureBlockRadius float32
-	lineWidth, signatureLineWidth            float32
-)
-
-type World struct {
-	background *Background
-	scene      *sprite.Node
-	eng        sprite.Engine
-	texs       []sprite.SubTex
-	blocks     map[*Block]*sprite.Node
-	switches   []*sprite.Node
-}
-
-func compute(val float32, factor float32) float32 {
-	return val * factor
-}
-
-func NewWorld() *World {
-
-	// Clean
-	// TODO
-	w := &World{}
-
-	w.eng = glsprite.Engine()
-	w.loadTextures()
-	w.scene = &sprite.Node{}
-	w.eng.Register(w.scene)
-	w.eng.SetTransform(w.scene, f32.Affine{
-		{1, 0, 0},
-		{0, 1, 0},
-	})
-
-	// Create the blocks
-	w.blocks = make(map[*Block]*sprite.Node)
-	for i := 0; i < len(g.level.blocks); i++ {
-		for j := 0; j < len(g.level.blocks[i]); j++ {
-			b := g.level.blocks[i][j]
-			if b != nil {
-				n := w.newNode(int(b.Color), blockSize, blockSize, float32(j)*blockSize, float32(i)*blockSize)
-				w.blocks[b] = n
-			}
-		}
-	}
-	v := switchSize / 2
-	for _, sw := range g.level.switches {
-		_ = sw
-		w.switches = append(w.switches, w.newNode(texSwitch1, switchSize, switchSize, sw.X+v, sw.Y+v))
-	}
-	return w
-}
-
-func (w *World) newNode(tex int, width, height, x, y float32) *sprite.Node {
-	n := &sprite.Node{}
-	w.eng.Register(n)
-	w.scene.AppendChild(n)
-	w.eng.SetSubTex(n, w.texs[tex])
-	w.eng.SetTransform(n, f32.Affine{
-		{width, 0, x},
-		{0, height, y},
-	})
-	return n
-}
-
-const (
-	texBlockRed = iota
-	texBlockYellow
-	texBlockBlue
-	texBlockGreen
-	texBlockPink
-	texBlockOrange
-	texBlockLightBlue
-	texSwitch1
-	texSwitch2
-	texSwitch3
-	texSwitch4
-	texSwitch5
-	texSwitch6
-	texSwitch7
-	texSwitch8
-	texSwitch9
-)
-
-const (
-	TexBlockSize  = 128
-	TexSwitchSize = 48
-)
-
-func (w *World) loadTextures() {
-	a, err := app.Open("textures/tiles.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer a.Close()
-
-	img, _, err := image.Decode(a)
-	if err != nil {
-		log.Fatal(err)
-	}
-	t, err := w.eng.LoadTexture(img)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	w.texs = []sprite.SubTex{
-		texBlockRed:       sprite.SubTex{t, image.Rect(0, 0, TexBlockSize, TexBlockSize)},
-		texBlockYellow:    sprite.SubTex{t, image.Rect(TexBlockSize, 0, TexBlockSize*2, TexBlockSize)},
-		texBlockBlue:      sprite.SubTex{t, image.Rect(TexBlockSize*2, 0, TexBlockSize*3, TexBlockSize)},
-		texBlockGreen:     sprite.SubTex{t, image.Rect(TexBlockSize*3, 0, TexBlockSize*4, TexBlockSize)},
-		texBlockPink:      sprite.SubTex{t, image.Rect(0, TexBlockSize, TexBlockSize, TexBlockSize*2)},
-		texBlockOrange:    sprite.SubTex{t, image.Rect(TexBlockSize, TexBlockSize, TexBlockSize*2, TexBlockSize*2)},
-		texBlockLightBlue: sprite.SubTex{t, image.Rect(TexBlockSize*2, TexBlockSize, TexBlockSize*3, TexBlockSize*2)},
-		texSwitch1:        sprite.SubTex{t, image.Rect(0, TexBlockSize*2, TexSwitchSize, TexBlockSize*2+TexSwitchSize)},
-		texSwitch2:        sprite.SubTex{t, image.Rect(0, TexBlockSize*2, TexSwitchSize, TexBlockSize*2+TexSwitchSize)},
-		texSwitch3:        sprite.SubTex{t, image.Rect(TexSwitchSize*2, TexBlockSize*2, TexSwitchSize*3, TexBlockSize*2+TexSwitchSize)},
-		texSwitch4:        sprite.SubTex{t, image.Rect(TexSwitchSize*3, TexBlockSize*2, TexSwitchSize*4, TexBlockSize*2+TexSwitchSize)},
-		texSwitch5:        sprite.SubTex{t, image.Rect(TexSwitchSize*4, TexBlockSize*2, TexSwitchSize*5, TexBlockSize*2+TexSwitchSize)},
-		texSwitch6:        sprite.SubTex{t, image.Rect(TexSwitchSize*5, TexBlockSize*2, TexSwitchSize*6, TexBlockSize*2+TexSwitchSize)},
-		texSwitch7:        sprite.SubTex{t, image.Rect(TexSwitchSize*6, TexBlockSize*2, TexSwitchSize*7, TexBlockSize*2+TexSwitchSize)},
-		texSwitch8:        sprite.SubTex{t, image.Rect(TexSwitchSize*7, TexBlockSize*2, TexSwitchSize*8, TexBlockSize*2+TexSwitchSize)},
-		texSwitch9:        sprite.SubTex{t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9, TexBlockSize*2+TexSwitchSize)},
-	}
-}
 
 type Game struct {
 	currentLevel int

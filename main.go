@@ -79,7 +79,9 @@ func draw() {
 				//}
 			}
 		}
-		w.eng.Render(w.scene, 0)
+		for i := 0; i < len(w.switches); i++ {
+			w.eng.Render(w.switches[i], 0)
+		}
 		debug.DrawFPS()
 	}
 }
