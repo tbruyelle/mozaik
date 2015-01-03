@@ -56,10 +56,14 @@ func (sw *Switch) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 		e.SetSubTex(n, g.world.texs[texSwitch9])
 	}
 	v := switchSize / 2
-	e.SetTransform(n, f32.Affine{
-		{switchSize, 0, sw.X - v},
-		{0, switchSize, sw.Y - v},
+	mv := &f32.Affine{}
+	mv.Identity()
+	mv.Translate(mv, sw.X-v, sw.Y-v)
+	mv.Mul(mv, &f32.Affine{
+		{switchSize, 0, 0},
+		{0, switchSize, 0},
 	})
+	e.SetTransform(n, *mv)
 }
 
 type BlockArranger struct {
@@ -78,10 +82,18 @@ func (ba *BlockArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) 
 	//		e.SetSubTex(n, sprite.SubTex{})
 	//	} else {
 	e.SetSubTex(n, g.world.texs[b.Color])
-	e.SetTransform(n, f32.Affine{
-		{blockSize, 0, ba.sw.X + ba.tx},
-		{0, blockSize, ba.sw.Y + ba.ty},
+	mv := &f32.Affine{}
+	mv.Identity()
+	mv.Translate(mv, ba.sw.X, ba.sw.Y)
+	mv.Rotate(mv, -ba.sw.rotate)
+	mv.Translate(mv, ba.tx, ba.ty)
+
+	mv.Mul(mv, &f32.Affine{
+		{blockSize, 0, 0},
+		{0, blockSize, 0},
 	})
+
+	e.SetTransform(n, *mv)
 	//}
 }
 
