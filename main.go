@@ -70,6 +70,7 @@ func draw() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 		w := g.world
 		w.background.Draw()
+		w.eng.Render(w.scene, 0)
 		if g.level.rotating != nil {
 			// Start draw the rotating switch
 			for _, swm := range w.switches {
@@ -79,7 +80,6 @@ func draw() {
 				//}
 			}
 		}
-		w.eng.Render(w.scene, 0)
 		for i := 0; i < len(w.switches); i++ {
 			w.eng.Render(w.switches[i], 0)
 		}

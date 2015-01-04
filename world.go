@@ -77,24 +77,24 @@ type BlockArranger struct {
 func (ba *BlockArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	// find the corresponding block
 	b := g.level.blocks[ba.x][ba.y]
-	//	if b.Rendered {
-	//		// TODO put a nil texture
-	//		e.SetSubTex(n, sprite.SubTex{})
-	//	} else {
-	e.SetSubTex(n, g.world.texs[b.Color])
-	mv := &f32.Affine{}
-	mv.Identity()
-	mv.Translate(mv, ba.sw.X, ba.sw.Y)
-	mv.Rotate(mv, -ba.sw.rotate)
-	mv.Translate(mv, ba.tx, ba.ty)
+	if b.Rendered {
+		// TODO put a nil texture
+	} else {
+		b.Rendered = true //FIXME put Rendered in the arranger
+		e.SetSubTex(n, g.world.texs[b.Color])
+		mv := &f32.Affine{}
+		mv.Identity()
+		mv.Translate(mv, ba.sw.X, ba.sw.Y)
+		mv.Rotate(mv, -ba.sw.rotate)
+		mv.Translate(mv, ba.tx, ba.ty)
 
-	mv.Mul(mv, &f32.Affine{
-		{blockSize, 0, 0},
-		{0, blockSize, 0},
-	})
+		mv.Mul(mv, &f32.Affine{
+			{blockSize, 0, 0},
+			{0, blockSize, 0},
+		})
 
-	e.SetTransform(n, *mv)
-	//}
+		e.SetTransform(n, *mv)
+	}
 }
 
 func NewWorld() *World {
@@ -128,7 +128,7 @@ func NewWorld() *World {
 
 func (w *World) addBlock(sw *Switch, x, y int, tx, ty float32) {
 	b := w.newNode()
-	b.Arranger = &BlockArranger{sw: sw, x: sw.line, y: sw.col, tx: tx, ty: ty}
+	b.Arranger = &BlockArranger{sw: sw, x: x, y: y, tx: tx, ty: ty}
 	w.scene.AppendChild(b)
 }
 

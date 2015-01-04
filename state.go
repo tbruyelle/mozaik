@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"math"
 	"reflect"
 )
@@ -61,7 +61,7 @@ const (
 
 func smoothstep(step float64, goal int) (r float64) {
 	x := float64(step) / float64(goal)
-	defer func() { fmt.Println("smooth", x, r) }()
+	defer func() { log.Println("smooth", x, r) }()
 	return 3*math.Pow(x, 2) - 2*math.Pow(x, 3)
 }
 
@@ -71,18 +71,19 @@ func scaleStep(rotate float32) float32 {
 }
 
 func (s RotateState) Enter(g *Game, sw *Switch) {
-	fmt.Println("RotateState.Enter")
+	log.Println("RotateState.Enter")
 	g.level.rotating = sw
 	sw.rotate = 0
 	sw.scale = 1
 }
 
 func (s RotateState) Exit(g *Game, sw *Switch) {
-	fmt.Println("RotateState.Exit")
+	log.Println("RotateState.Exit")
 	g.level.RotateSwitch(sw)
 	g.level.rotating = nil
 	sw.rotate = 0
 	sw.scale = 1
+	log.Println(g.level.blockSignature())
 }
 
 func (s RotateState) Update(g *Game, sw *Switch) {
