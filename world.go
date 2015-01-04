@@ -55,10 +55,9 @@ func (sw *Switch) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	case "9":
 		e.SetSubTex(n, g.world.texs[texSwitch9])
 	}
-	v := switchSize / 2
 	mv := &f32.Affine{}
 	mv.Identity()
-	mv.Translate(mv, sw.X-v, sw.Y-v)
+	mv.Translate(mv, sw.X, sw.Y)
 	mv.Mul(mv, &f32.Affine{
 		{switchSize, 0, 0},
 		{0, switchSize, 0},
@@ -71,9 +70,10 @@ type BlockSetArranger struct {
 }
 
 func (bsa *BlockSetArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
+	v := switchSize / 2
 	mv := &f32.Affine{}
 	mv.Identity()
-	mv.Translate(mv, bsa.sw.X, bsa.sw.Y)
+	mv.Translate(mv, bsa.sw.X+v, bsa.sw.Y+v)
 	if bsa.sw.rotate != 0 {
 		mv.Rotate(mv, -bsa.sw.rotate)
 	}

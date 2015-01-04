@@ -85,10 +85,11 @@ func (l *Level) PopLastRotated() *Switch {
 // of the coordinates in parameters.
 func (l *Level) addSwitch(line, col int) {
 
+	v := switchSize / 2
 	s := &Switch{
 		line: line, col: col,
-		X:    xMin + float32(col+1)*blockSize + float32(col)*blockPadding*2,
-		Y:    yMin + float32(line+1)*blockSize + float32(line)*blockPadding*2,
+		X:    xMin + float32(col+1)*blockSize + float32(col)*blockPadding*2 - v,
+		Y:    yMin + float32(line+1)*blockSize + float32(line)*blockPadding*2 - v,
 		name: determineName(line, col),
 	}
 	s.ChangeState(NewIdleState())
@@ -156,7 +157,7 @@ func (l *Level) TriggerSwitch(i int) {
 
 func (l *Level) findSwitch(x, y int) (int, *Switch) {
 	for i, s := range l.switches {
-		if x >= int(s.X) && x <= int(s.X)+SwitchSize && y >= int(s.Y) && y <= int(s.Y)+SwitchSize {
+		if x >= int(s.X) && x <= int(s.X+switchSize) && y >= int(s.Y) && y <= int(s.Y+switchSize) {
 			return i, s
 		}
 	}
