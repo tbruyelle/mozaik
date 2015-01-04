@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	_ "image/png"
+	"math"
 
 	"golang.org/x/mobile/geom"
 )
@@ -50,10 +51,13 @@ func (g *Game) Start() {
 
 func (g *Game) ComputeSizes() {
 	// Compute dimensions according to current window size
-	windowWidth, windowHeight = geom.Width.Px(), geom.Height.Px()
+	windowWidth, windowHeight = float32(geom.Width), float32(geom.Height)
+
 	fmt.Println("window", windowWidth, windowHeight)
 	widthFactor := windowWidth / WindowWidth
 	heightFactor := windowHeight / WindowHeight
+
+	windowRadius = math.Sqrt(math.Pow(float64(windowHeight), 2) + math.Pow(float64(windowWidth), 2))
 
 	blockSize = compute(BlockSize, widthFactor)
 	fmt.Println("size", BlockSize, blockSize)

@@ -2,13 +2,11 @@ package main
 
 import (
 	"log"
-	"math"
 	"time"
 
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/app/debug"
 	"golang.org/x/mobile/event"
-	"golang.org/x/mobile/geom"
 	"golang.org/x/mobile/gl"
 )
 
@@ -30,12 +28,6 @@ func main() {
 }
 
 func initialize() {
-	width, height := geom.Width.Px(), geom.Height.Px()
-	gl.Viewport(0, 0, int(width), int(height))
-
-	// Compute window radius
-	windowRadius = math.Sqrt(math.Pow(float64(height), 2) + math.Pow(float64(width), 2))
-
 	//gl.Init()
 	gl.Disable(gl.DEPTH_TEST)
 	// antialiasing
@@ -93,6 +85,7 @@ func draw() {
 
 func touch(t event.Touch) {
 	if t.Type == event.TouchEnd {
+		log.Println("touch", t.String(), t.Loc.X.Px(), t.Loc.Y.Px())
 		g.Click(int(t.Loc.X.Px()), int(t.Loc.Y.Px()))
 	}
 }
