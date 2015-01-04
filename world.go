@@ -92,7 +92,10 @@ func (ba *BlockArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) 
 	// find the corresponding block
 	b := g.level.blocks[ba.x][ba.y]
 	if b.Rendered {
-		// TODO put a nil texture
+		e.SetTransform(n, f32.Affine{
+			{0, 0, 0},
+			{0, 0, 0},
+		})
 	} else {
 		b.Rendered = true //FIXME put Rendered in the arranger
 		e.SetSubTex(n, g.world.texs[b.Color])

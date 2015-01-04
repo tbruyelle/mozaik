@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"math"
 	"time"
 
@@ -74,6 +75,7 @@ func draw() {
 			// Start draw the rotating blockset
 			for _, bs := range w.blockSet {
 				if bs.Arranger.(*BlockSetArranger).sw == g.level.rotating {
+					log.Println("rotating", g.level.rotating)
 					w.eng.Render(bs, 0)
 				}
 			}
