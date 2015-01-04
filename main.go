@@ -28,7 +28,6 @@ func main() {
 }
 
 func initialize() {
-	//gl.Init()
 	gl.Disable(gl.DEPTH_TEST)
 	// antialiasing
 	gl.Enable(gl.BLEND)
@@ -85,7 +84,6 @@ func draw() {
 
 func touch(t event.Touch) {
 	if t.Type == event.TouchEnd {
-		log.Println("touch", t.String(), t.Loc.X.Px(), t.Loc.Y.Px())
-		g.Click(int(t.Loc.X.Px()), int(t.Loc.Y.Px()))
+		g.Click(int(t.Loc.X), int(t.Loc.Y))
 	}
 }

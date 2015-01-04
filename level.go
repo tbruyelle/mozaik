@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"golang.org/x/mobile/app"
 	"io/ioutil"
 	"strconv"
 	"strings"
+
+	"golang.org/x/mobile/app"
 )
 
 type Level struct {
@@ -150,6 +151,7 @@ func (l *Level) TriggerSwitchName(name string) {
 		}
 	}
 }
+
 func (l *Level) TriggerSwitch(i int) {
 	l.switches[i].Rotate()
 	l.rotated = append(l.rotated, i)
