@@ -62,8 +62,8 @@ func draw() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 		w := g.world
 		w.background.Draw()
+		// Start draw the rotating blockset if any
 		if g.level.rotating != nil {
-			// Start draw the rotating blockset
 			for _, bs := range w.blockSet {
 				if bs.Arranger.(*BlockSetArranger).sw == g.level.rotating {
 					log.Println("rotating", g.level.rotating)

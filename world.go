@@ -145,6 +145,34 @@ func NewWorld() *World {
 		w.addBlock(bs, sw, sw.line+1, sw.col+1, 0, 0)
 		w.addBlock(bs, sw, sw.line+1, sw.col, -blockSize, 0)
 	}
+
+	// Add the win block signature
+	signatureNode := w.newNode()
+	w.scene.AppendChild(signatureNode)
+	w.eng.SetTransform(signatureNode, f32.Affine{
+		{1, 0, xMax - signatureBlockSize*4},
+		{0, 1, yMax - signatureBlockSize*4},
+	})
+	line, col := float32(0), float32(0)
+	for _, c := range g.level.winSignature {
+		if c == '\n' {
+			//next line
+			line++
+			col = 0
+			continue
+		}
+		if c != '-' {
+			n := w.newNode()
+			signatureNode.AppendChild(n)
+			w.eng.SetSubTex(n, w.texs[atoi(string(c))])
+			w.eng.SetTransform(n, f32.Affine{
+				{signatureBlockSize, 0, col * signatureBlockSize},
+				{0, signatureBlockSize, line * signatureBlockSize},
+			})
+			col++
+		}
+	}
+
 	return w
 }
 
