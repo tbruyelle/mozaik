@@ -150,8 +150,8 @@ func NewWorld() *World {
 	signatureNode := w.newNode()
 	w.scene.AppendChild(signatureNode)
 	w.eng.SetTransform(signatureNode, f32.Affine{
-		{1, 0, xMax - signatureBlockSize*4},
-		{0, 1, yMax - signatureBlockSize*4},
+		{1, 0, windowWidth - signatureBlockSize*4},
+		{0, 1, windowHeight - signatureBlockSize*4},
 	})
 	line, col := float32(0), float32(0)
 	for _, c := range g.level.winSignature {
@@ -169,8 +169,8 @@ func NewWorld() *World {
 				{signatureBlockSize, 0, col * signatureBlockSize},
 				{0, signatureBlockSize, line * signatureBlockSize},
 			})
-			col++
 		}
+		col++
 	}
 
 	return w
