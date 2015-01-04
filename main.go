@@ -70,19 +70,21 @@ func draw() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 		w := g.world
 		w.background.Draw()
-		w.eng.Render(w.scene, 0)
 		if g.level.rotating != nil {
-			// Start draw the rotating switch
-			for _, swm := range w.switches {
-				_ = swm
-				//if swm.sw == g.level.rotating {
-				// FIXME			swm.Draw()
-				//}
+			// Start draw the rotating blockset
+			for _, bs := range w.blockSet {
+				if bs.Arranger.(*BlockSetArranger).sw == g.level.rotating {
+					w.eng.Render(bs, 0)
+				}
 			}
 		}
-		for i := 0; i < len(w.switches); i++ {
-			w.eng.Render(w.switches[i], 0)
+		// Then draw the other blockset
+		for _, bs := range w.blockSet {
+			if bs.Arranger.(*BlockSetArranger).sw != g.level.rotating {
+				w.eng.Render(bs, 0)
+			}
 		}
+		w.eng.Render(w.scene, 0)
 		debug.DrawFPS()
 	}
 }

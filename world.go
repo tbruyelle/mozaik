@@ -26,7 +26,7 @@ type World struct {
 	scene      *sprite.Node
 	eng        sprite.Engine
 	texs       []sprite.SubTex
-	switches   []*sprite.Node
+	blockSet   []*sprite.Node
 }
 
 func compute(val float32, factor float32) float32 {
@@ -66,6 +66,20 @@ func (sw *Switch) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	e.SetTransform(n, *mv)
 }
 
+type BlockSetArranger struct {
+	sw *Switch
+}
+
+func (bsa *BlockSetArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
+	mv := &f32.Affine{}
+	mv.Identity()
+	mv.Translate(mv, bsa.sw.X, bsa.sw.Y)
+	if bsa.sw.rotate != 0 {
+		mv.Rotate(mv, -bsa.sw.rotate)
+	}
+	e.SetTransform(n, *mv)
+}
+
 type BlockArranger struct {
 	sw *Switch
 	// the block position according to the switch
@@ -84,8 +98,6 @@ func (ba *BlockArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) 
 		e.SetSubTex(n, g.world.texs[b.Color])
 		mv := &f32.Affine{}
 		mv.Identity()
-		mv.Translate(mv, ba.sw.X, ba.sw.Y)
-		mv.Rotate(mv, -ba.sw.rotate)
 		mv.Translate(mv, ba.tx, ba.ty)
 
 		mv.Mul(mv, &f32.Affine{
@@ -115,21 +127,28 @@ func NewWorld() *World {
 	// Create the switches
 	for _, sw := range g.level.switches {
 		n := w.newNode()
-		w.switches = append(w.switches, n)
 		n.Arranger = sw
-		// for each switch add the corresponding block nodes
-		w.addBlock(sw, sw.line, sw.col, -blockSize, -blockSize)
-		w.addBlock(sw, sw.line, sw.col+1, 0, -blockSize)
-		w.addBlock(sw, sw.line+1, sw.col+1, 0, 0)
-		w.addBlock(sw, sw.line+1, sw.col, -blockSize, 0)
+		w.scene.AppendChild(n)
+		// for each switch add the corresponding block set
+		bs := w.newNode()
+		bs.Arranger = &BlockSetArranger{sw: sw}
+		// blockSet are not added to the scene node because they'll be
+		// rendered in a specific order, according to the presence of
+		// a rotating switch.
+		w.blockSet = append(w.blockSet, bs)
+		// for each block set add the corresponding blocks
+		w.addBlock(bs, sw, sw.line, sw.col, -blockSize, -blockSize)
+		w.addBlock(bs, sw, sw.line, sw.col+1, 0, -blockSize)
+		w.addBlock(bs, sw, sw.line+1, sw.col+1, 0, 0)
+		w.addBlock(bs, sw, sw.line+1, sw.col, -blockSize, 0)
 	}
 	return w
 }
 
-func (w *World) addBlock(sw *Switch, x, y int, tx, ty float32) {
+func (w *World) addBlock(parent *sprite.Node, sw *Switch, x, y int, tx, ty float32) {
 	b := w.newNode()
 	b.Arranger = &BlockArranger{sw: sw, x: x, y: y, tx: tx, ty: ty}
-	w.scene.AppendChild(b)
+	parent.AppendChild(b)
 }
 
 func (w *World) newNode() *sprite.Node {
