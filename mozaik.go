@@ -27,6 +27,8 @@ const (
 	LineWidth            = 2
 	SignatureLineWidth   = 1
 	BgSegments           = 24
+	WinTxtWidth          = 300
+	WinTxtHeight         = 90
 )
 
 type Game struct {
@@ -45,8 +47,6 @@ func (g *Game) Start() {
 	g.ComputeSizes()
 	g.level = LoadLevel(g.currentLevel)
 	g.world = NewWorld()
-	// Load first level
-	g.world.background = NewBackground()
 }
 
 func (g *Game) ComputeSizes() {
@@ -74,6 +74,8 @@ func (g *Game) ComputeSizes() {
 	signatureBlockRadius = compute(SignatureBlockRadius, widthFactor)
 	signatureLineWidth = compute(SignatureLineWidth, widthFactor)
 	lineWidth = compute(LineWidth, widthFactor)
+	winTxtWidth = compute(WinTxtWidth, widthFactor)
+	winTxtHeight = compute(WinTxtHeight, widthFactor)
 }
 
 func (g *Game) Stop() {
@@ -81,7 +83,12 @@ func (g *Game) Stop() {
 
 func (g *Game) Click(x, y float32) {
 	if g.listen {
-		g.level.PressSwitch(x, y)
+		if g.level.Win() {
+			// Next level
+			g.Warp()
+		} else {
+			g.level.PressSwitch(x, y)
+		}
 	}
 }
 
@@ -106,7 +113,8 @@ func (g *Game) Warp() {
 		// Next level
 		g.currentLevel++
 		g.level = LoadLevel(g.currentLevel)
-		//FIXME g.world.Reset()
+		//FIXME clean resources
+		g.world.LoadScene()
 	}
 }
 

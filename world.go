@@ -19,6 +19,7 @@ var (
 	xMin, yMin, xMax, yMax                   float32
 	signatureBlockSize, signatureBlockRadius float32
 	lineWidth, signatureLineWidth            float32
+	winTxtWidth, winTxtHeight                float32
 )
 
 type World struct {
@@ -101,14 +102,35 @@ func (b *Block) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	e.SetTransform(n, *mv)
 }
 
+type WinTextArranger struct {
+}
+
+func (a *WinTextArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
+	// Display only when win
+	if g.level.Win() {
+		e.SetSubTex(n, g.world.texs[texSuccess])
+		e.SetTransform(n, f32.Affine{
+			{winTxtWidth, 0, windowWidth/2 - winTxtWidth/2},
+			{0, winTxtHeight, windowHeight/2 - winTxtHeight/2},
+		})
+	}
+}
+
 func NewWorld() *World {
 
 	// Clean
 	// TODO
 	w := &World{}
 
+	w.background = NewBackground()
+
 	w.eng = glsprite.Engine()
 	w.loadTextures()
+	w.LoadScene()
+	return w
+}
+
+func (w *World) LoadScene() {
 	w.scene = w.newNode()
 	w.eng.SetTransform(w.scene, f32.Affine{
 		{1, 0, 0},
@@ -160,7 +182,12 @@ func NewWorld() *World {
 		col++
 	}
 
-	return w
+	// Add the win text node
+	{
+		n := w.newNode()
+		w.scene.AppendChild(n)
+		n.Arranger = &WinTextArranger{}
+	}
 }
 
 func (w *World) Draw() {
@@ -193,6 +220,7 @@ const (
 	texSwitch7
 	texSwitch8
 	texSwitch9
+	texSuccess
 )
 
 const (
@@ -233,5 +261,6 @@ func (w *World) loadTextures() {
 		texSwitch7:        sprite.SubTex{t, image.Rect(TexSwitchSize*6, TexBlockSize*2, TexSwitchSize*7-1, TexBlockSize*2+TexSwitchSize)},
 		texSwitch8:        sprite.SubTex{t, image.Rect(TexSwitchSize*7, TexBlockSize*2, TexSwitchSize*8-1, TexBlockSize*2+TexSwitchSize)},
 		texSwitch9:        sprite.SubTex{t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9-1, TexBlockSize*2+TexSwitchSize)},
+		texSuccess:        sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
 	}
 }
