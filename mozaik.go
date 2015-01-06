@@ -79,7 +79,7 @@ func (g *Game) ComputeSizes() {
 func (g *Game) Stop() {
 }
 
-func (g *Game) Click(x, y int) {
+func (g *Game) Click(x, y float32) {
 	if g.listen {
 		g.level.PressSwitch(x, y)
 	}

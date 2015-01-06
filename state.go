@@ -17,20 +17,20 @@ type IdleState struct {
 }
 
 func NewIdleState() State {
-	return IdleState{}
+	return &IdleState{}
 }
 
-func (s IdleState) Enter(g *Game, sw *Switch) {
+func (s *IdleState) Enter(g *Game, sw *Switch) {
 }
 
-func (s IdleState) Exit(g *Game, sw *Switch) {}
+func (s *IdleState) Exit(g *Game, sw *Switch) {}
 
-func (s IdleState) Update(g *Game, sw *Switch) {
+func (s *IdleState) Update(g *Game, sw *Switch) {
 }
 
-func (s IdleState) AllowChange(state State) bool {
+func (s *IdleState) AllowChange(state State) bool {
 	switch state.(type) {
-	case IdleState:
+	case *IdleState:
 		return false
 	}
 	return true
@@ -46,7 +46,7 @@ type RotateState struct {
 }
 
 func NewRotateState() State {
-	return RotateState{}
+	return &RotateState{}
 }
 
 const (
@@ -70,23 +70,32 @@ func scaleStep(rotate float32) float32 {
 	return float32(math.Cos(float64(4*rotate))/12 + 0.91666)
 }
 
-func (s RotateState) Enter(g *Game, sw *Switch) {
+func (s *RotateState) Enter(g *Game, sw *Switch) {
 	log.Println("RotateState.Enter")
 	g.level.rotating = sw
-	sw.rotate = 0
-	sw.scale = 1
+	blocks := sw.Blocks()
+	for i := range blocks {
+		blocks[i].rotateSW = sw
+	}
 }
 
-func (s RotateState) Exit(g *Game, sw *Switch) {
+func (s *RotateState) setTransform() {
+}
+
+func (s *RotateState) Exit(g *Game, sw *Switch) {
 	log.Println("RotateState.Exit")
 	g.level.RotateSwitch(sw)
 	g.level.rotating = nil
+	blocks := sw.Blocks()
+	for i := range blocks {
+		blocks[i].rotateSW = nil
+	}
 	sw.rotate = 0
-	sw.scale = 1
+	sw.scale = 0
 	log.Println(g.level.blockSignature())
 }
 
-func (s RotateState) Update(g *Game, sw *Switch) {
+func (s *RotateState) Update(g *Game, sw *Switch) {
 	// Update the rotation
 	sw.rotate += rotatePerTick
 	if sw.rotate >= rotateDegree {
@@ -97,9 +106,9 @@ func (s RotateState) Update(g *Game, sw *Switch) {
 	}
 }
 
-func (s RotateState) AllowChange(state State) bool {
+func (s *RotateState) AllowChange(state State) bool {
 	switch state.(type) {
-	case RotateState:
+	case *RotateState:
 		return false
 	}
 	return true
@@ -111,17 +120,17 @@ type RotateStateReverse struct {
 }
 
 func NewRotateStateReverse() State {
-	return RotateStateReverse{}
+	return &RotateStateReverse{}
 }
 
-func (s RotateStateReverse) Exit(g *Game, sw *Switch) {
+func (s *RotateStateReverse) Exit(g *Game, sw *Switch) {
 	g.level.RotateSwitchInverse(sw)
 	sw.rotate = 0
 	sw.scale = 1
 	g.level.rotating = nil
 }
 
-func (s RotateStateReverse) Update(g *Game, sw *Switch) {
+func (s *RotateStateReverse) Update(g *Game, sw *Switch) {
 	sw.rotate -= rotateRevertPerTick
 	if sw.rotate <= -rotateDegree {
 		sw.ChangeState(NewIdleState())
@@ -136,10 +145,10 @@ type ResetState struct {
 }
 
 func NewResetState() State {
-	return ResetState{}
+	return &ResetState{}
 }
 
-func (s ResetState) Update(g *Game, sw *Switch) {
+func (s *ResetState) Update(g *Game, sw *Switch) {
 	sw.rotate -= rotateRevertPerTick
 	if sw.rotate <= -rotateDegree {
 		// Process next switch

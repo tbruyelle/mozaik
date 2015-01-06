@@ -18,7 +18,8 @@ const (
 
 type Block struct {
 	Color    ColorDef
-	Rendered bool
+	X, Y     float32
+	rotateSW *Switch
 }
 
 type Switch struct {
@@ -44,6 +45,15 @@ func (s *Switch) ChangeState(state State) {
 	}
 	s.state = state
 	s.state.Enter(g, s)
+}
+
+// Blocks returns the block arround the switch in parameter.
+func (sw *Switch) Blocks() []*Block {
+	topLeft := g.level.blocks[sw.line][sw.col]
+	topRight := g.level.blocks[sw.line][sw.col+1]
+	bottomLeft := g.level.blocks[sw.line+1][sw.col]
+	bottomRight := g.level.blocks[sw.line+1][sw.col+1]
+	return []*Block{topLeft, topRight, bottomLeft, bottomRight}
 }
 
 func (s *Switch) String() string {

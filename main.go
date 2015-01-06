@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	"golang.org/x/mobile/app"
@@ -49,41 +48,15 @@ func draw() {
 		// Update all component states
 		g.Update()
 
-		// Reinit blocks as not renderered
-		for i := 0; i < len(g.level.blocks); i++ {
-			for j := 0; j < len(g.level.blocks[i]); j++ {
-				if g.level.blocks[i][j] != nil {
-					g.level.blocks[i][j].Rendered = false
-				}
-			}
-		}
-
 		gl.ClearColor(0.9, 0.85, 0.46, 0.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
-		w := g.world
-		w.background.Draw()
-		// Start draw the rotating blockset if any
-		if g.level.rotating != nil {
-			for _, bs := range w.blockSet {
-				if bs.Arranger.(*BlockSetArranger).sw == g.level.rotating {
-					log.Println("rotating", g.level.rotating)
-					w.eng.Render(bs, 0)
-				}
-			}
-		}
-		// Then draw the other blockset
-		for _, bs := range w.blockSet {
-			if bs.Arranger.(*BlockSetArranger).sw != g.level.rotating {
-				w.eng.Render(bs, 0)
-			}
-		}
-		w.eng.Render(w.scene, 0)
+		g.world.Draw()
 		debug.DrawFPS()
 	}
 }
 
 func touch(t event.Touch) {
 	if t.Type == event.TouchEnd {
-		g.Click(int(t.Loc.X), int(t.Loc.Y))
+		g.Click(float32(t.Loc.X), float32(t.Loc.Y))
 	}
 }

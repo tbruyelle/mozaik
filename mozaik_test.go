@@ -21,7 +21,7 @@ func TestFindSwitch(t *testing.T) {
 	setup()
 	fill()
 
-	_, s := g.level.findSwitch(XMin+BlockSize, YMin+BlockSize)
+	_, s := g.level.findSwitch(xMin+blockSize, yMin+blockSize)
 
 	assert.NotNil(t, s, "Should found a switch")
 }
@@ -43,9 +43,17 @@ func TestParseLevel(t *testing.T) {
 	assert.Equal(t, 2, len(l.blocks[0]))
 	assert.Equal(t, 2, len(l.blocks[1]))
 	assert.Equal(t, 0, l.blocks[0][0].Color)
+	assert.Equal(t, xMin, l.blocks[0][0].X)
+	assert.Equal(t, yMin, l.blocks[0][0].X)
 	assert.Equal(t, 1, l.blocks[0][1].Color)
+	assert.Equal(t, xMin+blockSize+blockPadding, l.blocks[0][1].X)
+	assert.Equal(t, yMin, l.blocks[0][1].Y)
 	assert.Equal(t, 2, l.blocks[1][0].Color)
+	assert.Equal(t, xMin, l.blocks[1][0].X)
+	assert.Equal(t, yMin+blockSize+blockPadding, l.blocks[1][0].Y)
 	assert.Equal(t, 4, l.blocks[1][1].Color)
+	assert.Equal(t, xMin+blockSize+blockPadding, l.blocks[1][1].X)
+	assert.Equal(t, yMin+blockSize+blockPadding, l.blocks[1][1].Y)
 	assert.Equal(t, "24\n", l.winSignature)
 }
 

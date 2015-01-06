@@ -26,14 +26,13 @@ type World struct {
 	scene      *sprite.Node
 	eng        sprite.Engine
 	texs       []sprite.SubTex
-	blockSet   []*sprite.Node
 }
 
 func compute(val float32, factor float32) float32 {
 	return val * factor
 }
 
-// Switch implement the Arranger interface
+// Switch implement the Arranger interface.
 func (sw *Switch) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	switch sw.name {
 	case "1":
@@ -65,51 +64,41 @@ func (sw *Switch) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	e.SetTransform(n, *mv)
 }
 
-type BlockSetArranger struct {
-	sw *Switch
-}
-
-func (bsa *BlockSetArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
-	v := switchSize / 2
+// Block implement the Arranger interface.
+func (b *Block) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
+	e.SetSubTex(n, g.world.texs[b.Color])
 	mv := &f32.Affine{}
 	mv.Identity()
-	mv.Translate(mv, bsa.sw.X+v, bsa.sw.Y+v)
-	if bsa.sw.rotate != 0 {
-		mv.Rotate(mv, -bsa.sw.rotate)
-	}
-	e.SetTransform(n, *mv)
-}
-
-type BlockArranger struct {
-	sw *Switch
-	// the block position according to the switch
-	x, y int
-	// translation according to the switch
-	tx, ty float32
-}
-
-func (ba *BlockArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
-	// find the corresponding block
-	b := g.level.blocks[ba.x][ba.y]
-	if b.Rendered {
-		e.SetTransform(n, f32.Affine{
-			{0, 0, 0},
-			{0, 0, 0},
-		})
-	} else {
-		b.Rendered = true //FIXME put Rendered in the arranger
-		e.SetSubTex(n, g.world.texs[b.Color])
-		mv := &f32.Affine{}
-		mv.Identity()
-		mv.Translate(mv, ba.tx, ba.ty)
-
+	if b.rotateSW == nil {
+		// The block is not attached to a rotating switch
+		mv.Translate(mv, b.X, b.Y)
 		mv.Mul(mv, &f32.Affine{
 			{blockSize, 0, 0},
 			{0, blockSize, 0},
 		})
 
-		e.SetTransform(n, *mv)
+	} else {
+		// The block is attached to a rotating switch
+		// we need to draw it according to the switch
+		// to apply the correct affine transformations
+		v := switchSize / 2
+		mv.Translate(mv, b.rotateSW.X+v, b.rotateSW.Y+v)
+		mv.Rotate(mv, -b.rotateSW.rotate)
+		mv.Scale(mv, b.rotateSW.scale, b.rotateSW.scale)
+		tx := blockSize
+		if b.X < b.rotateSW.X {
+			tx = -tx
+		}
+		ty := blockSize
+		if b.Y < b.rotateSW.Y {
+			ty = -ty
+		}
+		mv.Mul(mv, &f32.Affine{
+			{tx, 0, 0},
+			{0, ty, 0},
+		})
 	}
+	e.SetTransform(n, *mv)
 }
 
 func NewWorld() *World {
@@ -120,30 +109,28 @@ func NewWorld() *World {
 
 	w.eng = glsprite.Engine()
 	w.loadTextures()
-	w.scene = &sprite.Node{}
-	w.eng.Register(w.scene)
+	w.scene = w.newNode()
 	w.eng.SetTransform(w.scene, f32.Affine{
 		{1, 0, 0},
 		{0, 1, 0},
 	})
 
+	// Create the blocks
+	for i := range g.level.blocks {
+		for j := range g.level.blocks[i] {
+			b := g.level.blocks[i][j]
+			if b != nil {
+				n := w.newNode()
+				n.Arranger = b
+				w.scene.AppendChild(n)
+			}
+		}
+	}
 	// Create the switches
 	for _, sw := range g.level.switches {
 		n := w.newNode()
 		n.Arranger = sw
 		w.scene.AppendChild(n)
-		// for each switch add the corresponding block set
-		bs := w.newNode()
-		bs.Arranger = &BlockSetArranger{sw: sw}
-		// blockSet are not added to the scene node because they'll be
-		// rendered in a specific order, according to the presence of
-		// a rotating switch.
-		w.blockSet = append(w.blockSet, bs)
-		// for each block set add the corresponding blocks
-		w.addBlock(bs, sw, sw.line, sw.col, -blockSize, -blockSize)
-		w.addBlock(bs, sw, sw.line, sw.col+1, 0, -blockSize)
-		w.addBlock(bs, sw, sw.line+1, sw.col+1, 0, 0)
-		w.addBlock(bs, sw, sw.line+1, sw.col, -blockSize, 0)
 	}
 
 	// Add the win block signature
@@ -176,10 +163,11 @@ func NewWorld() *World {
 	return w
 }
 
-func (w *World) addBlock(parent *sprite.Node, sw *Switch, x, y int, tx, ty float32) {
-	b := w.newNode()
-	b.Arranger = &BlockArranger{sw: sw, x: x, y: y, tx: tx, ty: ty}
-	parent.AppendChild(b)
+func (w *World) Draw() {
+	// Background
+	w.background.Draw()
+	// The scene
+	w.eng.Render(w.scene, 0)
 }
 
 func (w *World) newNode() *sprite.Node {

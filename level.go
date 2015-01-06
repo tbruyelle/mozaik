@@ -82,15 +82,24 @@ func (l *Level) PopLastRotated() *Switch {
 	return l.switches[res]
 }
 
+func (l *Level) addBlock(color ColorDef, line, col int) {
+	colf, linef := float32(col), float32(line)
+	l.blocks[line][col] = &Block{
+		Color: color,
+		X:     xMin + colf*(blockSize+blockPadding),
+		Y:     yMin + linef*(blockSize+blockPadding),
+	}
+}
+
 // addSwitch appends a new switch at the bottom right
 // of the coordinates in parameters.
 func (l *Level) addSwitch(line, col int) {
-
 	v := switchSize / 2
+	colf, linef := float32(col), float32(line)
 	s := &Switch{
 		line: line, col: col,
-		X:    xMin + float32(col+1)*blockSize + float32(col)*blockPadding*2 - v,
-		Y:    yMin + float32(line+1)*blockSize + float32(line)*blockPadding*2 - v,
+		X:    xMin + (colf+1)*blockSize + colf*blockPadding*2 - v,
+		Y:    yMin + (linef+1)*blockSize + linef*blockPadding*2 - v,
 		name: determineName(line, col),
 	}
 	s.ChangeState(NewIdleState())
@@ -133,7 +142,7 @@ func determineName(line, col int) string {
 
 // PressSwitch tries to find a swicth from the coordinates
 // and activate it.
-func (l *Level) PressSwitch(x, y int) {
+func (l *Level) PressSwitch(x, y float32) {
 	// Handle click only when no switch are rotating
 	if l.rotating == nil {
 		if i, s := l.findSwitch(x, y); s != nil {
@@ -157,9 +166,9 @@ func (l *Level) TriggerSwitch(i int) {
 	l.rotated = append(l.rotated, i)
 }
 
-func (l *Level) findSwitch(x, y int) (int, *Switch) {
+func (l *Level) findSwitch(x, y float32) (int, *Switch) {
 	for i, s := range l.switches {
-		if x >= int(s.X) && x <= int(s.X+switchSize) && y >= int(s.Y) && y <= int(s.Y+switchSize) {
+		if x >= s.X && x <= s.X+switchSize && y >= s.Y && y <= s.Y+switchSize {
 			return i, s
 		}
 	}
@@ -228,7 +237,7 @@ func ParseLevel(str string) Level {
 			l.blocks = append(l.blocks, bline)
 			for j, c := range lines[i] {
 				if c != '-' {
-					bline[j] = &Block{Color: atoc(string(c))}
+					l.addBlock(atoc(string(c)), i, j)
 				}
 			}
 		case 1:
@@ -249,23 +258,23 @@ func ParseLevel(str string) Level {
 	return l
 }
 
+// RotateSwitch swaps bocks according to the 90d rotation
 func (lvl *Level) RotateSwitch(s *Switch) {
-	// Swap bocks according to the 90d rotation
 	l, c := s.line, s.col
 	//fmt.Println("Swap from", l, c)
-	b := lvl.blocks[l][c]
-	lvl.blocks[l][c] = lvl.blocks[l+1][c]
-	lvl.blocks[l+1][c] = lvl.blocks[l+1][c+1]
-	lvl.blocks[l+1][c+1] = lvl.blocks[l][c+1]
-	lvl.blocks[l][c+1] = b
+	color := lvl.blocks[l][c].Color
+	lvl.blocks[l][c].Color = lvl.blocks[l+1][c].Color
+	lvl.blocks[l+1][c].Color = lvl.blocks[l+1][c+1].Color
+	lvl.blocks[l+1][c+1].Color = lvl.blocks[l][c+1].Color
+	lvl.blocks[l][c+1].Color = color
 }
 
+// RotateSwitchInverse swaps bocks according to the -90d rotation
 func (lvl *Level) RotateSwitchInverse(s *Switch) {
-	// Swap bocks according to the -90d rotation
 	l, c := s.line, s.col
-	b := lvl.blocks[l][c]
-	lvl.blocks[l][c] = lvl.blocks[l][c+1]
-	lvl.blocks[l][c+1] = lvl.blocks[l+1][c+1]
-	lvl.blocks[l+1][c+1] = lvl.blocks[l+1][c]
-	lvl.blocks[l+1][c] = b
+	color := lvl.blocks[l][c].Color
+	lvl.blocks[l][c].Color = lvl.blocks[l][c+1].Color
+	lvl.blocks[l][c+1].Color = lvl.blocks[l+1][c+1].Color
+	lvl.blocks[l+1][c+1].Color = lvl.blocks[l+1][c].Color
+	lvl.blocks[l+1][c].Color = color
 }
