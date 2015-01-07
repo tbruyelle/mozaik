@@ -31,6 +31,17 @@ const (
 	WinTxtHeight         = 90
 )
 
+var (
+	windowWidth, windowHeight                float32
+	blockSize, blockRadius, blockPadding     float32
+	switchSize                               float32
+	dashboardHeight                          float32
+	xMin, yMin, xMax, yMax                   float32
+	signatureBlockSize, signatureBlockRadius float32
+	lineWidth, signatureLineWidth            float32
+	winTxtWidth, winTxtHeight                float32
+)
+
 type Game struct {
 	currentLevel int
 	level        Level
@@ -40,13 +51,10 @@ type Game struct {
 
 func NewGame() *Game {
 	game := &Game{currentLevel: 1, listen: true}
-	return game
-}
-
-func (g *Game) Start() {
 	g.ComputeSizes()
 	g.level = LoadLevel(g.currentLevel)
 	g.world = NewWorld()
+	return game
 }
 
 func (g *Game) ComputeSizes() {

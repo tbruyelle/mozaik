@@ -10,17 +10,6 @@ import (
 	"golang.org/x/mobile/sprite/glsprite"
 )
 
-var (
-	windowWidth, windowHeight                float32
-	blockSize, blockRadius, blockPadding     float32
-	switchSize                               float32
-	dashboardHeight                          float32
-	xMin, yMin, xMax, yMax                   float32
-	signatureBlockSize, signatureBlockRadius float32
-	lineWidth, signatureLineWidth            float32
-	winTxtWidth, winTxtHeight                float32
-)
-
 type World struct {
 	background *Background
 	scene      *sprite.Node
