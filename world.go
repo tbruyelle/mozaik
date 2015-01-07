@@ -7,6 +7,7 @@ import (
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/f32"
 	"golang.org/x/mobile/sprite"
+	"golang.org/x/mobile/sprite/clock"
 	"golang.org/x/mobile/sprite/glsprite"
 )
 
@@ -107,11 +108,11 @@ func (w *World) LoadScene() {
 	}
 }
 
-func (w *World) Draw() {
+func (w *World) Draw(t clock.Time) {
 	// Background
 	w.background.Draw()
 	// The scene
-	w.eng.Render(w.scene, 0)
+	w.eng.Render(w.scene, t)
 }
 
 func (w *World) newNode() *sprite.Node {

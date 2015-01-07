@@ -7,16 +7,18 @@ import (
 	"golang.org/x/mobile/app/debug"
 	"golang.org/x/mobile/event"
 	"golang.org/x/mobile/gl"
+	"golang.org/x/mobile/sprite/clock"
 )
 
 const (
-	FRAMES_PER_SECOND = 30
+	FPS = 60
 )
 
 var (
 	g            *Game
 	windowRadius float64
-	ticker       *time.Ticker
+	start        = time.Now()
+	lastClock    = clock.Time(-1)
 )
 
 func main() {
@@ -39,16 +41,18 @@ func draw() {
 	// Keep until golang.org/x/mogile/x11.go handle Start callback
 	if g == nil {
 		initialize()
-		ticker = time.NewTicker(time.Duration(1e9 / int(FRAMES_PER_SECOND)))
 	}
 
-	select {
-	case <-ticker.C:
-		gl.ClearColor(0.9, 0.85, 0.46, 0.0)
-		gl.Clear(gl.COLOR_BUFFER_BIT)
-		g.world.Draw()
-		debug.DrawFPS()
+	now := clock.Time(time.Since(start) * FPS / time.Second)
+	if now == lastClock {
+		return
 	}
+	lastClock = now
+
+	gl.ClearColor(0.9, 0.85, 0.46, 0.0)
+	gl.Clear(gl.COLOR_BUFFER_BIT)
+	g.world.Draw(now)
+	debug.DrawFPS()
 }
 
 func touch(t event.Touch) {
