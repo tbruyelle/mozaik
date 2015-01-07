@@ -32,7 +32,7 @@ func initialize() {
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
-	g = NewGame()
+	NewGame()
 }
 
 func draw() {

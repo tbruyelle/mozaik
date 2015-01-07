@@ -49,15 +49,14 @@ type Game struct {
 	world        *World
 }
 
-func NewGame() *Game {
-	game := &Game{currentLevel: 1, listen: true}
-	g.ComputeSizes()
+func NewGame() {
+	g = &Game{currentLevel: 1, listen: true}
+	computeSizes()
 	g.level = LoadLevel(g.currentLevel)
 	g.world = NewWorld()
-	return game
 }
 
-func (g *Game) ComputeSizes() {
+func computeSizes() {
 	// Compute dimensions according to current window size
 	windowWidth, windowHeight = float32(geom.Width), float32(geom.Height)
 
@@ -90,7 +89,7 @@ func (g *Game) Stop() {
 }
 
 func (g *Game) Click(x, y float32) {
-	if g.listen {
+	if g.Listen() {
 		if g.level.Win() {
 			// Next level
 			g.Warp()
@@ -111,7 +110,7 @@ func (g *Game) Continue() {
 }
 
 func (g *Game) Warp() {
-	if g.listen {
+	if g.Listen() {
 		// Next level
 		g.currentLevel++
 		g.level = LoadLevel(g.currentLevel)
@@ -121,7 +120,7 @@ func (g *Game) Warp() {
 }
 
 func (g *Game) UndoLastMove() {
-	if g.listen {
+	if g.Listen() {
 		g.level.UndoLastMove()
 	}
 }
