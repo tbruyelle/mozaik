@@ -96,12 +96,6 @@ func (g *Game) Listen() bool {
 	return g.listen && g.level.rotating == nil
 }
 
-func (g *Game) Update() {
-	for _, s := range g.level.switches {
-		s.state.Update(g, s)
-	}
-}
-
 func (g *Game) Continue() {
 	if g.level.Win() {
 		g.Warp()
@@ -128,6 +122,7 @@ func (g *Game) Reset() {
 	sw := g.level.PopLastRotated()
 	if sw != nil {
 		g.listen = false
-		sw.ChangeState(NewResetState())
+		// TODO
+		//sw.ChangeState(NewResetState())
 	}
 }

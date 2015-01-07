@@ -5,11 +5,13 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
+	"sync"
 
 	"golang.org/x/mobile/app"
 )
 
 type Level struct {
+	sync.Mutex
 	blocks       [][]*Block
 	switches     []*Switch
 	winSignature string
@@ -68,7 +70,8 @@ func (l *Level) UndoLastMove() {
 	}
 	sw := l.PopLastRotated()
 	if sw != nil {
-		sw.ChangeState(NewRotateStateReverse())
+		//TODO
+		//sw.ChangeState(NewRotateStateReverse())
 	}
 }
 
@@ -84,11 +87,16 @@ func (l *Level) PopLastRotated() *Switch {
 
 func (l *Level) addBlock(color ColorDef, line, col int) {
 	colf, linef := float32(col), float32(line)
-	l.blocks[line][col] = &Block{
-		Color: color,
-		X:     xMin + colf*(blockSize+blockPadding),
-		Y:     yMin + linef*(blockSize+blockPadding),
+	b := &Block{Color: color}
+	b.Object = Object{
+		X:      xMin + colf*(blockSize+blockPadding),
+		Y:      yMin + linef*(blockSize+blockPadding),
+		Width:  blockSize,
+		Height: blockSize,
+		Data:   b,
+		Action: blockIdle,
 	}
+	l.blocks[line][col] = b
 }
 
 // addSwitch appends a new switch at the bottom right
@@ -98,11 +106,16 @@ func (l *Level) addSwitch(line, col int) {
 	colf, linef := float32(col), float32(line)
 	s := &Switch{
 		line: line, col: col,
-		X:    xMin + (colf+1)*blockSize + colf*blockPadding*2 - v,
-		Y:    yMin + (linef+1)*blockSize + linef*blockPadding*2 - v,
 		name: determineName(line, col),
 	}
-	s.ChangeState(NewIdleState())
+	s.Object = Object{
+		X:      xMin + (colf+1)*blockSize + colf*blockPadding*2 - v,
+		Y:      yMin + (linef+1)*blockSize + linef*blockPadding*2 - v,
+		Width:  switchSize,
+		Height: switchSize,
+		Action: switchIdle,
+		Data:   s,
+	}
 	l.switches = append(l.switches, s)
 	//fmt.Println("Switch added", s.X, s.Y)
 }
@@ -147,6 +160,7 @@ func (l *Level) PressSwitch(x, y float32) {
 	if l.rotating == nil {
 		if i, s := l.findSwitch(x, y); s != nil {
 			fmt.Println("find switch", s)
+			l.rotating = s
 			l.TriggerSwitch(i)
 		}
 	}

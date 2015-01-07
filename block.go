@@ -17,34 +17,24 @@ const (
 )
 
 type Block struct {
-	Color    ColorDef
-	X, Y     float32
-	rotateSW *Switch
+	Object
+	Color ColorDef
 }
 
 type Switch struct {
-	state     State
+	Object
 	line, col int
-	X, Y      float32
-	scale     float32
-	rotate    float32
 	name      string
 }
 
 func (s *Switch) Rotate() {
-	s.ChangeState(NewRotateState())
-}
-
-func (s *Switch) ChangeState(state State) {
-	if s.state != nil {
-		s.state.Exit(g, s)
-		if !s.state.AllowChange(state) {
-			fmt.Println("Change state not allowed")
-			return
-		}
+	blocks := s.Blocks()
+	for i := range blocks {
+		b := blocks[i]
+		v := switchSize / 2
+		b.Rx, b.Ry = s.X+v, s.Y+v
+		b.Action = blockRotate
 	}
-	s.state = state
-	s.state.Enter(g, s)
 }
 
 // Blocks returns the block arround the switch in parameter.

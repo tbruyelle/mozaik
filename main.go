@@ -45,9 +45,6 @@ func draw() {
 
 	select {
 	case <-ticker.C:
-		// Update all component states
-		g.Update()
-
 		gl.ClearColor(0.9, 0.85, 0.46, 0.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 		g.world.Draw()

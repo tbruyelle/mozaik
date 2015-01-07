@@ -7,7 +7,6 @@ import (
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/f32"
 	"golang.org/x/mobile/sprite"
-	"golang.org/x/mobile/sprite/clock"
 	"golang.org/x/mobile/sprite/glsprite"
 )
 
@@ -31,89 +30,6 @@ type World struct {
 
 func compute(val float32, factor float32) float32 {
 	return val * factor
-}
-
-// Switch implement the Arranger interface.
-func (sw *Switch) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
-	switch sw.name {
-	case "1":
-		e.SetSubTex(n, g.world.texs[texSwitch1])
-	case "2":
-		e.SetSubTex(n, g.world.texs[texSwitch2])
-	case "3":
-		e.SetSubTex(n, g.world.texs[texSwitch3])
-	case "4":
-		e.SetSubTex(n, g.world.texs[texSwitch4])
-	case "5":
-		e.SetSubTex(n, g.world.texs[texSwitch5])
-	case "6":
-		e.SetSubTex(n, g.world.texs[texSwitch6])
-	case "7":
-		e.SetSubTex(n, g.world.texs[texSwitch7])
-	case "8":
-		e.SetSubTex(n, g.world.texs[texSwitch8])
-	case "9":
-		e.SetSubTex(n, g.world.texs[texSwitch9])
-	}
-	mv := &f32.Affine{}
-	mv.Identity()
-	mv.Translate(mv, sw.X, sw.Y)
-	mv.Mul(mv, &f32.Affine{
-		{switchSize, 0, 0},
-		{0, switchSize, 0},
-	})
-	e.SetTransform(n, *mv)
-}
-
-// Block implement the Arranger interface.
-func (b *Block) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
-	e.SetSubTex(n, g.world.texs[b.Color])
-	mv := &f32.Affine{}
-	mv.Identity()
-	if b.rotateSW == nil {
-		// The block is not attached to a rotating switch
-		mv.Translate(mv, b.X, b.Y)
-		mv.Mul(mv, &f32.Affine{
-			{blockSize, 0, 0},
-			{0, blockSize, 0},
-		})
-
-	} else {
-		// The block is attached to a rotating switch
-		// we need to draw it according to the switch
-		// to apply the correct affine transformations
-		v := switchSize / 2
-		mv.Translate(mv, b.rotateSW.X+v, b.rotateSW.Y+v)
-		mv.Rotate(mv, -b.rotateSW.rotate)
-		mv.Scale(mv, b.rotateSW.scale, b.rotateSW.scale)
-		tx := blockSize
-		if b.X < b.rotateSW.X {
-			tx = -tx
-		}
-		ty := blockSize
-		if b.Y < b.rotateSW.Y {
-			ty = -ty
-		}
-		mv.Mul(mv, &f32.Affine{
-			{tx, 0, 0},
-			{0, ty, 0},
-		})
-	}
-	e.SetTransform(n, *mv)
-}
-
-type WinTextArranger struct {
-}
-
-func (a *WinTextArranger) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
-	// Display only when win
-	if g.level.Win() {
-		e.SetSubTex(n, g.world.texs[texSuccess])
-		e.SetTransform(n, f32.Affine{
-			{winTxtWidth, 0, windowWidth/2 - winTxtWidth/2},
-			{0, winTxtHeight, windowHeight/2 - winTxtHeight/2},
-		})
-	}
 }
 
 func NewWorld() *World {
@@ -143,7 +59,7 @@ func (w *World) LoadScene() {
 			b := g.level.blocks[i][j]
 			if b != nil {
 				n := w.newNode()
-				n.Arranger = b
+				n.Arranger = &b.Object
 				w.scene.AppendChild(n)
 			}
 		}
@@ -151,7 +67,7 @@ func (w *World) LoadScene() {
 	// Create the switches
 	for _, sw := range g.level.switches {
 		n := w.newNode()
-		n.Arranger = sw
+		n.Arranger = &sw.Object
 		w.scene.AppendChild(n)
 	}
 
@@ -173,11 +89,16 @@ func (w *World) LoadScene() {
 		if c != '-' {
 			n := w.newNode()
 			signatureNode.AppendChild(n)
-			w.eng.SetSubTex(n, w.texs[atoi(string(c))])
-			w.eng.SetTransform(n, f32.Affine{
-				{signatureBlockSize, 0, col * signatureBlockSize},
-				{0, signatureBlockSize, line * signatureBlockSize},
-			})
+			b := &Block{Color: atoc(string(c))}
+			b.Object = Object{
+				X:      col * signatureBlockSize,
+				Y:      line * signatureBlockSize,
+				Width:  signatureBlockSize,
+				Height: signatureBlockSize,
+				Action: blockIdle,
+				Data:   b,
+			}
+			n.Arranger = &b.Object
 		}
 		col++
 	}
@@ -186,7 +107,14 @@ func (w *World) LoadScene() {
 	{
 		n := w.newNode()
 		w.scene.AppendChild(n)
-		n.Arranger = &WinTextArranger{}
+		n.Arranger = &Object{
+			X:      windowWidth/2 - winTxtWidth/2,
+			Y:      windowHeight/2 - winTxtHeight/2,
+			Width:  winTxtWidth,
+			Height: winTxtHeight,
+			Action: winTxtPop,
+			Sprite: w.texs[texWinTxt],
+		}
 	}
 }
 
@@ -220,7 +148,7 @@ const (
 	texSwitch7
 	texSwitch8
 	texSwitch9
-	texSuccess
+	texWinTxt
 )
 
 const (
@@ -261,6 +189,6 @@ func (w *World) loadTextures() {
 		texSwitch7:        sprite.SubTex{t, image.Rect(TexSwitchSize*6, TexBlockSize*2, TexSwitchSize*7-1, TexBlockSize*2+TexSwitchSize)},
 		texSwitch8:        sprite.SubTex{t, image.Rect(TexSwitchSize*7, TexBlockSize*2, TexSwitchSize*8-1, TexBlockSize*2+TexSwitchSize)},
 		texSwitch9:        sprite.SubTex{t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9-1, TexBlockSize*2+TexSwitchSize)},
-		texSuccess:        sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
+		texWinTxt:         sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
 	}
 }
