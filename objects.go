@@ -16,21 +16,28 @@ type Object struct {
 	Vx, Vy float32
 	// Rotation
 	Rx, Ry, Angle float32
+	// Translation
+	Tx, Ty float32
 	// Scale
 	Sx, Sy        float32
 	Width, Height float32
 	Sprite        sprite.SubTex
-	Action        func(o *Object)
+	Action        func(o *Object, t clock.Time)
 	Dead          bool
-	Tick          int
+	Time          clock.Time
 	// Data contains any relevant information needed about the object
 	Data interface{}
+}
+
+func (o *Object) AddAction(action func(o *Object, t clock.Time), t clock.Time) {
+	o.Time = t
+	o.Action = action
 }
 
 func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	if o.Action != nil {
 		// Invoke the action
-		o.Action(o)
+		o.Action(o, t)
 	}
 
 	if o.Dead {
@@ -45,8 +52,11 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	mv := &f32.Affine{}
 	mv.Identity()
 
+	// Apply translations
+	x, y := o.X+o.Tx, o.Y+o.Ty
+
 	if o.Angle == 0 {
-		mv.Translate(mv, o.X, o.Y)
+		mv.Translate(mv, x, y)
 		mv.Mul(mv, &f32.Affine{
 			{o.Width, 0, 0},
 			{0, o.Height, 0},
@@ -55,11 +65,11 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 		mv.Translate(mv, o.Rx, o.Ry)
 		mv.Rotate(mv, -o.Angle)
 		w := o.Width
-		if o.X < o.Rx {
+		if x < o.Rx {
 			w = -w
 		}
 		h := o.Height
-		if o.Y < o.Ry {
+		if y < o.Ry {
 			h = -h
 		}
 		mv.Mul(mv, &f32.Affine{

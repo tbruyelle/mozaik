@@ -102,8 +102,8 @@ func (w *World) LoadScene() {
 			Y:      windowHeight/2 - winTxtHeight/2,
 			Width:  winTxtWidth,
 			Height: winTxtHeight,
-			Action: winTxtPop,
 			Sprite: w.texs[texWinTxt],
+			Action: winTxtPop,
 		}
 	}
 }
