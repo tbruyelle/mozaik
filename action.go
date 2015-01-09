@@ -27,11 +27,6 @@ const (
 	scaleMin            = 0.9
 )
 
-func scaleStep(rotate float32) float32 {
-	//return float32(math.Cos(float64(4*rotate))/12 + 1 - 1.0/12)
-	return float32(math.Cos(float64(4*rotate))/12 + 0.91666)
-}
-
 func blockRotate(o *Object, t clock.Time) {
 	b, ok := o.Data.(*Block)
 	if !ok {
