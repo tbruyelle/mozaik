@@ -26,7 +26,8 @@ var (
 	PinkColor      = Color{1, 0.70, 1, 1}
 	OrangeColor    = Color{0.95, 0.48, 0.07, 1}
 	LightBlueColor = Color{0.38, 0.87, 1, 1}
-	BgColor        = Color{1.0, 0.85, 0.23, 1.0}
+	//BgColor        = Color{1.0, 0.85, 0.23, 1.0}
+	BgColor = Color{.11, .03, .81, 1.0}
 )
 
 type Coords struct{ X, Y, Z, W float32 }

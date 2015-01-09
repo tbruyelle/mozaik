@@ -32,6 +32,7 @@ const (
 	Pink
 	Orange
 	LightBlue
+	Purple
 )
 
 type Block struct {

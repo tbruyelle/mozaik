@@ -49,7 +49,7 @@ func draw() {
 	}
 	lastClock = now
 
-	gl.ClearColor(0.9, 0.85, 0.46, 0.0)
+	gl.ClearColor(0.9, 0.09, 0.26, 0.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT)
 	g.world.Draw(now)
 	debug.DrawFPS()
