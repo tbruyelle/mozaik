@@ -158,7 +158,7 @@ func (t *Background) Draw() {
 	if t.angle > math.Pi {
 		t.angle = t.angle - math.Pi
 	} else {
-		t.angle += 0.02
+		t.angle += 0.01
 	}
 	modelViewBackup := *t.modelView
 	t.modelView.Mul(t.modelView, rotate(t.angle))
