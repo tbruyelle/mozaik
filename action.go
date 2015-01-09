@@ -24,8 +24,8 @@ func blockIdle(o *Object, t clock.Time) {
 }
 
 const (
-	rotateTicks         = 10
-	rotateRevertTicks   = 6
+	rotateTicks         = 15
+	rotateRevertTicks   = 10
 	rotateComplete      = math.Pi / 2
 	halfRotate          = rotateComplete / 2
 	rotatePerTick       = rotateComplete / rotateTicks
@@ -51,6 +51,28 @@ func blockRotate(o *Object, t clock.Time) {
 		g.level.Lock()
 		if g.level.rotating != nil {
 			g.level.RotateSwitch(g.level.rotating)
+		}
+		g.level.rotating = nil
+		g.level.Unlock()
+		// Return to the idle action
+		o.Action = blockIdle
+		return
+	}
+	blockSprite(o)
+	// Update also the scaling
+	scale := float32(math.Cos(float64(o.Angle*4))/12 + .91666)
+	o.Sx, o.Sy = scale, scale
+}
+
+func blockRotateInverse(o *Object, t clock.Time) {
+	o.Angle -= rotateRevertPerTick
+	if o.Angle <= -rotateComplete {
+		// The rotation is over
+		// First apply the rotation to the level struct
+		// Use a mutex because this must be done only one time
+		g.level.Lock()
+		if g.level.rotating != nil {
+			g.level.RotateSwitchInverse(g.level.rotating)
 		}
 		g.level.rotating = nil
 		g.level.Unlock()

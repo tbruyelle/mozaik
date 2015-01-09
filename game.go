@@ -100,6 +100,10 @@ func (g *Game) Click(x, y float32) {
 				g.Warp()
 				return
 			}
+			if x > windowWidth-30 && y < 30 {
+				g.level.UndoLastMove()
+			}
+
 			g.level.PressSwitch(x, y)
 		}
 	}
@@ -122,12 +126,6 @@ func (g *Game) Warp() {
 		g.level = LoadLevel(g.currentLevel)
 		//FIXME clean resources
 		g.world.LoadScene()
-	}
-}
-
-func (g *Game) UndoLastMove() {
-	if g.Listen() {
-		g.level.UndoLastMove()
 	}
 }
 

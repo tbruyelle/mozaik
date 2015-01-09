@@ -46,12 +46,12 @@ type Switch struct {
 	name      string
 }
 
-func (s *Switch) Rotate() {
-	blocks := s.Blocks()
+func (sw *Switch) Rotate() {
+	blocks := sw.Blocks()
 	for i := range blocks {
 		b := blocks[i]
 		v := switchSize / 2
-		b.Rx, b.Ry = s.X+v, s.Y+v
+		b.Rx, b.Ry = sw.X+v, sw.Y+v
 		b.Action = blockRotate
 	}
 }
@@ -117,8 +117,14 @@ func (l *Level) UndoLastMove() {
 	}
 	sw := l.PopLastRotated()
 	if sw != nil {
-		//TODO
-		//sw.ChangeState(NewRotateStateReverse())
+		g.level.rotating = sw
+		blocks := sw.Blocks()
+		for i := range blocks {
+			b := blocks[i]
+			v := switchSize / 2
+			b.Rx, b.Ry = sw.X+v, sw.Y+v
+			b.Action = blockRotateInverse
+		}
 	}
 }
 
