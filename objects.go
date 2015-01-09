@@ -29,11 +29,21 @@ type Object struct {
 	Data interface{}
 }
 
+func (o *Object) Reset() {
+	o.Tx, o.Ty, o.Sx, o.Sy, o.Rx, o.Ry, o.Angle = 0, 0, 0, 0, 0, 0, 0
+	o.Time = 0
+}
+
 func (o *Object) ZoomIn(f, start float32) {
 	s := start + f
 	o.Sx, o.Sy = s, s
-	o.Tx = -o.Width * f / 2
-	o.Ty = -o.Height * f / 2
+	if start < 1 {
+		o.Tx = o.Width / 2 * (1 - f)
+		o.Ty = o.Height / 2 * (1 - f)
+	} else {
+		o.Tx = -o.Width / 2 * f
+		o.Ty = -o.Height / 2 * f
+	}
 }
 
 func (o *Object) ZoomOut(f, start float32) {

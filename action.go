@@ -59,7 +59,27 @@ func blockRotate(o *Object, t clock.Time) {
 	o.Sx, o.Sy = scale, scale
 }
 
+func switchPop(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+		o.Dead = true
+		return
+	}
+	o.Dead = false
+	switchSprite(o)
+	f := clock.EaseIn(o.Time, o.Time+30, t)
+	o.ZoomIn(f, 0)
+	if f == 1 {
+		o.Reset()
+		o.Action = switchIdle
+	}
+}
+
 func switchIdle(o *Object, t clock.Time) {
+	switchSprite(o)
+}
+
+func switchSprite(o *Object) {
 	sw, ok := o.Data.(*Switch)
 	if !ok {
 		log.Println("Invalid type assertion", o.Data)
@@ -102,7 +122,7 @@ func winTxtPop(o *Object, t clock.Time) {
 		o.Tx = -x + x*f
 		if f == 1 {
 			// First animation is over
-			o.Time = 0
+			o.Reset()
 			o.Action = winTxtZoomIn
 			g.listen = true
 		}
