@@ -66,11 +66,14 @@ func blockRotate(o *Object, t clock.Time) {
 
 func blockPopStart(o *Object, t clock.Time) {
 	if o.Time == 0 {
+		// Make the pop start randomly
 		o.Time = t + clock.Time(rand.Intn(15))
 		o.Dead = true
 		return
 	}
 	if t > o.Time {
+		// Once the random time elapsed,
+		// start the pop animation
 		o.Time = 0
 		o.Action = blockPop
 	}
