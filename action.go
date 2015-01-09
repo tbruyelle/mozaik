@@ -83,9 +83,9 @@ func blockPop(o *Object, t clock.Time) {
 	}
 	blockSprite(o)
 	o.Dead = false
-	f := clock.EaseIn(o.Time, o.Time+150, t)
-	o.Tx = -o.X + o.Y/o.X*o.Y*f
-	o.Ty = -o.Y + o.X/o.Y*o.X*f
+	f := clock.EaseIn(o.Time, o.Time+40, t)
+	o.Tx = -o.X + o.X*f
+	o.Ty = -o.Y + o.Y*f
 	if f == 1 {
 		o.Reset()
 		o.Action = blockIdle
@@ -98,13 +98,13 @@ func switchPop(o *Object, t clock.Time) {
 		o.Dead = true
 		return
 	}
-	if t <= o.Time+35 {
+	if t <= o.Time+55 {
 		// Wait until all the blocks have popped
 		return
 	}
 	o.Dead = false
 	switchSprite(o)
-	f := clock.EaseIn(o.Time+35, o.Time+55, t)
+	f := clock.EaseIn(o.Time+55, o.Time+65, t)
 	o.ZoomIn(f, 0)
 	if f == 1 {
 		o.Reset()
