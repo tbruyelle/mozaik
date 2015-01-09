@@ -4,7 +4,13 @@ import (
 	"golang.org/x/mobile/sprite/clock"
 	"log"
 	"math"
+	"math/rand"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+}
 
 func blockIdle(o *Object, t clock.Time) {
 	// Ensure no transformation in the idle action
@@ -27,12 +33,16 @@ const (
 	scaleMin            = 0.9
 )
 
-func blockRotate(o *Object, t clock.Time) {
+func blockSprite(o *Object) {
 	b, ok := o.Data.(*Block)
 	if !ok {
 		log.Println("Invalid type assertion", o.Data)
 		return
 	}
+	o.Sprite = g.world.texs[b.Color]
+}
+
+func blockRotate(o *Object, t clock.Time) {
 	o.Angle += rotatePerTick
 	if o.Angle >= rotateComplete {
 		// The rotation is over
@@ -48,10 +58,37 @@ func blockRotate(o *Object, t clock.Time) {
 		o.Action = blockIdle
 		return
 	}
-	o.Sprite = g.world.texs[b.Color]
+	blockSprite(o)
 	// Update also the scaling
 	scale := float32(math.Cos(float64(o.Angle*4))/12 + .91666)
 	o.Sx, o.Sy = scale, scale
+}
+
+func blockPopStart(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t + clock.Time(rand.Intn(15))
+		o.Dead = true
+		return
+	}
+	if t > o.Time {
+		o.Time = 0
+		o.Action = blockPop
+	}
+}
+
+func blockPop(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+		return
+	}
+	blockSprite(o)
+	o.Dead = false
+	f := clock.EaseIn(o.Time, o.Time+20, t)
+	o.ZoomIn(f, 0)
+	if f == 1 {
+		o.Reset()
+		o.Action = blockIdle
+	}
 }
 
 func switchPop(o *Object, t clock.Time) {
@@ -60,9 +97,13 @@ func switchPop(o *Object, t clock.Time) {
 		o.Dead = true
 		return
 	}
+	if t <= o.Time+35 {
+		// Wait until all the blocks have popped
+		return
+	}
 	o.Dead = false
 	switchSprite(o)
-	f := clock.EaseIn(o.Time, o.Time+30, t)
+	f := clock.EaseIn(o.Time+35, o.Time+55, t)
 	o.ZoomIn(f, 0)
 	if f == 1 {
 		o.Reset()

@@ -140,7 +140,7 @@ func (l *Level) addBlock(color ColorDef, line, col int) {
 		Width:  blockSize,
 		Height: blockSize,
 		Data:   b,
-		Action: blockIdle,
+		Action: blockPopStart,
 	}
 	l.blocks[line][col] = b
 }
