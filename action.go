@@ -103,44 +103,33 @@ func winTxtPop(o *Object, t clock.Time) {
 		if f == 1 {
 			// First animation is over
 			o.Time = 0
-			o.Action = winTxtBreethOut
+			o.Action = winTxtZoomIn
 			g.listen = true
 		}
 	}
 }
 
-func winTxtBreethOut(o *Object, t clock.Time) {
+func winTxtZoomIn(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		// Start the animation
 		o.Time = t
 	}
 	f := clock.EaseIn(o.Time, o.Time+20, t) * .2
-	// Scale
-	s := f + 1
-	o.Sx, o.Sy = s, s
-	// Translate to keep centered
-	o.Tx = -o.Width * f / 2
-	o.Ty = -o.Height * f / 2
+	o.ZoomIn(f, 1)
 	if f == .2 {
 		o.Time = 0
-		o.Action = winTxtBreethIn
+		o.Action = winTxtZoomOut
 	}
 }
 
-func winTxtBreethIn(o *Object, t clock.Time) {
+func winTxtZoomOut(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
 	}
 	f := clock.EaseOut(o.Time, o.Time+25, t) * .2
-	s := 1.2 - f
-	// Scale
-	o.Sx, o.Sy = s, s
-	// Translate to keep centered
-	mw, mh := o.Width/2, o.Height/2
-	o.Tx = -mw*.2 + mw*f
-	o.Ty = -mh*.2 + mh*f
+	o.ZoomOut(f, 1.2)
 	if f == .2 {
 		o.Time = 0
-		o.Action = winTxtBreethOut
+		o.Action = winTxtZoomIn
 	}
 }

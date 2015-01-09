@@ -29,9 +29,19 @@ type Object struct {
 	Data interface{}
 }
 
-func (o *Object) AddAction(action func(o *Object, t clock.Time), t clock.Time) {
-	o.Time = t
-	o.Action = action
+func (o *Object) ZoomIn(f, start float32) {
+	s := start + f
+	o.Sx, o.Sy = s, s
+	o.Tx = -o.Width * f / 2
+	o.Ty = -o.Height * f / 2
+}
+
+func (o *Object) ZoomOut(f, start float32) {
+	s := start - f
+	o.Sx, o.Sy = s, s
+	mw, mh := o.Width/2, o.Height/2
+	o.Tx = -mw*(start-1) + mw*f
+	o.Ty = -mh*(start-1) + mh*f
 }
 
 func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
