@@ -94,6 +94,12 @@ func (g *Game) Click(x, y float32) {
 			// Next level
 			g.Warp()
 		} else {
+			if x < 30 && y < 30 {
+				// Trick to warp level
+				// FIXME remove me
+				g.Warp()
+				return
+			}
 			g.level.PressSwitch(x, y)
 		}
 	}
