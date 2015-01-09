@@ -87,8 +87,8 @@ func blockPop(o *Object, t clock.Time) {
 	blockSprite(o)
 	o.Dead = false
 	f := clock.EaseIn(o.Time, o.Time+40, t)
-	o.Tx = -o.X + o.X*f
-	o.Ty = -o.Y + o.Y*f
+	o.Tx = -o.X - o.Width + (o.X+o.Width)*f
+	o.Ty = -o.Y - o.Height + (o.Y+o.Height)*f
 	if f == 1 {
 		o.Reset()
 		o.Action = blockIdle
