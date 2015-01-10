@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,7 +15,7 @@ type Level struct {
 	sync.Mutex
 	blocks       [][]*Block
 	switches     []*Switch
-	winSignature string
+	winSignature [][]ColorDef
 	// rotated represents the historics of rotations
 	rotated []int
 	// rotating represents a rotate which
@@ -42,6 +43,7 @@ const (
 	LightPurple                 //D
 	LightBrown                  //E
 	OtherWhite                  //F
+	Empty       ColorDef = -1
 )
 
 type Block struct {
@@ -105,15 +107,44 @@ func (l *Level) IsPlain(sw int) bool {
 
 // Win returns true if player has win
 func (l *Level) Win() bool {
-	return l.winSignature == l.blockSignature()
+	for i := range l.winSignature {
+		for j := range l.winSignature[i] {
+			if l.blocks[i][j] != nil && l.winSignature[i][j] != l.blocks[i][j].Color {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (l *Level) findManhattan(x, y int) int {
+	c := l.blocks[x][y].Color
+	maxM := 0
+	for i := range l.winSignature {
+		for j := range l.winSignature[i] {
+			if c == l.winSignature[i][j] {
+				m := manhattan(x, y, i, j)
+				if m > maxM {
+					maxM = m
+				}
+			}
+		}
+	}
+	return maxM
+}
+
+func manhattan(x1, y1, x2, y2 int) int {
+	return int(math.Abs(float64(x1)-float64(x2))) + int(math.Abs(float64(y1)-float64(y2)))
 }
 
 func (l *Level) HowFar() int {
 	howfar := 0
-	signature := l.blockSignature()
-	for i := range l.winSignature {
-		if l.winSignature[i] != signature[i] {
-			howfar++
+	for i := range l.blocks {
+		for j := range l.blocks[i] {
+			// FIXME populate always blocks in parse
+			if l.blocks[i][j] != nil && l.winSignature[i][j] != l.blocks[i][j].Color {
+				howfar += l.findManhattan(i, j)
+			}
 		}
 	}
 	return howfar
@@ -252,18 +283,18 @@ func (l *Level) findSwitch(x, y float32) (int, *Switch) {
 }
 
 func (l *Level) blockSignature() string {
-	var signature string
+	var signature bytes.Buffer
 	for i := 0; i < len(l.blocks); i++ {
 		for j := 0; j < len(l.blocks[i]); j++ {
 			if l.blocks[i][j] == nil {
-				signature += "-"
+				signature.WriteString("-")
 			} else {
-				signature += ctoa(l.blocks[i][j].Color)
+				signature.WriteString(ctoa(l.blocks[i][j].Color))
 			}
 		}
-		signature += "\n"
+		signature.WriteString("\n")
 	}
-	return signature
+	return signature.String()
 }
 
 func atoi(s string) int {
@@ -275,6 +306,9 @@ func atoi(s string) int {
 }
 
 func atoc(s string) ColorDef {
+	if s == "-" {
+		return Empty
+	}
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		switch s {
@@ -339,7 +373,11 @@ func ParseLevel(str string) Level {
 			l.addSwitch(atoi(tokens[0]), atoi(tokens[1]))
 		case 2:
 			//read win
-			l.winSignature += lines[i] + "\n"
+			wline := make([]ColorDef, len(lines[i]))
+			for j, c := range lines[i] {
+				wline[j] = atoc(string(c))
+			}
+			l.winSignature = append(l.winSignature, wline)
 		case 3:
 			// read the solution
 			l.solution = lines[i]

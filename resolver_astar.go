@@ -89,6 +89,7 @@ func Resolve(lvl Level) *Node {
 		priority: lvl.HowFar(),
 	}
 	heap.Push(&ns, init)
+	fmt.Println("INIT NODE", init)
 	signs = make(map[string]bool)
 	signs[init.lvl.blockSignature()] = true
 

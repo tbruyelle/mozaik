@@ -69,28 +69,27 @@ func (w *World) LoadScene() {
 		{0, 1, windowHeight - signatureBlockSize*4},
 	})
 	line, col := float32(0), float32(0)
-	for _, c := range g.level.winSignature {
-		if c == '\n' {
-			//next line
-			line++
-			col = 0
-			continue
-		}
-		if c != '-' {
-			n := w.newNode()
-			signatureNode.AppendChild(n)
-			b := &Block{Color: atoc(string(c))}
-			b.Object = Object{
-				X:      col * signatureBlockSize,
-				Y:      line * signatureBlockSize,
-				Width:  signatureBlockSize,
-				Height: signatureBlockSize,
-				Action: blockIdle,
-				Data:   b,
+	for i := range g.level.winSignature {
+		for j := range g.level.winSignature[i] {
+			c := g.level.winSignature[i][j]
+			if c != Empty {
+				n := w.newNode()
+				signatureNode.AppendChild(n)
+				b := &Block{Color: c}
+				b.Object = Object{
+					X:      col * signatureBlockSize,
+					Y:      line * signatureBlockSize,
+					Width:  signatureBlockSize,
+					Height: signatureBlockSize,
+					Action: blockIdle,
+					Data:   b,
+				}
+				n.Arranger = &b.Object
 			}
-			n.Arranger = &b.Object
+			col++
 		}
-		col++
+		line++
+		col = 0
 	}
 
 	// Add the win text node
