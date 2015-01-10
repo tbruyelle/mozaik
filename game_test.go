@@ -6,7 +6,7 @@ import (
 )
 
 func setup() {
-	g = NewGame()
+	NewGame()
 }
 
 func fill() {
@@ -55,23 +55,6 @@ func TestParseLevel(t *testing.T) {
 	assert.Equal(t, xMin+blockSize+blockPadding, l.blocks[1][1].X)
 	assert.Equal(t, yMin+blockSize+blockPadding, l.blocks[1][1].Y)
 	assert.Equal(t, "24\n", l.winSignature)
-}
-
-func TestRotateState(t *testing.T) {
-	setup()
-	fill()
-
-	g.level.switches[0].ChangeState(NewRotateState())
-	g.level.switches[0].ChangeState(NewIdleState())
-
-	l := g.level
-	assert.Equal(t, 2, len(l.blocks))
-	assert.Equal(t, 2, len(l.blocks[0]))
-	assert.Equal(t, 2, len(l.blocks[1]))
-	assert.Equal(t, Yellow, l.blocks[0][0].Color)
-	assert.Equal(t, Red, l.blocks[0][1].Color)
-	assert.Equal(t, Blue, l.blocks[1][1].Color)
-	assert.Equal(t, Pink, l.blocks[1][0].Color)
 }
 
 func TestBlockSignature(t *testing.T) {

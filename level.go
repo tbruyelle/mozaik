@@ -20,19 +20,28 @@ type Level struct {
 	// rotating represents a rotate which
 	// is currently rotating
 	rotating *Switch
+	solution string
 }
 
 type ColorDef int
 
 const (
-	Red ColorDef = iota
-	Yellow
-	Blue
-	Green
-	Pink
-	Orange
-	LightBlue
-	Purple
+	Red         ColorDef = iota //0
+	Yellow                      //1
+	Blue                        //2
+	Green                       //3
+	Pink                        //4
+	Orange                      //5
+	LightBlue                   //6
+	Purple                      //7
+	Brown                       //8
+	LightGreen                  //9
+	Cyan                        //A
+	LightPink                   //B
+	White                       //C
+	LightPurple                 //D
+	LightBrown                  //E
+	OtherWhite                  //F
 )
 
 type Block struct {
@@ -266,7 +275,24 @@ func atoi(s string) int {
 }
 
 func atoc(s string) ColorDef {
-	return ColorDef(atoi(s))
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		switch s {
+		case "A":
+			return Cyan
+		case "B":
+			return LightPink
+		case "C":
+			return White
+		case "D":
+			return LightPurple
+		case "E":
+			return LightBrown
+		case "F":
+			return OtherWhite
+		}
+	}
+	return ColorDef(i)
 }
 
 func ctoa(c ColorDef) string {
@@ -314,6 +340,9 @@ func ParseLevel(str string) Level {
 		case 2:
 			//read win
 			l.winSignature += lines[i] + "\n"
+		case 3:
+			// read the solution
+			l.solution = lines[i]
 		}
 	}
 	//fmt.Printf("Level loaded blocks=%d, swicthes=%d\n", len(l.blocks), len(l.switches))
