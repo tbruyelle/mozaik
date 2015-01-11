@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"math"
 
 	"golang.org/x/mobile/f32"
@@ -140,18 +141,28 @@ type Background struct {
 }
 
 func NewBackground() *Background {
-	model := &Background{}
-	vs := []Vertex{}
+	b := &Background{}
 
+	vertices := make([]float32, 0)
 	for i := float64(0); i <= BgSegments; i++ {
 		if math.Mod(i, 2) == 0 {
-			vs = append(vs, NewVertex(0, 0, 0, BgColor))
+			// position
+			vertices = append(vertices, 0, 0, 0, 1)
+			// color
+			vertices = append(vertices, .11, .03, .81, 1)
+			b.vertexCount++
 		}
 		a := 2 * math.Pi * i / BgSegments
-		vs = append(vs, NewVertex(float32(math.Sin(a)*windowRadius), float32(math.Cos(a)*windowRadius), 0, BgColor))
+		// position
+		vertices = append(vertices, float32(math.Sin(a)*windowRadius), float32(math.Cos(a)*windowRadius), 0, 1)
+		// color
+		vertices = append(vertices, .11, .03, .81, 1)
+		b.vertexCount++
 	}
-	model.Init(gl.TRIANGLES, vs, VShaderBasic, FShaderBasic)
-	return model
+	data := f32.Bytes(binary.LittleEndian, vertices...)
+
+	b.Init(gl.TRIANGLES, data, VShaderBasic, FShaderBasic)
+	return b
 }
 
 func (t *Background) Draw() {

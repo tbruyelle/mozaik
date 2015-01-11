@@ -14,14 +14,12 @@ type Model interface {
 }
 
 type ModelBase struct {
-	mode         gl.Enum
-	buf          gl.Buffer
-	vertices     []Vertex
-	sizeVertices int
-	vertexCount  int
-	prg          gl.Program
-	position     gl.Attrib
-	color        gl.Attrib
+	mode        gl.Enum
+	buf         gl.Buffer
+	vertexCount int
+	prg         gl.Program
+	position    gl.Attrib
+	color       gl.Attrib
 	//	vao                   gl.VertexArray
 	uniformMVP            gl.Uniform
 	modelView, projection *f32.Mat4
@@ -33,17 +31,14 @@ type ModelGroup struct {
 	modelView, projection *f32.Mat4
 }
 
-func (t *ModelGroup) Add(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf string) {
+func (t *ModelGroup) Add(mode gl.Enum, data []byte, vshaderf, fshaderf string) {
 	m := &ModelBase{}
-	m.Init(mode, vertices, vshaderf, fshaderf)
+	m.Init(mode, data, vshaderf, fshaderf)
 	t.models = append(t.models, m)
 }
 
-func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf string) {
+func (t *ModelBase) Init(mode gl.Enum, data []byte, vshaderf, fshaderf string) {
 	t.mode = mode
-	t.vertices = vertices
-	t.vertexCount = len(t.vertices)
-	t.sizeVertices = t.vertexCount * sizeVertex
 
 	// Shaders
 	var err error
@@ -54,7 +49,7 @@ func (t *ModelBase) Init(mode gl.Enum, vertices []Vertex, vshaderf, fshaderf str
 
 	t.buf = gl.GenBuffer()
 	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
-	gl.BufferData2(gl.ARRAY_BUFFER, gl.STATIC_DRAW, t.sizeVertices, vertices)
+	gl.BufferData(gl.ARRAY_BUFFER, gl.STATIC_DRAW, data)
 
 	t.position = gl.GetAttribLocation(t.prg, "position")
 	t.color = gl.GetAttribLocation(t.prg, "color")
@@ -102,17 +97,14 @@ func flatten(m *f32.Mat4) []float32 {
 func (t *ModelBase) Draw() {
 	gl.UseProgram(t.prg)
 
-	mvp := &f32.Mat4{}
-	mvp.Mul(t.modelView, t.projection)
-	gl.UniformMatrix4fv(t.uniformMVP, flatten(mvp))
-	//t.uniformMVP.UniformMatrix4f(false, (*[16]float32)(&mvp))
+	gl.UniformMatrix4fv(t.uniformMVP, flatten(t.modelView))
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
 
 	gl.EnableVertexAttribArray(t.position)
-	gl.VertexAttribPointer(t.position, 4, gl.FLOAT, false, sizeVertex, 0)
+	gl.VertexAttribPointer(t.position, 4, gl.FLOAT, false, 32, 0)
 	gl.EnableVertexAttribArray(t.color)
-	gl.VertexAttribPointer(t.color, 4, gl.FLOAT, false, sizeVertex, sizeCoords)
+	gl.VertexAttribPointer(t.color, 4, gl.FLOAT, false, 32, 16)
 
 	gl.DrawArrays(t.mode, 0, t.vertexCount)
 
