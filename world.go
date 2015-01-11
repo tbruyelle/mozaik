@@ -47,11 +47,9 @@ func (w *World) LoadScene() {
 	for i := range g.level.blocks {
 		for j := range g.level.blocks[i] {
 			b := g.level.blocks[i][j]
-			if b != nil {
-				n := w.newNode()
-				n.Arranger = &b.Object
-				w.scene.AppendChild(n)
-			}
+			n := w.newNode()
+			n.Arranger = &b.Object
+			w.scene.AppendChild(n)
 		}
 	}
 	// Create the switches
@@ -147,6 +145,7 @@ const (
 	texSwitch8
 	texSwitch9
 	texWinTxt
+	texEmpty
 )
 
 const (
@@ -171,6 +170,9 @@ func (w *World) loadTextures() {
 	}
 
 	w.texs = []sprite.SubTex{
+		// Empty texture
+		texEmpty: sprite.SubTex{},
+		// Block textures
 		texBlockRed:         sprite.SubTex{t, image.Rect(0, 0, TexBlockSize, TexBlockSize)},
 		texBlockYellow:      sprite.SubTex{t, image.Rect(TexBlockSize, 0, TexBlockSize*2, TexBlockSize)},
 		texBlockBlue:        sprite.SubTex{t, image.Rect(TexBlockSize*2, 0, TexBlockSize*3, TexBlockSize)},
@@ -187,15 +189,17 @@ func (w *World) loadTextures() {
 		texBlockLightPurple: sprite.SubTex{t, image.Rect(TexBlockSize*5, TexBlockSize, TexBlockSize*6, TexBlockSize*2)},
 		texBlockLightBrown:  sprite.SubTex{t, image.Rect(TexBlockSize*6, TexBlockSize, TexBlockSize*7, TexBlockSize*2)},
 		texBlockOtherWhite:  sprite.SubTex{t, image.Rect(TexBlockSize*7, TexBlockSize, TexBlockSize*8, TexBlockSize*2)},
-		texSwitch1:          sprite.SubTex{t, image.Rect(0, TexBlockSize*2, TexSwitchSize-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch2:          sprite.SubTex{t, image.Rect(TexSwitchSize, TexBlockSize*2, TexSwitchSize*2-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch3:          sprite.SubTex{t, image.Rect(TexSwitchSize*2, TexBlockSize*2, TexSwitchSize*3-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch4:          sprite.SubTex{t, image.Rect(TexSwitchSize*3, TexBlockSize*2, TexSwitchSize*4-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch5:          sprite.SubTex{t, image.Rect(TexSwitchSize*4, TexBlockSize*2, TexSwitchSize*5-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch6:          sprite.SubTex{t, image.Rect(TexSwitchSize*5, TexBlockSize*2, TexSwitchSize*6-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch7:          sprite.SubTex{t, image.Rect(TexSwitchSize*6, TexBlockSize*2, TexSwitchSize*7-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch8:          sprite.SubTex{t, image.Rect(TexSwitchSize*7, TexBlockSize*2, TexSwitchSize*8-1, TexBlockSize*2+TexSwitchSize)},
-		texSwitch9:          sprite.SubTex{t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9-1, TexBlockSize*2+TexSwitchSize)},
-		texWinTxt:           sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
+		// Switches textures
+		texSwitch1: sprite.SubTex{t, image.Rect(0, TexBlockSize*2, TexSwitchSize-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch2: sprite.SubTex{t, image.Rect(TexSwitchSize, TexBlockSize*2, TexSwitchSize*2-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch3: sprite.SubTex{t, image.Rect(TexSwitchSize*2, TexBlockSize*2, TexSwitchSize*3-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch4: sprite.SubTex{t, image.Rect(TexSwitchSize*3, TexBlockSize*2, TexSwitchSize*4-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch5: sprite.SubTex{t, image.Rect(TexSwitchSize*4, TexBlockSize*2, TexSwitchSize*5-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch6: sprite.SubTex{t, image.Rect(TexSwitchSize*5, TexBlockSize*2, TexSwitchSize*6-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch7: sprite.SubTex{t, image.Rect(TexSwitchSize*6, TexBlockSize*2, TexSwitchSize*7-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch8: sprite.SubTex{t, image.Rect(TexSwitchSize*7, TexBlockSize*2, TexSwitchSize*8-1, TexBlockSize*2+TexSwitchSize)},
+		texSwitch9: sprite.SubTex{t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9-1, TexBlockSize*2+TexSwitchSize)},
+		// Win text texture
+		texWinTxt: sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
 	}
 }

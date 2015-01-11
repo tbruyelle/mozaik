@@ -1,11 +1,12 @@
 package main
 
 import (
-	"golang.org/x/mobile/sprite/clock"
 	"log"
 	"math"
 	"math/rand"
 	"time"
+
+	"golang.org/x/mobile/sprite/clock"
 )
 
 func init() {
@@ -15,12 +16,7 @@ func init() {
 func blockIdle(o *Object, t clock.Time) {
 	// Ensure no transformation in the idle action
 	o.Angle, o.Sx, o.Sy = 0, 0, 0
-	b, ok := o.Data.(*Block)
-	if !ok {
-		log.Println("Invalid type assertion", o.Data)
-		return
-	}
-	o.Sprite = g.world.texs[b.Color]
+	blockSprite(o)
 }
 
 const (
@@ -39,7 +35,11 @@ func blockSprite(o *Object) {
 		log.Println("Invalid type assertion", o.Data)
 		return
 	}
-	o.Sprite = g.world.texs[b.Color]
+	if b.Color == Empty {
+		o.Sprite = g.world.texs[texEmpty]
+	} else {
+		o.Sprite = g.world.texs[b.Color]
+	}
 }
 
 func blockRotate(o *Object, t clock.Time) {

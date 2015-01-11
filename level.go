@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -365,6 +366,8 @@ func ParseLevel(str string) Level {
 			for j, c := range lines[i] {
 				if c != '-' {
 					l.addBlock(atoc(string(c)), i, j)
+				} else {
+					l.addBlock(Empty, i, j)
 				}
 			}
 		case 1:
