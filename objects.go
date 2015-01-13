@@ -41,6 +41,12 @@ func (o *Object) Reset() {
 
 func (o *Object) ZoomIn(f, start float32) {
 	s := start + f
+	if s == 0 {
+		// useless display
+		o.Dead = true
+		return
+	}
+	o.Dead = false
 	o.Sx, o.Sy = s, s
 	if start < 1 {
 		o.Tx = o.Width / 2 * (1 - f)
@@ -53,6 +59,12 @@ func (o *Object) ZoomIn(f, start float32) {
 
 func (o *Object) ZoomOut(f, start float32) {
 	s := start - f
+	if s == 0 {
+		// useless display
+		o.Dead = true
+		return
+	}
+	o.Dead = false
 	o.Sx, o.Sy = s, s
 	mw, mh := o.Width/2, o.Height/2
 	o.Tx = -mw*(start-1) + mw*f

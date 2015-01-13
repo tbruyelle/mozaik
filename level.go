@@ -208,7 +208,7 @@ func (l *Level) addSwitch(line, col int) {
 		Y:      yMin + (linef+1)*blockSize + linef*blockPadding*2 - v,
 		Width:  switchSize,
 		Height: switchSize,
-		Action: wait{until: 70, next: ActionFunc(switchPop)},
+		Action: wait{until: 70, next: ActionFunc(switchPopIn)},
 		Data:   s,
 	}
 	l.switches = append(l.switches, s)

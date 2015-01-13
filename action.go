@@ -128,10 +128,9 @@ func blockPop(o *Object, t clock.Time) {
 	}
 }
 
-func switchPop(o *Object, t clock.Time) {
+func switchPopIn(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
-		return
 	}
 	switchSprite(o)
 	f := clock.EaseOut(o.Time, o.Time+20, t)
@@ -142,7 +141,21 @@ func switchPop(o *Object, t clock.Time) {
 	}
 }
 
+func switchPopOut(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+	}
+	switchSprite(o)
+	f := clock.EaseIn(o.Time, o.Time+20, t)
+	o.ZoomOut(f, 1)
+}
+
 func switchIdle(o *Object, t clock.Time) {
+	if g.level.Win() {
+		o.Time = 0
+		o.Action = ActionFunc(switchPopOut)
+		return
+	}
 	switchSprite(o)
 }
 
