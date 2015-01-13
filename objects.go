@@ -92,28 +92,16 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	// Apply translations
 	x, y := o.X+o.Tx, o.Y+o.Ty
 
-	if o.Angle == 0 {
-		mv.Translate(mv, x, y)
-		mv.Mul(mv, &f32.Affine{
-			{o.Width, 0, 0},
-			{0, o.Height, 0},
-		})
-	} else {
+	if o.Angle > 0 {
 		mv.Translate(mv, o.Rx, o.Ry)
 		mv.Rotate(mv, -o.Angle)
-		w := o.Width
-		if x < o.Rx {
-			w = -w
-		}
-		h := o.Height
-		if y < o.Ry {
-			h = -h
-		}
-		mv.Mul(mv, &f32.Affine{
-			{w, 0, 0},
-			{0, h, 0},
-		})
+		mv.Translate(mv, -o.Rx, -o.Ry)
 	}
+	mv.Translate(mv, x, y)
+	mv.Mul(mv, &f32.Affine{
+		{o.Width, 0, 0},
+		{0, o.Height, 0},
+	})
 	if o.Sx != 0 || o.Sy != 0 {
 		mv.Scale(mv, o.Sx, o.Sy)
 	}

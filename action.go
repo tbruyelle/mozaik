@@ -13,12 +13,6 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
-func blockIdle(o *Object, t clock.Time) {
-	// Ensure no transformation in the idle action
-	o.Angle, o.Sx, o.Sy = 0, 0, 0
-	blockSprite(o)
-}
-
 const (
 	rotateTicks         = 15
 	rotateRevertTicks   = 10
@@ -35,6 +29,27 @@ func (a ActionFunc) Do(o *Object, t clock.Time) {
 	a(o, t)
 }
 
+// wait pauses the display of the current object
+type wait struct {
+	until clock.Time
+	next  Action
+}
+
+func (w wait) Do(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+		o.Dead = true
+		return
+	}
+	if t > o.Time+w.until {
+		// Once the time is elapsed,
+		// start the next Action
+		o.Time = 0
+		o.Dead = false
+		o.Action = w.next
+	}
+}
+
 func blockSprite(o *Object) {
 	b, ok := o.Data.(*Block)
 	if !ok {
@@ -46,6 +61,21 @@ func blockSprite(o *Object) {
 	} else {
 		o.Sprite = g.world.texs[b.Color]
 	}
+}
+
+func blockIdle(o *Object, t clock.Time) {
+	if g.level.Win() {
+		o.Time = 0
+		o.Action = ActionFunc(blockPopOut)
+		return
+	}
+	// Ensure no transformation in the idle action
+	o.Angle, o.Sx, o.Sy = 0, 0, 0
+	blockSprite(o)
+}
+
+func signatureBlockIdle(o *Object, t clock.Time) {
+	blockSprite(o)
 }
 
 func blockRotate(o *Object, t clock.Time) {
@@ -92,28 +122,7 @@ func blockRotateInverse(o *Object, t clock.Time) {
 	o.Sx, o.Sy = scale, scale
 }
 
-// wait pauses the display of the current object
-type wait struct {
-	until clock.Time
-	next  Action
-}
-
-func (w wait) Do(o *Object, t clock.Time) {
-	if o.Time == 0 {
-		o.Time = t
-		o.Dead = true
-		return
-	}
-	if t > o.Time+w.until {
-		// Once the time is elapsed,
-		// start the next Action
-		o.Time = 0
-		o.Dead = false
-		o.Action = w.next
-	}
-}
-
-func blockPop(o *Object, t clock.Time) {
+func blockPopIn(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
 	}
@@ -126,6 +135,16 @@ func blockPop(o *Object, t clock.Time) {
 		o.Reset()
 		o.Action = ActionFunc(blockIdle)
 	}
+}
+
+func blockPopOut(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+		o.Rx = o.X + blockSize/2
+		o.Ry = o.Y + blockSize/2
+	}
+	f := clock.EaseIn(o.Time, o.Time+300, t)
+	o.Angle += f
 }
 
 func switchPopIn(o *Object, t clock.Time) {

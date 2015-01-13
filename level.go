@@ -189,7 +189,7 @@ func (l *Level) addBlock(color ColorDef, line, col int) {
 		Width:  blockSize,
 		Height: blockSize,
 		Data:   b,
-		Action: wait{until: clock.Time(line*10 + col*5), next: ActionFunc(blockPop)},
+		Action: wait{until: clock.Time(line*10 + col*5), next: ActionFunc(blockPopIn)},
 	}
 	l.blocks[line][col] = b
 }

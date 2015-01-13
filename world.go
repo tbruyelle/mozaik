@@ -79,7 +79,7 @@ func (w *World) LoadScene() {
 					Y:      line * signatureBlockSize,
 					Width:  signatureBlockSize,
 					Height: signatureBlockSize,
-					Action: ActionFunc(blockIdle),
+					Action: ActionFunc(signatureBlockIdle),
 					Data:   b,
 				}
 				n.Arranger = &b.Object
