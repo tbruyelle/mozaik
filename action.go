@@ -59,13 +59,13 @@ func blockIdle(o *Object, t clock.Time) {
 		o.Time = t
 		o.Reset()
 	}
+	blockSprite(o)
 	if g.level.Win() {
 		o.Time = 0
 		o.Action = ActionFunc(blockPopOut)
 		return
 	}
 	o.Angle, o.Sx, o.Sy = 0, 0, 0
-	blockSprite(o)
 }
 
 func signatureBlockIdle(o *Object, t clock.Time) {
