@@ -23,11 +23,15 @@ type Object struct {
 	Sx, Sy        float32
 	Width, Height float32
 	Sprite        sprite.SubTex
-	Action        func(o *Object, t clock.Time)
+	Action        Action
 	Dead          bool
 	Time          clock.Time
 	// Data contains any relevant information needed about the object
 	Data interface{}
+}
+
+type Action interface {
+	Do(o *Object, t clock.Time)
 }
 
 func (o *Object) Reset() {
@@ -58,7 +62,7 @@ func (o *Object) ZoomOut(f, start float32) {
 func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	if o.Action != nil {
 		// Invoke the action
-		o.Action(o, t)
+		o.Action.Do(o, t)
 	}
 
 	if o.Dead {

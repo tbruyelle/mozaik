@@ -29,6 +29,12 @@ const (
 	scaleMin            = 0.9
 )
 
+type ActionFunc func(o *Object, t clock.Time)
+
+func (a ActionFunc) Do(o *Object, t clock.Time) {
+	a(o, t)
+}
+
 func blockSprite(o *Object) {
 	b, ok := o.Data.(*Block)
 	if !ok {
@@ -55,7 +61,7 @@ func blockRotate(o *Object, t clock.Time) {
 		g.level.rotating = nil
 		g.level.Unlock()
 		// Return to the idle action
-		o.Action = blockIdle
+		o.Action = ActionFunc(blockIdle)
 		return
 	}
 	blockSprite(o)
@@ -77,7 +83,7 @@ func blockRotateInverse(o *Object, t clock.Time) {
 		g.level.rotating = nil
 		g.level.Unlock()
 		// Return to the idle action
-		o.Action = blockIdle
+		o.Action = ActionFunc(blockIdle)
 		return
 	}
 	blockSprite(o)
@@ -97,7 +103,7 @@ func blockPopStart(o *Object, t clock.Time) {
 		// Once the random time elapsed,
 		// start the pop animation
 		o.Time = 0
-		o.Action = blockPop
+		o.Action = ActionFunc(blockPop)
 	}
 }
 
@@ -113,7 +119,7 @@ func blockPop(o *Object, t clock.Time) {
 	o.Ty = -o.Y - o.Height + (o.Y+o.Height)*f
 	if f == 1 {
 		o.Reset()
-		o.Action = blockIdle
+		o.Action = ActionFunc(blockIdle)
 	}
 }
 
@@ -133,7 +139,7 @@ func switchPop(o *Object, t clock.Time) {
 	o.ZoomIn(f, 0)
 	if f == 1 {
 		o.Reset()
-		o.Action = switchIdle
+		o.Action = ActionFunc(switchIdle)
 	}
 }
 
@@ -185,7 +191,7 @@ func winTxtPop(o *Object, t clock.Time) {
 		if f == 1 {
 			// First animation is over
 			o.Reset()
-			o.Action = winTxtZoomIn
+			o.Action = ActionFunc(winTxtZoomIn)
 			g.listen = true
 		}
 	}
@@ -200,7 +206,7 @@ func winTxtZoomIn(o *Object, t clock.Time) {
 	o.ZoomIn(f, 1)
 	if f == .2 {
 		o.Time = 0
-		o.Action = winTxtZoomOut
+		o.Action = ActionFunc(winTxtZoomOut)
 	}
 }
 
@@ -212,6 +218,6 @@ func winTxtZoomOut(o *Object, t clock.Time) {
 	o.ZoomOut(f, 1.2)
 	if f == .2 {
 		o.Time = 0
-		o.Action = winTxtZoomIn
+		o.Action = ActionFunc(winTxtZoomIn)
 	}
 }

@@ -64,7 +64,7 @@ func (sw *Switch) Rotate() {
 		b := blocks[i]
 		v := switchSize / 2
 		b.Rx, b.Ry = sw.X+v, sw.Y+v
-		b.Action = blockRotate
+		b.Action = ActionFunc(blockRotate)
 	}
 }
 
@@ -164,7 +164,7 @@ func (l *Level) UndoLastMove() {
 			b := blocks[i]
 			v := switchSize / 2
 			b.Rx, b.Ry = sw.X+v, sw.Y+v
-			b.Action = blockRotateInverse
+			b.Action = ActionFunc(blockRotateInverse)
 		}
 	}
 }
@@ -188,7 +188,7 @@ func (l *Level) addBlock(color ColorDef, line, col int) {
 		Width:  blockSize,
 		Height: blockSize,
 		Data:   b,
-		Action: blockPopStart,
+		Action: ActionFunc(blockPopStart),
 	}
 	l.blocks[line][col] = b
 }
@@ -207,7 +207,7 @@ func (l *Level) addSwitch(line, col int) {
 		Y:      yMin + (linef+1)*blockSize + linef*blockPadding*2 - v,
 		Width:  switchSize,
 		Height: switchSize,
-		Action: switchPop,
+		Action: ActionFunc(switchPop),
 		Data:   s,
 	}
 	l.switches = append(l.switches, s)

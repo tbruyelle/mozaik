@@ -79,7 +79,7 @@ func (w *World) LoadScene() {
 					Y:      line * signatureBlockSize,
 					Width:  signatureBlockSize,
 					Height: signatureBlockSize,
-					Action: blockIdle,
+					Action: ActionFunc(blockIdle),
 					Data:   b,
 				}
 				n.Arranger = &b.Object
@@ -100,7 +100,7 @@ func (w *World) LoadScene() {
 			Width:  winTxtWidth,
 			Height: winTxtHeight,
 			Sprite: w.texs[texWinTxt],
-			Action: winTxtPop,
+			Action: ActionFunc(winTxtPop),
 		}
 	}
 }
