@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"golang.org/x/mobile/app"
+	"golang.org/x/mobile/sprite/clock"
 )
 
 type Level struct {
@@ -188,7 +189,7 @@ func (l *Level) addBlock(color ColorDef, line, col int) {
 		Width:  blockSize,
 		Height: blockSize,
 		Data:   b,
-		Action: ActionFunc(blockPopStart),
+		Action: wait{until: clock.Time(line*10 + col*5), next: ActionFunc(blockPop)},
 	}
 	l.blocks[line][col] = b
 }
@@ -207,7 +208,7 @@ func (l *Level) addSwitch(line, col int) {
 		Y:      yMin + (linef+1)*blockSize + linef*blockPadding*2 - v,
 		Width:  switchSize,
 		Height: switchSize,
-		Action: ActionFunc(switchPop),
+		Action: wait{until: 70, next: ActionFunc(switchPop)},
 		Data:   s,
 	}
 	l.switches = append(l.switches, s)
@@ -253,7 +254,6 @@ func (l *Level) PressSwitch(x, y float32) {
 	// Handle click only when no switch are rotating
 	if l.rotating == nil {
 		if i, s := l.findSwitch(x, y); s != nil {
-			fmt.Println("find switch", s)
 			l.rotating = s
 			l.TriggerSwitch(i)
 		}

@@ -92,29 +92,34 @@ func blockRotateInverse(o *Object, t clock.Time) {
 	o.Sx, o.Sy = scale, scale
 }
 
-func blockPopStart(o *Object, t clock.Time) {
+// wait pauses the display of the current object
+type wait struct {
+	until clock.Time
+	next  Action
+}
+
+func (w wait) Do(o *Object, t clock.Time) {
 	if o.Time == 0 {
-		// Make the pop start randomly
-		o.Time = t + clock.Time(rand.Intn(15))
+		o.Time = t
 		o.Dead = true
 		return
 	}
-	if t > o.Time {
-		// Once the random time elapsed,
-		// start the pop animation
+	if t > o.Time+w.until {
+		// Once the time is elapsed,
+		// start the next Action
 		o.Time = 0
-		o.Action = ActionFunc(blockPop)
+		o.Dead = false
+		o.Action = w.next
 	}
 }
 
 func blockPop(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
-		return
 	}
 	blockSprite(o)
 	o.Dead = false
-	f := clock.EaseIn(o.Time, o.Time+40, t)
+	f := clock.EaseOut(o.Time, o.Time+20, t)
 	o.Tx = -o.X - o.Width + (o.X+o.Width)*f
 	o.Ty = -o.Y - o.Height + (o.Y+o.Height)*f
 	if f == 1 {
@@ -126,16 +131,10 @@ func blockPop(o *Object, t clock.Time) {
 func switchPop(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
-		o.Dead = true
 		return
 	}
-	if t <= o.Time+55 {
-		// Wait until all the blocks have popped
-		return
-	}
-	o.Dead = false
 	switchSprite(o)
-	f := clock.EaseIn(o.Time+55, o.Time+65, t)
+	f := clock.EaseOut(o.Time, o.Time+20, t)
 	o.ZoomIn(f, 0)
 	if f == 1 {
 		o.Reset()
