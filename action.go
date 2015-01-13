@@ -13,16 +13,6 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
-const (
-	rotateTicks         = 15
-	rotateRevertTicks   = 10
-	rotateComplete      = math.Pi / 2
-	halfRotate          = rotateComplete / 2
-	rotatePerTick       = rotateComplete / rotateTicks
-	rotateRevertPerTick = rotateComplete / rotateRevertTicks
-	scaleMin            = 0.9
-)
-
 type ActionFunc func(o *Object, t clock.Time)
 
 func (a ActionFunc) Do(o *Object, t clock.Time) {
@@ -64,12 +54,16 @@ func blockSprite(o *Object) {
 }
 
 func blockIdle(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		// Ensure no transformation in the idle action
+		o.Time = t
+		o.Reset()
+	}
 	if g.level.Win() {
 		o.Time = 0
 		o.Action = ActionFunc(blockPopOut)
 		return
 	}
-	// Ensure no transformation in the idle action
 	o.Angle, o.Sx, o.Sy = 0, 0, 0
 	blockSprite(o)
 }
@@ -79,8 +73,12 @@ func signatureBlockIdle(o *Object, t clock.Time) {
 }
 
 func blockRotate(o *Object, t clock.Time) {
-	o.Angle += rotatePerTick
-	if o.Angle >= rotateComplete {
+	if o.Time == 0 {
+		o.Time = t
+	}
+	f := clock.EaseOut(o.Time, o.Time+16, t)
+	o.Angle = math.Pi / 2 * f
+	if f == 1 {
 		// The rotation is over
 		// First apply the rotation to the level struct
 		// Use a mutex because this must be done only one time
@@ -91,17 +89,28 @@ func blockRotate(o *Object, t clock.Time) {
 		g.level.rotating = nil
 		g.level.Unlock()
 		// Return to the idle action
+		o.Time = 0
 		o.Action = ActionFunc(blockIdle)
 		return
 	}
 	blockSprite(o)
 	// Update also the scaling
-	o.Scale = float32(math.Cos(float64(o.Angle*4))/12 + .91666)
+	if f > .5 {
+		f = (f - .5) / .5
+		o.Scale = .8 + .2*f
+	} else {
+		f = f / .5
+		o.Scale = 1 - .2*f
+	}
 }
 
 func blockRotateInverse(o *Object, t clock.Time) {
-	o.Angle -= rotateRevertPerTick
-	if o.Angle <= -rotateComplete {
+	if o.Time == 0 {
+		o.Time = t
+	}
+	f := clock.EaseOut(o.Time, o.Time+12, t)
+	o.Angle = -math.Pi / 2 * f
+	if f == 1 {
 		// The rotation is over
 		// First apply the rotation to the level struct
 		// Use a mutex because this must be done only one time
@@ -117,7 +126,13 @@ func blockRotateInverse(o *Object, t clock.Time) {
 	}
 	blockSprite(o)
 	// Update also the scaling
-	o.Scale = float32(math.Cos(float64(o.Angle*4))/12 + .91666)
+	if f > .5 {
+		f = (f - .5) / .5
+		o.Scale = .8 + .2*f
+	} else {
+		f = f / .5
+		o.Scale = 1 - .2*f
+	}
 }
 
 func blockPopIn(o *Object, t clock.Time) {

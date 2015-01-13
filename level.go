@@ -167,6 +167,7 @@ func (l *Level) UndoLastMove() {
 		for i := range blocks {
 			b := blocks[i]
 			v := switchSize / 2
+			b.Time = 0
 			b.Rx, b.Ry = sw.X+v, sw.Y+v
 			b.Sx, b.Sy = b.Rx, b.Ry
 			b.Action = ActionFunc(blockRotateInverse)
