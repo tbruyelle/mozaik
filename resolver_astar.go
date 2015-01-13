@@ -24,6 +24,7 @@ func (ns Nodes) Less(i, j int) bool {
 }
 
 func (ns Nodes) Swap(i, j int) {
+	fmt.Println("Swap", i, j)
 	ns[i], ns[j] = ns[j], ns[i]
 }
 
@@ -106,7 +107,7 @@ func Resolve(lvl Level) *Node {
 
 func process(ns *Nodes) *Node {
 	n := heap.Pop(ns).(*Node)
-	//fmt.Println("Processing node", n)
+	fmt.Println("Processing node", n)
 	if n.lvl.Win() {
 		return n
 	}
