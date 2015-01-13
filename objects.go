@@ -20,7 +20,7 @@ type Object struct {
 	// Translation
 	Tx, Ty float32
 	// Scale
-	Sx, Sy        float32
+	Sx, Sy, Scale float32
 	Width, Height float32
 	Sprite        sprite.SubTex
 	Action        Action
@@ -35,40 +35,10 @@ type Action interface {
 }
 
 func (o *Object) Reset() {
-	o.Tx, o.Ty, o.Sx, o.Sy, o.Rx, o.Ry, o.Angle = 0, 0, 0, 0, 0, 0, 0
+	o.Tx, o.Ty = 0, 0
+	o.Sx, o.Sy, o.Scale = 0, 0, 0
+	o.Rx, o.Ry, o.Angle = 0, 0, 0
 	o.Time = 0
-}
-
-func (o *Object) ZoomIn(f, start float32) {
-	s := start + f
-	if s == 0 {
-		// useless display
-		o.Dead = true
-		return
-	}
-	o.Dead = false
-	o.Sx, o.Sy = s, s
-	if start < 1 {
-		o.Tx = o.Width / 2 * (1 - f)
-		o.Ty = o.Height / 2 * (1 - f)
-	} else {
-		o.Tx = -o.Width / 2 * f
-		o.Ty = -o.Height / 2 * f
-	}
-}
-
-func (o *Object) ZoomOut(f, start float32) {
-	s := start - f
-	if s == 0 {
-		// useless display
-		o.Dead = true
-		return
-	}
-	o.Dead = false
-	o.Sx, o.Sy = s, s
-	mw, mh := o.Width/2, o.Height/2
-	o.Tx = -mw*(start-1) + mw*f
-	o.Ty = -mh*(start-1) + mh*f
 }
 
 func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
@@ -92,19 +62,29 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	// Apply translations
 	x, y := o.X+o.Tx, o.Y+o.Ty
 
-	if o.Angle > 0 {
+	if o.Angle != 0 && o.Rx == o.Sx && o.Ry == o.Sy {
+		// Optim when angle and scale use the same transformation
 		mv.Translate(mv, o.Rx, o.Ry)
 		mv.Rotate(mv, -o.Angle)
+		mv.Scale(mv, o.Scale, o.Scale)
 		mv.Translate(mv, -o.Rx, -o.Ry)
+	} else {
+		if o.Angle != 0 {
+			mv.Translate(mv, o.Rx, o.Ry)
+			mv.Rotate(mv, -o.Angle)
+			mv.Translate(mv, -o.Rx, -o.Ry)
+		}
+		if o.Sx > 0 || o.Sy > 0 {
+			mv.Translate(mv, o.Sx, o.Sy)
+			mv.Scale(mv, o.Scale, o.Scale)
+			mv.Translate(mv, -o.Sx, -o.Sy)
+		}
 	}
 	mv.Translate(mv, x, y)
 	mv.Mul(mv, &f32.Affine{
 		{o.Width, 0, 0},
 		{0, o.Height, 0},
 	})
-	if o.Sx != 0 || o.Sy != 0 {
-		mv.Scale(mv, o.Sx, o.Sy)
-	}
 	e.SetTransform(n, *mv)
 }
 

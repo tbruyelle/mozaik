@@ -64,7 +64,10 @@ func (sw *Switch) Rotate() {
 	for i := range blocks {
 		b := blocks[i]
 		v := switchSize / 2
+		// Prepare a rotation around the center of the switch
 		b.Rx, b.Ry = sw.X+v, sw.Y+v
+		b.Sx, b.Sy = b.Rx, b.Ry
+		b.Time = 0
 		b.Action = ActionFunc(blockRotate)
 	}
 }
@@ -165,6 +168,7 @@ func (l *Level) UndoLastMove() {
 			b := blocks[i]
 			v := switchSize / 2
 			b.Rx, b.Ry = sw.X+v, sw.Y+v
+			b.Sx, b.Sy = b.Rx, b.Ry
 			b.Action = ActionFunc(blockRotateInverse)
 		}
 	}

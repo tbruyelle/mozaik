@@ -96,8 +96,7 @@ func blockRotate(o *Object, t clock.Time) {
 	}
 	blockSprite(o)
 	// Update also the scaling
-	scale := float32(math.Cos(float64(o.Angle*4))/12 + .91666)
-	o.Sx, o.Sy = scale, scale
+	o.Scale = float32(math.Cos(float64(o.Angle*4))/12 + .91666)
 }
 
 func blockRotateInverse(o *Object, t clock.Time) {
@@ -118,8 +117,7 @@ func blockRotateInverse(o *Object, t clock.Time) {
 	}
 	blockSprite(o)
 	// Update also the scaling
-	scale := float32(math.Cos(float64(o.Angle*4))/12 + .91666)
-	o.Sx, o.Sy = scale, scale
+	o.Scale = float32(math.Cos(float64(o.Angle*4))/12 + .91666)
 }
 
 func blockPopIn(o *Object, t clock.Time) {
@@ -150,11 +148,12 @@ func blockPopOut(o *Object, t clock.Time) {
 func switchPopIn(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
+		o.Sx = o.X + o.Width/2
+		o.Sy = o.Y + o.Height/2
 	}
 	switchSprite(o)
-	f := clock.EaseOut(o.Time, o.Time+20, t)
-	o.ZoomIn(f, 0)
-	if f == 1 {
+	o.Scale = clock.EaseOut(o.Time, o.Time+20, t)
+	if o.Scale == 1 {
 		o.Reset()
 		o.Action = ActionFunc(switchIdle)
 	}
@@ -163,10 +162,11 @@ func switchPopIn(o *Object, t clock.Time) {
 func switchPopOut(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
+		o.Sx = o.X + o.Width/2
+		o.Sy = o.Y + o.Height/2
 	}
 	switchSprite(o)
-	f := clock.EaseIn(o.Time, o.Time+20, t)
-	o.ZoomOut(f, 1)
+	o.Scale = 1 - clock.EaseIn(o.Time, o.Time+20, t)
 }
 
 func switchIdle(o *Object, t clock.Time) {
@@ -232,10 +232,11 @@ func winTxtZoomIn(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		// Start the animation
 		o.Time = t
+		o.Sx = o.X + o.Width/2
+		o.Sy = o.Y + o.Height/2
 	}
-	f := clock.EaseIn(o.Time, o.Time+20, t) * .2
-	o.ZoomIn(f, 1)
-	if f == .2 {
+	o.Scale = 1 + clock.EaseIn(o.Time, o.Time+20, t)*.2
+	if o.Scale == 1.2 {
 		o.Time = 0
 		o.Action = ActionFunc(winTxtZoomOut)
 	}
@@ -245,9 +246,8 @@ func winTxtZoomOut(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
 	}
-	f := clock.EaseOut(o.Time, o.Time+25, t) * .2
-	o.ZoomOut(f, 1.2)
-	if f == .2 {
+	o.Scale = 1.2 - clock.EaseOut(o.Time, o.Time+25, t)*.2
+	if o.Scale == 1 {
 		o.Time = 0
 		o.Action = ActionFunc(winTxtZoomIn)
 	}
