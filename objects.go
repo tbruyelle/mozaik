@@ -60,27 +60,25 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	mv.Identity()
 
 	// Apply translations
-	x, y := o.X+o.Tx, o.Y+o.Ty
-
 	if o.Angle != 0 && o.Rx == o.Sx && o.Ry == o.Sy {
 		// Optim when angle and scale use the same transformation
-		mv.Translate(mv, o.Rx, o.Ry)
+		mv.Translate(mv, o.Rx+o.Tx, o.Ry+o.Ty)
 		mv.Rotate(mv, -o.Angle)
 		mv.Scale(mv, o.Scale, o.Scale)
-		mv.Translate(mv, -o.Rx, -o.Ry)
+		mv.Translate(mv, -o.Rx-o.Tx, -o.Ry-o.Ty)
 	} else {
 		if o.Angle != 0 {
-			mv.Translate(mv, o.Rx, o.Ry)
+			mv.Translate(mv, o.Rx+o.Tx, o.Ry+o.Ty)
 			mv.Rotate(mv, -o.Angle)
-			mv.Translate(mv, -o.Rx, -o.Ry)
+			mv.Translate(mv, -o.Rx-o.Tx, -o.Ry-o.Ty)
 		}
 		if o.Sx > 0 || o.Sy > 0 {
-			mv.Translate(mv, o.Sx, o.Sy)
+			mv.Translate(mv, o.Sx+o.Tx, o.Sy+o.Ty)
 			mv.Scale(mv, o.Scale, o.Scale)
-			mv.Translate(mv, -o.Sx, -o.Sy)
+			mv.Translate(mv, -o.Sx-o.Tx, -o.Sy-o.Ty)
 		}
 	}
-	mv.Translate(mv, x, y)
+	mv.Translate(mv, o.X+o.Tx, o.Y+o.Ty)
 	mv.Mul(mv, &f32.Affine{
 		{o.Width, 0, 0},
 		{0, o.Height, 0},
