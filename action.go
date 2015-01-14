@@ -40,7 +40,7 @@ func (w wait) Do(o *Object, t clock.Time) {
 	}
 }
 
-var colorTexMap = map[ColorDef]int{
+var colorTexMap = map[Color]int{
 	Empty:       texEmpty,
 	Red:         texBlockRed,
 	Yellow:      texBlockYellow,

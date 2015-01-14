@@ -17,7 +17,7 @@ type Level struct {
 	sync.Mutex
 	blocks       [][]*Block
 	switches     []*Switch
-	winSignature [][]ColorDef
+	winSignature [][]Color
 	// rotated represents the historics of rotations
 	rotated []int
 	// rotating represents a rotate which
@@ -26,7 +26,7 @@ type Level struct {
 	solution string
 }
 
-type ColorDef rune
+type Color rune
 
 const (
 	Empty       = '-'
@@ -50,7 +50,7 @@ const (
 
 type Block struct {
 	Object
-	Color ColorDef
+	Color Color
 }
 
 type Switch struct {
@@ -185,7 +185,7 @@ func (l *Level) PopLastRotated() *Switch {
 	return l.switches[res]
 }
 
-func (l *Level) addBlock(color ColorDef, line, col int) {
+func (l *Level) addBlock(color Color, line, col int) {
 	colf, linef := float32(col), float32(line)
 	b := &Block{Color: color}
 	b.Object = Object{
@@ -307,7 +307,7 @@ func atoi(s string) int {
 	return i
 }
 
-func ctoa(c ColorDef) string {
+func ctoa(c Color) string {
 	return fmt.Sprintf("%d", c)
 }
 
@@ -341,7 +341,7 @@ func ParseLevel(str string) Level {
 			bline := make([]*Block, len(lines[i]))
 			l.blocks = append(l.blocks, bline)
 			for j, c := range lines[i] {
-				l.addBlock(ColorDef(c), i, j)
+				l.addBlock(Color(c), i, j)
 			}
 		case 1:
 			// read switch locations
@@ -349,9 +349,9 @@ func ParseLevel(str string) Level {
 			l.addSwitch(atoi(tokens[0]), atoi(tokens[1]))
 		case 2:
 			//read win
-			wline := make([]ColorDef, len(lines[i]))
+			wline := make([]Color, len(lines[i]))
 			for j, c := range lines[i] {
-				wline[j] = ColorDef(c)
+				wline[j] = Color(c)
 			}
 			l.winSignature = append(l.winSignature, wline)
 		case 3:
