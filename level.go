@@ -185,17 +185,24 @@ func (l *Level) PopLastRotated() *Switch {
 	return l.switches[res]
 }
 
-func (l *Level) addBlock(color Color, line, col int) {
+func newBlock(color Color, line, col int, size, padding float32) *Block {
 	colf, linef := float32(col), float32(line)
 	b := &Block{Color: color}
 	b.Object = Object{
-		X:      xMin + colf*(blockSize+blockPadding),
-		Y:      yMin + linef*(blockSize+blockPadding),
-		Width:  blockSize,
-		Height: blockSize,
+		X:      colf * (size + padding),
+		Y:      linef * (size + padding),
+		Width:  size,
+		Height: size,
 		Data:   b,
-		Action: wait{until: clock.Time(line*10 + col*5), next: ActionFunc(blockPopIn)},
 	}
+	return b
+}
+
+func (l *Level) addBlock(color Color, line, col int) {
+	b := newBlock(color, line, col, blockSize, blockPadding)
+	b.X += xMin
+	b.Y += yMin
+	b.Action = wait{until: clock.Time(line*10 + col*5), next: ActionFunc(blockPopIn)}
 	l.blocks[line][col] = b
 }
 

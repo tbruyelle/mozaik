@@ -66,22 +66,15 @@ func (w *World) LoadScene() {
 		{1, 0, windowWidth - signatureBlockSize*4},
 		{0, 1, windowHeight - signatureBlockSize*4},
 	})
-	line, col := float32(0), float32(0)
+	line, col := 0, 0
 	for i := range g.level.winSignature {
 		for j := range g.level.winSignature[i] {
 			c := g.level.winSignature[i][j]
 			if c != Empty {
 				n := w.newNode()
 				signatureNode.AppendChild(n)
-				b := &Block{Color: c}
-				b.Object = Object{
-					X:      col * signatureBlockSize,
-					Y:      line * signatureBlockSize,
-					Width:  signatureBlockSize,
-					Height: signatureBlockSize,
-					Action: ActionFunc(signatureBlockIdle),
-					Data:   b,
-				}
+				b := newBlock(c, line, col, signatureBlockSize, 0)
+				b.Action = ActionFunc(signatureBlockIdle)
 				n.Arranger = &b.Object
 			}
 			col++
