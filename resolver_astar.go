@@ -118,6 +118,11 @@ func process(ns *Nodes) *Node {
 			// Useless to rotate a plain switch
 			continue
 		}
+		if n.s == i && n.parent != nil && n.parent.s == i && n.parent.parent != nil && n.parent.parent.s == i {
+			// Useless to rotate 4 times in a row the same switch
+			continue
+		}
+
 		nn := &Node{
 			s:        i,
 			depth:    n.depth + 1,
