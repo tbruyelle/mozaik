@@ -40,17 +40,33 @@ func (w wait) Do(o *Object, t clock.Time) {
 	}
 }
 
+var colorTexMap = map[ColorDef]int{
+	Empty:       texEmpty,
+	Red:         texBlockRed,
+	Yellow:      texBlockYellow,
+	Blue:        texBlockBlue,
+	Green:       texBlockGreen,
+	Pink:        texBlockPink,
+	Orange:      texBlockOrange,
+	LightBlue:   texBlockLightBlue,
+	Purple:      texBlockPurple,
+	Brown:       texBlockBrown,
+	LightGreen:  texBlockLightGreen,
+	Cyan:        texBlockCyan,
+	LightPink:   texBlockLightPink,
+	White:       texBlockWhite,
+	LightPurple: texBlockLightPurple,
+	LightBrown:  texBlockLightBrown,
+	OtherWhite:  texBlockOtherWhite,
+}
+
 func blockSprite(o *Object) {
 	b, ok := o.Data.(*Block)
 	if !ok {
 		log.Println("Invalid type assertion", o.Data)
 		return
 	}
-	if b.Color == Empty {
-		o.Sprite = g.world.texs[texEmpty]
-	} else {
-		o.Sprite = g.world.texs[b.Color]
-	}
+	o.Sprite = g.world.texs[colorTexMap[b.Color]]
 }
 
 func blockIdle(o *Object, t clock.Time) {

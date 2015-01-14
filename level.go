@@ -26,26 +26,26 @@ type Level struct {
 	solution string
 }
 
-type ColorDef int
+type ColorDef rune
 
 const (
-	Red         ColorDef = iota //0
-	Yellow                      //1
-	Blue                        //2
-	Green                       //3
-	Pink                        //4
-	Orange                      //5
-	LightBlue                   //6
-	Purple                      //7
-	Brown                       //8
-	LightGreen                  //9
-	Cyan                        //A
-	LightPink                   //B
-	White                       //C
-	LightPurple                 //D
-	LightBrown                  //E
-	OtherWhite                  //F
-	Empty       ColorDef = -1
+	Empty       = '-'
+	Red         = '0'
+	Yellow      = '1'
+	Blue        = '2'
+	Green       = '3'
+	Pink        = '4'
+	Orange      = '5'
+	LightBlue   = '6'
+	Purple      = '7'
+	Brown       = '8'
+	LightGreen  = '9'
+	Cyan        = 'A'
+	LightPink   = 'B'
+	White       = 'C'
+	LightPurple = 'D'
+	LightBrown  = 'E'
+	OtherWhite  = 'F'
 )
 
 type Block struct {
@@ -114,7 +114,7 @@ func (l *Level) IsPlain(sw int) bool {
 func (l *Level) Win() bool {
 	for i := range l.winSignature {
 		for j := range l.winSignature[i] {
-			if l.blocks[i][j] != nil && l.winSignature[i][j] != l.blocks[i][j].Color {
+			if l.winSignature[i][j] != l.blocks[i][j].Color {
 				return false
 			}
 		}
@@ -147,7 +147,7 @@ func (l *Level) HowFar() int {
 	for i := range l.blocks {
 		for j := range l.blocks[i] {
 			// FIXME populate always blocks in parse
-			if l.blocks[i][j] != nil && l.winSignature[i][j] != l.blocks[i][j].Color {
+			if l.winSignature[i][j] != l.blocks[i][j].Color {
 				howfar += l.findManhattan(i, j)
 			}
 		}
@@ -292,11 +292,7 @@ func (l *Level) blockSignature() string {
 	var signature bytes.Buffer
 	for i := 0; i < len(l.blocks); i++ {
 		for j := 0; j < len(l.blocks[i]); j++ {
-			if l.blocks[i][j] == nil {
-				signature.WriteString("-")
-			} else {
-				signature.WriteString(ctoa(l.blocks[i][j].Color))
-			}
+			signature.WriteRune(rune(l.blocks[i][j].Color))
 		}
 		signature.WriteString("\n")
 	}
@@ -309,30 +305,6 @@ func atoi(s string) int {
 		panic(err)
 	}
 	return i
-}
-
-func atoc(s string) ColorDef {
-	if s == "-" {
-		return Empty
-	}
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		switch s {
-		case "A":
-			return Cyan
-		case "B":
-			return LightPink
-		case "C":
-			return White
-		case "D":
-			return LightPurple
-		case "E":
-			return LightBrown
-		case "F":
-			return OtherWhite
-		}
-	}
-	return ColorDef(i)
 }
 
 func ctoa(c ColorDef) string {
@@ -369,11 +341,7 @@ func ParseLevel(str string) Level {
 			bline := make([]*Block, len(lines[i]))
 			l.blocks = append(l.blocks, bline)
 			for j, c := range lines[i] {
-				if c != '-' {
-					l.addBlock(atoc(string(c)), i, j)
-				} else {
-					l.addBlock(Empty, i, j)
-				}
+				l.addBlock(ColorDef(c), i, j)
 			}
 		case 1:
 			// read switch locations
@@ -383,7 +351,7 @@ func ParseLevel(str string) Level {
 			//read win
 			wline := make([]ColorDef, len(lines[i]))
 			for j, c := range lines[i] {
-				wline[j] = atoc(string(c))
+				wline[j] = ColorDef(c)
 			}
 			l.winSignature = append(l.winSignature, wline)
 		case 3:
