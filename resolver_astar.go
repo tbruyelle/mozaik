@@ -24,7 +24,6 @@ func (ns Nodes) Less(i, j int) bool {
 }
 
 func (ns Nodes) Swap(i, j int) {
-	fmt.Println("Swap", i, j)
 	ns[i], ns[j] = ns[j], ns[i]
 }
 
@@ -90,7 +89,7 @@ func Resolve(lvl Level) *Node {
 		priority: lvl.HowFar(),
 	}
 	heap.Push(&ns, init)
-	fmt.Println("INIT NODE", init)
+	//fmt.Println("INIT NODE", init)
 	signs = make(map[string]bool)
 	signs[init.lvl.blockSignature()] = true
 
@@ -107,7 +106,7 @@ func Resolve(lvl Level) *Node {
 
 func process(ns *Nodes) *Node {
 	n := heap.Pop(ns).(*Node)
-	fmt.Println("Processing node", n)
+	//	fmt.Println("Processing node", n, len(*ns))
 	if n.lvl.Win() {
 		return n
 	}
@@ -115,6 +114,10 @@ func process(ns *Nodes) *Node {
 		return nil
 	}
 	for i, _ := range n.lvl.switches {
+		if n.lvl.IsPlain(i) {
+			// Useless to rotate a plain switch
+			continue
+		}
 		nn := &Node{
 			s:        i,
 			depth:    n.depth + 1,
@@ -130,7 +133,7 @@ func process(ns *Nodes) *Node {
 		}
 		signs[sign] = true
 		heap.Push(ns, nn)
-		//fmt.Println("Added node", nn)
+		//		fmt.Println("Added node", nn)
 	}
 	return nil
 }

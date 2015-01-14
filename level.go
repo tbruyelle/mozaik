@@ -59,25 +59,12 @@ type Switch struct {
 	name      string
 }
 
-func (sw *Switch) Rotate() {
-	blocks := sw.Blocks()
-	for i := range blocks {
-		b := blocks[i]
-		v := switchSize / 2
-		// Prepare a rotation around the center of the switch
-		b.Rx, b.Ry = sw.X+v, sw.Y+v
-		b.Sx, b.Sy = b.Rx, b.Ry
-		b.Time = 0
-		b.Action = ActionFunc(blockRotate)
-	}
-}
-
 // Blocks returns the block arround the switch in parameter.
-func (sw *Switch) Blocks() []*Block {
-	topLeft := g.level.blocks[sw.line][sw.col]
-	topRight := g.level.blocks[sw.line][sw.col+1]
-	bottomLeft := g.level.blocks[sw.line+1][sw.col]
-	bottomRight := g.level.blocks[sw.line+1][sw.col+1]
+func (l *Level) Blocks(sw *Switch) []*Block {
+	topLeft := l.blocks[sw.line][sw.col]
+	topRight := l.blocks[sw.line][sw.col+1]
+	bottomLeft := l.blocks[sw.line+1][sw.col]
+	bottomRight := l.blocks[sw.line+1][sw.col+1]
 	return []*Block{topLeft, topRight, bottomLeft, bottomRight}
 }
 
@@ -86,28 +73,29 @@ func (s *Switch) String() string {
 }
 
 func (l *Level) Copy() Level {
-	lvl := new(Level)
-	lvl.blocks = make([][]*Block, len(l.blocks))
+	lcp := new(Level)
+	lcp.blocks = make([][]*Block, len(l.blocks))
 	for i := range l.blocks {
-		lvl.blocks[i] = make([]*Block, len(l.blocks[i]))
-		copy(lvl.blocks[i], l.blocks[i])
+		lcp.blocks[i] = make([]*Block, len(l.blocks[i]))
+		for j := range l.blocks[i] {
+			lcp.blocks[i][j] = &Block{Color: l.blocks[i][j].Color}
+		}
 	}
-	lvl.switches = make([]*Switch, len(l.switches))
-	copy(lvl.switches, l.switches)
-	lvl.winSignature = l.winSignature
-	return *lvl
+
+	lcp.switches = make([]*Switch, len(l.switches))
+	for i := range l.switches {
+		sw := l.switches[i]
+		lcp.switches[i] = &Switch{col: sw.col, line: sw.line, name: sw.name}
+	}
+	lcp.winSignature = l.winSignature
+	return *lcp
 }
 
 // IsPlain returns true if all the blocks of the switch
 // have the same color
-func (l *Level) IsPlain(sw int) bool {
-	x, y := l.switches[sw].line, l.switches[sw].col
-	b1 := l.blocks[x][y]
-	b2 := l.blocks[x+1][y]
-	b3 := l.blocks[x][y+1]
-	b4 := l.blocks[x+1][y+1]
-
-	return b1.Color == b2.Color && b2.Color == b3.Color && b3.Color == b4.Color
+func (l *Level) IsPlain(s int) bool {
+	bs := l.Blocks(l.switches[s])
+	return bs[0].Color == bs[1].Color && bs[1].Color == bs[2].Color && bs[2].Color == bs[3].Color
 }
 
 // Win returns true if player has win
@@ -146,7 +134,6 @@ func (l *Level) HowFar() int {
 	howfar := 0
 	for i := range l.blocks {
 		for j := range l.blocks[i] {
-			// FIXME populate always blocks in parse
 			if l.winSignature[i][j] != l.blocks[i][j].Color {
 				howfar += l.findManhattan(i, j)
 			}
@@ -163,7 +150,7 @@ func (l *Level) UndoLastMove() {
 	sw := l.PopLastRotated()
 	if sw != nil {
 		g.level.rotating = sw
-		blocks := sw.Blocks()
+		blocks := l.Blocks(sw)
 		for i := range blocks {
 			b := blocks[i]
 			v := switchSize / 2
@@ -267,22 +254,32 @@ func (l *Level) PressSwitch(x, y float32) {
 	if l.rotating == nil {
 		if i, s := l.findSwitch(x, y); s != nil {
 			l.rotating = s
-			l.TriggerSwitch(i)
+			l.triggerSwitch(i)
 		}
 	}
 }
 
-func (l *Level) TriggerSwitchName(name string) {
+func (l *Level) triggerSwitchName(name string) {
 	for i := 0; i < len(l.switches); i++ {
 		if l.switches[i].name == name {
-			l.TriggerSwitch(i)
+			l.triggerSwitch(i)
 			return
 		}
 	}
 }
 
-func (l *Level) TriggerSwitch(i int) {
-	l.switches[i].Rotate()
+func (l *Level) triggerSwitch(i int) {
+	sw := l.switches[i]
+	blocks := l.Blocks(sw)
+	for i := range blocks {
+		b := blocks[i]
+		v := switchSize / 2
+		// Prepare a rotation around the center of the switch
+		b.Rx, b.Ry = sw.X+v, sw.Y+v
+		b.Sx, b.Sy = b.Rx, b.Ry
+		b.Time = 0
+		b.Action = ActionFunc(blockRotate)
+	}
 	l.rotated = append(l.rotated, i)
 }
 
@@ -376,22 +373,22 @@ func ParseLevel(str string) Level {
 }
 
 // RotateSwitch swaps bocks according to the 90d rotation
-func (lvl *Level) RotateSwitch(s *Switch) {
-	l, c := s.line, s.col
-	//fmt.Println("Swap from", l, c)
-	color := lvl.blocks[l][c].Color
-	lvl.blocks[l][c].Color = lvl.blocks[l+1][c].Color
-	lvl.blocks[l+1][c].Color = lvl.blocks[l+1][c+1].Color
-	lvl.blocks[l+1][c+1].Color = lvl.blocks[l][c+1].Color
-	lvl.blocks[l][c+1].Color = color
+func (l *Level) RotateSwitch(s *Switch) {
+	li, co := s.line, s.col
+	//fmt.Println("Swap from", s.name, li, co)
+	color := l.blocks[li][co].Color
+	l.blocks[li][co].Color = l.blocks[li+1][co].Color
+	l.blocks[li+1][co].Color = l.blocks[li+1][co+1].Color
+	l.blocks[li+1][co+1].Color = l.blocks[li][co+1].Color
+	l.blocks[li][co+1].Color = color
 }
 
 // RotateSwitchInverse swaps bocks according to the -90d rotation
-func (lvl *Level) RotateSwitchInverse(s *Switch) {
-	l, c := s.line, s.col
-	color := lvl.blocks[l][c].Color
-	lvl.blocks[l][c].Color = lvl.blocks[l][c+1].Color
-	lvl.blocks[l][c+1].Color = lvl.blocks[l+1][c+1].Color
-	lvl.blocks[l+1][c+1].Color = lvl.blocks[l+1][c].Color
-	lvl.blocks[l+1][c].Color = color
+func (l *Level) RotateSwitchInverse(s *Switch) {
+	li, co := s.line, s.col
+	color := l.blocks[li][co].Color
+	l.blocks[li][co].Color = l.blocks[li][co+1].Color
+	l.blocks[li][co+1].Color = l.blocks[li+1][co+1].Color
+	l.blocks[li+1][co+1].Color = l.blocks[li+1][co].Color
+	l.blocks[li+1][co].Color = color
 }
