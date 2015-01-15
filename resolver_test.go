@@ -1,121 +1,147 @@
-// +build ignore
-
 package main
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
-func BenchmarkFindPaths_Level1(t *testing.B) {
+func TestPaths_Level1_(t *testing.T) {
 	lvl := LoadLevel(1)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level1 (%s) %+v\n", d, n)
 }
 
-func BenchmarkFindPaths_Level2(t *testing.B) {
+func TestPaths_Level2(t *testing.T) {
 	lvl := LoadLevel(2)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level2 (%s) %+v\n", d, n)
 }
 
-func BenchmarkFindPaths_Level3(t *testing.B) {
+func TestPaths_Level3(t *testing.T) {
 	lvl := LoadLevel(3)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level3 (%s) %+v\n", d, n)
 }
 
-func BenchmarkFindPaths_Level4(t *testing.B) {
+func TestPaths_Level4(t *testing.T) {
 	lvl := LoadLevel(4)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level4 (%s) %+v\n", d, n)
 }
 
-func BenchmarkFindPaths_Level5(t *testing.B) {
+func TestPaths_Level5(t *testing.T) {
 	lvl := LoadLevel(5)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level5 (%s) %+v\n", d, n)
 }
 
-func BenchmarkFindPaths_Level6(t *testing.B) {
+func TestPaths_Level6(t *testing.T) {
 	lvl := LoadLevel(6)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level6 (%s) %+v\n", d, n)
 }
 
-func BenchmarkFindPaths_Level7(t *testing.B) {
+func TestPaths_Level7(t *testing.T) {
 	lvl := LoadLevel(7)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level8 (%s) %+v\n", d, n)
 }
 
-func BenchmarkFindPaths_Level8(t *testing.B) {
-	lvl := LoadLevel(8)
+func TestPaths_Level9(t *testing.T) {
+	lvl := LoadLevel(9)
+	t0 := time.Now()
 
-	//paths := FindShortestPaths(lvl)
-	n := FindPathAsync(lvl)
+	n := Resolve(lvl)
 
-	fmt.Printf("test result %+v\n", n)
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level9 (%s) %+v\n", d, n)
 }
 
-func TestDetermineNearestSwicthes_Level1(t *testing.T) {
-	lvl := LoadLevel(1)
+func TestPaths_Level10(t *testing.T) {
+	lvl := LoadLevel(10)
+	t0 := time.Now()
 
-	res := DetermineNearSwitches(lvl)
+	n := Resolve(lvl)
 
-	assert.Equal(t, len(lvl.switches), len(res))
-	assert.Equal(t, len(res[0]), 1)
-	assert.Equal(t, len(res[1]), 2)
-	assert.Equal(t, len(res[2]), 1)
-	assert.Equal(t, res[0], []int{1})
-	assert.Equal(t, res[1], []int{0, 2})
-	assert.Equal(t, res[2], []int{1})
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level10 (%s) %+v\n", d, n)
 }
 
-func TestDetermineNearestSwicthes_Level3(t *testing.T) {
-	lvl := LoadLevel(3)
+func TestPaths_Level11(t *testing.T) {
+	lvl := LoadLevel(11)
+	t0 := time.Now()
 
-	res := DetermineNearSwitches(lvl)
+	n := Resolve(lvl)
 
-	assert.Equal(t, len(lvl.switches), len(res))
-	assert.Equal(t, len(res[0]), 3)
-	assert.Equal(t, len(res[1]), 5)
-	assert.Equal(t, len(res[2]), 3)
-	assert.Equal(t, len(res[3]), 5)
-	assert.Equal(t, len(res[4]), 8)
-	assert.Equal(t, len(res[5]), 5)
-	assert.Equal(t, len(res[6]), 3)
-	assert.Equal(t, len(res[7]), 5)
-	assert.Equal(t, len(res[8]), 3)
-	assert.Equal(t, res[0], []int{1, 3, 4})
-	assert.Equal(t, res[1], []int{0, 2, 3, 4, 5})
-	assert.Equal(t, res[2], []int{1, 4, 5})
-	assert.Equal(t, res[3], []int{0, 1, 4, 6, 7})
-	assert.Equal(t, res[4], []int{0, 1, 2, 3, 5, 6, 7, 8})
-	assert.Equal(t, res[5], []int{1, 2, 4, 7, 8})
-	assert.Equal(t, res[6], []int{3, 4, 7})
-	assert.Equal(t, res[7], []int{3, 4, 5, 6, 8})
-	assert.Equal(t, res[8], []int{4, 5, 7})
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level11 (%s) %+v\n", d, n)
+}
+
+func TestPaths_Level12(t *testing.T) {
+	lvl := LoadLevel(12)
+	t0 := time.Now()
+
+	n := Resolve(lvl)
+
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level12 (%s) %+v\n", d, n)
+}
+
+func TestPaths_Level13(t *testing.T) {
+	lvl := LoadLevel(13)
+	t0 := time.Now()
+
+	n := Resolve(lvl)
+
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level13 (%s) %+v\n", d, n)
+}
+
+func TestPaths_Level14(t *testing.T) {
+	lvl := LoadLevel(14)
+	t0 := time.Now()
+
+	n := Resolve(lvl)
+
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level14 (%s) %+v\n", d, n)
+}
+
+func TestPaths_Level15(t *testing.T) {
+	lvl := LoadLevel(15)
+
+	t0 := time.Now()
+	n := Resolve(lvl)
+
+	d := time.Now().Sub(t0)
+	fmt.Printf("Level15 (%s) %+v\n", d, n)
 }
