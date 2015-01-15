@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"container/heap"
 	"fmt"
-	"math"
 	"os"
 	"runtime/pprof"
 )
@@ -67,8 +66,8 @@ func (b Board) signature() string {
 func (b Board) findManhattan(x, y int) int {
 	c := b[x][y]
 	max := 0
-	for i := range lvl.winSignature {
-		for j := range lvl.winSignature[i] {
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
 			if c == lvl.winSignature[i][j] {
 				m := manhattan(x, y, i, j)
 				if m > max {
@@ -80,8 +79,15 @@ func (b Board) findManhattan(x, y int) int {
 	return max
 }
 
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
 func manhattan(x1, y1, x2, y2 int) int {
-	return int(math.Abs(float64(x1)-float64(x2))) + int(math.Abs(float64(y1)-float64(y2)))
+	return abs(x1-x2) + abs(y1-y2)
 }
 
 func (b Board) howFar() int {
