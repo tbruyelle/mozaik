@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"container/heap"
 	"fmt"
+	"math"
+	"os"
+	"runtime/pprof"
 )
 
 const (
@@ -11,7 +15,86 @@ const (
 
 var (
 	signs map[string]bool
+	lvl   Level
 )
+
+type Board [4][4]Color
+
+// IsPlain returns true if all the blocks of the switch
+// have the same color
+func (b Board) isPlain(li, col int) bool {
+	return b[li][col] == b[li+1][col] && b[li+1][col] == b[li][col+1] && b[li][col+1] == b[li+1][col+1]
+}
+
+func (b *Board) cp(board Board) {
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			b[i][j] = board[i][j]
+		}
+	}
+}
+
+func (b Board) win() bool {
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			if lvl.winSignature[i][j] != b[i][j] {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (b *Board) rotate(li, co int) {
+	color := b[li][co]
+	b[li][co] = b[li+1][co]
+	b[li+1][co] = b[li+1][co+1]
+	b[li+1][co+1] = b[li][co+1]
+	b[li][co+1] = color
+}
+
+func (b Board) signature() string {
+	var signature bytes.Buffer
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			signature.WriteRune(rune(b[i][j]))
+		}
+		signature.WriteString("\n")
+	}
+	return signature.String()
+}
+
+func (b Board) findManhattan(x, y int) int {
+	c := b[x][y]
+	max := 0
+	for i := range lvl.winSignature {
+		for j := range lvl.winSignature[i] {
+			if c == lvl.winSignature[i][j] {
+				m := manhattan(x, y, i, j)
+				if m > max {
+					max = m
+				}
+			}
+		}
+	}
+	return max
+}
+
+func manhattan(x1, y1, x2, y2 int) int {
+	return int(math.Abs(float64(x1)-float64(x2))) + int(math.Abs(float64(y1)-float64(y2)))
+}
+
+func (b Board) howFar() int {
+	howfar := 0
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			if lvl.winSignature[i][j] != b[i][j] {
+				howfar += b.findManhattan(i, j)
+			}
+		}
+	}
+	return howfar
+}
 
 type Nodes []*Node
 
@@ -41,13 +124,11 @@ func (ns *Nodes) Pop() interface{} {
 }
 
 type Node struct {
+	board Board
+	depth int
 	// current switch
-	s      int
-	depth  int
-	parent *Node
-	// lvl represents a copy of the level
-	// at the current node of the tree
-	lvl      Level
+	s        int
+	parent   *Node
 	priority int
 }
 
@@ -62,36 +143,38 @@ func (n *Node) String() string {
 func (n *Node) road() string {
 	var s string
 	for n.parent != nil && n.s >= 0 {
-		s = n.lvl.switches[n.s].name + s
+		s = lvl.switches[n.s].name + s
 		n = n.parent
 	}
 	if n.s >= 0 {
-		s = n.lvl.switches[n.s].name + s
+		s = lvl.switches[n.s].name + s
 	}
 	return s
 }
 
-func Resolve(lvl Level) *Node {
-	//f, err := os.Create("resolver.prof")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//pprof.StartCPUProfile(f)
-	//defer pprof.StopCPUProfile()
+func Resolve(l Level) *Node {
+	f, err := os.Create("resolver.prof")
+	if err != nil {
+		panic(err)
+	}
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
 
+	lvl = l
 	ns := make(Nodes, 0)
 	heap.Init(&ns)
 
-	init := &Node{
-		s:        -1,
-		depth:    0,
-		lvl:      lvl.Copy(),
-		priority: lvl.HowFar(),
+	init := &Node{s: -1}
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			init.board[i][j] = lvl.blocks[i][j].Color
+		}
 	}
+	init.priority = init.board.howFar()
 	heap.Push(&ns, init)
 	//fmt.Println("INIT NODE", init)
 	signs = make(map[string]bool)
-	signs[init.lvl.blockSignature()] = true
+	signs[init.board.signature()] = true
 
 	loop := 0
 	for {
@@ -106,15 +189,14 @@ func Resolve(lvl Level) *Node {
 
 func process(ns *Nodes) *Node {
 	n := heap.Pop(ns).(*Node)
-	//	fmt.Println("Processing node", n, len(*ns))
-	if n.lvl.Win() {
-		return n
-	}
 	if n.depth > MaxDepth {
 		return nil
 	}
-	for i, _ := range n.lvl.switches {
-		if n.lvl.IsPlain(i) {
+	if n.board.win() {
+		return n
+	}
+	for i, sw := range lvl.switches {
+		if n.board.isPlain(sw.line, sw.col) {
 			// Useless to rotate a plain switch
 			continue
 		}
@@ -124,21 +206,21 @@ func process(ns *Nodes) *Node {
 		}
 
 		nn := &Node{
-			s:        i,
-			depth:    n.depth + 1,
-			lvl:      n.lvl.Copy(),
-			parent:   n,
-			priority: n.lvl.HowFar() + n.depth,
+			s:      i,
+			depth:  n.depth + 1,
+			parent: n,
 		}
-		nn.lvl.RotateSwitch(n.lvl.switches[i])
-		sign := nn.lvl.blockSignature()
+		nn.board.cp(n.board)
+		nn.board.rotate(sw.line, sw.col)
+		sign := nn.board.signature()
 		if _, ok := signs[sign]; ok {
 			// Already processed skip
 			continue
 		}
 		signs[sign] = true
+		nn.priority = nn.board.howFar() + nn.depth
+
 		heap.Push(ns, nn)
-		//		fmt.Println("Added node", nn)
 	}
 	return nil
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"strconv"
 	"strings"
 	"sync"
@@ -91,13 +90,6 @@ func (l *Level) Copy() Level {
 	return *lcp
 }
 
-// IsPlain returns true if all the blocks of the switch
-// have the same color
-func (l *Level) IsPlain(s int) bool {
-	bs := l.Blocks(l.switches[s])
-	return bs[0].Color == bs[1].Color && bs[1].Color == bs[2].Color && bs[2].Color == bs[3].Color
-}
-
 // Win returns true if player has win
 func (l *Level) Win() bool {
 	for i := range l.winSignature {
@@ -108,38 +100,6 @@ func (l *Level) Win() bool {
 		}
 	}
 	return true
-}
-
-func (l *Level) findManhattan(x, y int) int {
-	c := l.blocks[x][y].Color
-	maxM := 0
-	for i := range l.winSignature {
-		for j := range l.winSignature[i] {
-			if c == l.winSignature[i][j] {
-				m := manhattan(x, y, i, j)
-				if m > maxM {
-					maxM = m
-				}
-			}
-		}
-	}
-	return maxM
-}
-
-func manhattan(x1, y1, x2, y2 int) int {
-	return int(math.Abs(float64(x1)-float64(x2))) + int(math.Abs(float64(y1)-float64(y2)))
-}
-
-func (l *Level) HowFar() int {
-	howfar := 0
-	for i := range l.blocks {
-		for j := range l.blocks[i] {
-			if l.winSignature[i][j] != l.blocks[i][j].Color {
-				howfar += l.findManhattan(i, j)
-			}
-		}
-	}
-	return howfar
 }
 
 // UndoLastMove cancels the last player move
