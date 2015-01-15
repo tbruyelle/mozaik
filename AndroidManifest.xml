@@ -14,7 +14,8 @@ license that can be found in the LICENSE file.
 	<application android:label="Mozaik" android:hasCode="false">
 	<activity android:name="android.app.NativeActivity"
 		android:label="Mozaik"
-		android:configChanges="orientation|keyboardHidden">
+		orientation="portrait"
+		android:configChanges="keyboardHidden">
 		<meta-data android:name="android.app.lib_name" android:value="mozaik" />
 		<intent-filter>
 			<action android:name="android.intent.action.MAIN" />
