@@ -78,7 +78,7 @@ func blockIdle(o *Object, t clock.Time) {
 	blockSprite(o)
 	if g.level.Win() {
 		o.Time = 0
-		o.Action = ActionFunc(blockPopOut)
+		o.Action = wait{until: clock.Time((o.X + o.Y) / 20), next: ActionFunc(blockPopOut)}
 		return
 	}
 	o.Angle, o.Sx, o.Sy = 0, 0, 0
