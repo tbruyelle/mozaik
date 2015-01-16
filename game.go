@@ -17,7 +17,7 @@ const (
 	BlockCornerSegments  = 6
 	SwitchSize           = 48
 	SwitchSegments       = 20
-	DashboardHeight      = 128
+	DashboardHeight      = 144
 	XMin                 = 32
 	YMin                 = 32
 	XMax                 = WindowHeight - 32

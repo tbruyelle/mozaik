@@ -59,12 +59,22 @@ func (w *World) LoadScene() {
 		w.scene.AppendChild(n)
 	}
 
+	// The bottom dashboard
+	dashboard := w.newNode()
+	w.scene.AppendChild(dashboard)
+	w.eng.SetSubTex(dashboard, w.texs[texGray])
+	w.eng.SetTransform(dashboard, f32.Affine{
+		{windowWidth, 0, 0},
+		{0, dashboardHeight, windowHeight - dashboardHeight},
+	})
+
 	// Add the win block signature
-	signatureNode := w.newNode()
-	w.scene.AppendChild(signatureNode)
-	w.eng.SetTransform(signatureNode, f32.Affine{
-		{1, 0, windowWidth - signatureBlockSize*4},
-		{0, 1, windowHeight - signatureBlockSize*4},
+	signature := w.newNode()
+	w.scene.AppendChild(signature)
+	signSize := signatureBlockSize * 4
+	w.eng.SetTransform(signature, f32.Affine{
+		{signSize, 0, windowWidth - signSize},
+		{0, signSize, windowHeight - signSize},
 	})
 	line, col := 0, 0
 	for i := range g.level.winSignature {
@@ -72,7 +82,7 @@ func (w *World) LoadScene() {
 			c := g.level.winSignature[i][j]
 			if c != Empty {
 				n := w.newNode()
-				signatureNode.AppendChild(n)
+				signature.AppendChild(n)
 				b := newBlock(c, line, col, signatureBlockSize, 0)
 				b.Action = ActionFunc(signatureBlockIdle)
 				n.Arranger = &b.Object
@@ -138,6 +148,7 @@ const (
 	texSwitch8
 	texSwitch9
 	texWinTxt
+	texGray
 	texEmpty
 )
 
@@ -195,4 +206,11 @@ func (w *World) loadTextures() {
 		// Win text texture
 		texWinTxt: sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
 	}
+
+	//t, err = w.eng.LoadTexture(image.NewGray(image.Rect(0, 0, int(windowWidth), int(dashboardHeight))))
+	//if err == nil {
+	//	log.Fatal(err)
+	//}
+	w.texs[texGray] = sprite.SubTex{t, image.Rect(0, 0, int(windowWidth), int(dashboardHeight))}
+
 }
