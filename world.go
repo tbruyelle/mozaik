@@ -61,11 +61,10 @@ func (w *World) LoadScene() {
 
 	// The bottom dashboard
 	dashboard := w.newNode()
-	w.scene.AppendChild(dashboard)
-	w.eng.SetSubTex(dashboard, w.texs[texGray])
+	//w.scene.AppendChild(dashboard)
 	w.eng.SetTransform(dashboard, f32.Affine{
-		{windowWidth, 0, 0},
-		{0, dashboardHeight, windowHeight - dashboardHeight},
+		{1, 0, 0},
+		{0, 1, windowHeight - dashboardHeight},
 	})
 
 	// Add the win block signature
@@ -73,8 +72,8 @@ func (w *World) LoadScene() {
 	w.scene.AppendChild(signature)
 	signSize := signatureBlockSize * 4
 	w.eng.SetTransform(signature, f32.Affine{
-		{signSize, 0, windowWidth - signSize},
-		{0, signSize, windowHeight - signSize},
+		{1, 0, windowWidth - signSize},
+		{0, 1, windowHeight - signSize},
 	})
 	line, col := 0, 0
 	for i := range g.level.winSignature {
