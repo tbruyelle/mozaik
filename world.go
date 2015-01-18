@@ -12,10 +12,11 @@ import (
 )
 
 type World struct {
-	background *Background
-	scene      *sprite.Node
-	eng        sprite.Engine
-	texs       []sprite.SubTex
+	background  *Background
+	moveCounter MoveCounter
+	scene       *sprite.Node
+	eng         sprite.Engine
+	texs        []sprite.SubTex
 }
 
 func compute(val float32, factor float32) float32 {
@@ -93,17 +94,22 @@ func (w *World) LoadScene() {
 	}
 
 	// The move counter
-	{
+	startTxtX := windowWidth/2 - 100
+	for i := 0; i < 5; i++ {
 		n := w.newNode()
 		w.scene.AppendChild(n)
-		n.Arranger = &Object{
-			X:      windowWidth / 2,
-			Y:      windowHeight - 60,
-			Width:  40,
-			Height: 54,
-			Sprite: w.texs[tex2],
-		}
+		w.moveCounter[i] = new(Char)
+		n.Arranger = w.moveCounter[i]
+		w.moveCounter[i].X = startTxtX
+		w.moveCounter[i].Y = windowHeight - 60
+		startTxtX += 40
 	}
+	// TODO adapt to level
+	w.moveCounter[0].Set(w, "0")
+	w.moveCounter[1].Set(w, "0")
+	w.moveCounter[2].Set(w, "/")
+	w.moveCounter[3].Set(w, "2")
+	w.moveCounter[4].Set(w, "0")
 
 	// Add the win text node
 	{
@@ -131,6 +137,23 @@ func (w *World) newNode() *sprite.Node {
 	n := &sprite.Node{}
 	w.eng.Register(n)
 	return n
+}
+
+type MoveCounter [5]*Char
+
+type Char struct {
+	Object
+	val string
+}
+
+func (c *Char) Set(w *World, val string) {
+	c.Width = 40
+	c.Height = 54
+	if val == "/" {
+		c.Sprite = w.texs[texSlash]
+	} else {
+		c.Sprite = w.texs[tex0+atoi(val)]
+	}
 }
 
 const (
@@ -170,6 +193,7 @@ const (
 	tex7
 	tex8
 	tex9
+	texSlash
 	texEmpty
 )
 
@@ -234,7 +258,7 @@ func (w *World) loadTextures() {
 	numEndY := 374
 
 	texId := tex0
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 11; i++ {
 		w.texs[texId] = sprite.SubTex{t, image.Rect(numStartX, numStartY, numStartX+40, numEndY)}
 		numStartX += 40
 		texId++
