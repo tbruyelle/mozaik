@@ -92,6 +92,19 @@ func (w *World) LoadScene() {
 		col = 0
 	}
 
+	// The move counter
+	{
+		n := w.newNode()
+		w.scene.AppendChild(n)
+		n.Arranger = &Object{
+			X:      windowWidth / 2,
+			Y:      windowHeight - 60,
+			Width:  40,
+			Height: 54,
+			Sprite: w.texs[tex2],
+		}
+	}
+
 	// Add the win text node
 	{
 		n := w.newNode()
@@ -147,7 +160,16 @@ const (
 	texSwitch8
 	texSwitch9
 	texWinTxt
-	texGray
+	tex0
+	tex1
+	tex2
+	tex3
+	tex4
+	tex5
+	tex6
+	tex7
+	tex8
+	tex9
 	texEmpty
 )
 
@@ -206,10 +228,15 @@ func (w *World) loadTextures() {
 		texWinTxt: sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
 	}
 
-	//t, err = w.eng.LoadTexture(image.NewGray(image.Rect(0, 0, int(windowWidth), int(dashboardHeight))))
-	//if err == nil {
-	//	log.Fatal(err)
-	//}
-	w.texs[texGray] = sprite.SubTex{t, image.Rect(0, 0, int(windowWidth), int(dashboardHeight))}
+	// Load the number textures
+	numStartX := 320
+	numStartY := 320
+	numEndY := 374
 
+	texId := tex0
+	for i := 0; i < 10; i++ {
+		w.texs[texId] = sprite.SubTex{t, image.Rect(numStartX, numStartY, numStartX+40, numEndY)}
+		numStartX += 40
+		texId++
+	}
 }
