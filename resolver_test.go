@@ -73,6 +73,16 @@ func TestPaths_Level7(t *testing.T) {
 	n := Resolve(lvl)
 
 	d := time.Now().Sub(t0)
+	fmt.Printf("Level7 (%s) %+v\n", d, n)
+}
+
+func TestPaths_Level8(t *testing.T) {
+	lvl := LoadLevel(8)
+	t0 := time.Now()
+
+	n := Resolve(lvl)
+
+	d := time.Now().Sub(t0)
 	fmt.Printf("Level8 (%s) %+v\n", d, n)
 }
 

@@ -23,6 +23,8 @@ type Level struct {
 	// is currently rotating
 	rotating *Switch
 	solution string
+	maxMoves int
+	moves    int
 }
 
 type Color rune
@@ -319,16 +321,14 @@ func ParseLevel(str string) Level {
 			}
 			l.winSignature = append(l.winSignature, wline)
 		case 3:
+			// read the max move count
+			l.maxMoves = atoi(lines[i])
+		case 4:
 			// read the solution
 			l.solution = lines[i]
 		}
 	}
-	//fmt.Printf("Level loaded blocks=%d, swicthes=%d\n", len(l.blocks), len(l.switches))
-
-	//for i := 0; i < len(l.blocks); i++ {
-	//	fmt.Printf("line %d blocks %d\n", i, len(l.blocks[i]))
-	//}
-	//fmt.Printf("winSignature\n%s\n---\n", l.winSignature)
+	//fmt.Printf("Level loaded %+v\n", l)
 	return l
 }
 
@@ -341,6 +341,7 @@ func (l *Level) RotateSwitch(s *Switch) {
 	l.blocks[li+1][co].Color = l.blocks[li+1][co+1].Color
 	l.blocks[li+1][co+1].Color = l.blocks[li][co+1].Color
 	l.blocks[li][co+1].Color = color
+	l.moves++
 }
 
 // RotateSwitchInverse swaps bocks according to the -90d rotation
@@ -351,4 +352,5 @@ func (l *Level) RotateSwitchInverse(s *Switch) {
 	l.blocks[li][co+1].Color = l.blocks[li+1][co+1].Color
 	l.blocks[li+1][co+1].Color = l.blocks[li+1][co].Color
 	l.blocks[li+1][co].Color = color
+	l.moves--
 }

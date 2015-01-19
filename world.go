@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"log"
 
@@ -104,12 +105,6 @@ func (w *World) LoadScene() {
 		w.moveCounter[i].Y = windowHeight - 60
 		startTxtX += 40
 	}
-	// TODO adapt to level
-	w.moveCounter[0].Set(w, "0")
-	w.moveCounter[1].Set(w, "0")
-	w.moveCounter[2].Set(w, "/")
-	w.moveCounter[3].Set(w, "2")
-	w.moveCounter[4].Set(w, "0")
 
 	// Add the win text node
 	{
@@ -129,6 +124,8 @@ func (w *World) LoadScene() {
 func (w *World) Draw(t clock.Time) {
 	// Background
 	w.background.Draw()
+	// the move counter
+	w.printMoves(g.level)
 	// The scene
 	w.eng.Render(w.scene, t)
 }
@@ -141,18 +138,37 @@ func (w *World) newNode() *sprite.Node {
 
 type MoveCounter [5]*Char
 
+func (w *World) printMoves(l Level) {
+	moves := fmt.Sprintf("%d", l.moves)
+	if g.level.moves < 10 {
+		w.moveCounter[0].Set(w, '0')
+		w.moveCounter[1].Set(w, rune(moves[0]))
+	} else {
+		w.moveCounter[0].Set(w, rune(moves[0]))
+		w.moveCounter[1].Set(w, rune(moves[1]))
+	}
+	w.moveCounter[2].Set(w, '/')
+	maxMoves := fmt.Sprintf("%d", l.maxMoves)
+	w.moveCounter[3].Set(w, rune(maxMoves[0]))
+	w.moveCounter[4].Set(w, rune(maxMoves[1]))
+}
+
+func (w *World) decMoves() {
+}
+
 type Char struct {
 	Object
 	val string
 }
 
-func (c *Char) Set(w *World, val string) {
+func (c *Char) Set(w *World, val rune) {
 	c.Width = 40
 	c.Height = 54
-	if val == "/" {
+	if val == '/' {
 		c.Sprite = w.texs[texSlash]
 	} else {
-		c.Sprite = w.texs[tex0+atoi(val)]
+		// convert the rune to int
+		c.Sprite = w.texs[tex0+val-48]
 	}
 }
 
