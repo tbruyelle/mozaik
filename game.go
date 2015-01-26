@@ -100,20 +100,29 @@ func (g *Game) Stop() {
 
 func (g *Game) Click(x, y float32) {
 	if g.Listen() {
-		if g.level.Win() {
+		switch {
+		case g.level.Win():
 			// Next level
 			g.Warp()
-		} else {
-			if x < 30 && y < 30 {
-				// Trick to warp level
-				// FIXME remove me
-				g.Warp()
-				return
-			}
-			if x > windowWidth-30 && y < 30 {
-				g.level.UndoLastMove()
-			}
 
+		case g.level.moves >= g.level.maxMoves:
+			// Loose, restart
+			g.currentLevel = 1
+			g.level = LoadLevel(g.currentLevel)
+			//FIXME clean resources
+			g.world.LoadScene()
+
+		case x < 30 && y < 30:
+			// Trick to warp level
+			// FIXME remove me
+			g.Warp()
+
+		case x > windowWidth-30 && y < 30:
+			// Trick to undo moves
+			// FIXME remove me
+			g.level.UndoLastMove()
+
+		default:
 			g.level.PressSwitch(x, y)
 		}
 	}
