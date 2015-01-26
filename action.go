@@ -250,6 +250,13 @@ func switchSprite(o *Object) {
 	}
 }
 
+func looseTxtPop(o *Object, t clock.Time) {
+	o.Dead = g.level.Win() || g.level.moves < g.level.maxMoves
+	if !o.Dead {
+		g.listen = false
+	}
+}
+
 func winTxtPop(o *Object, t clock.Time) {
 	o.Dead = !g.level.Win()
 	if !o.Dead {

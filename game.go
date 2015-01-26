@@ -31,6 +31,8 @@ const (
 	WinTxtHeight         = 90
 	CharWidth            = 40
 	CharHeight           = 54
+	LooseTxtWidth        = 338
+	LooseTxtHeight       = 307
 )
 
 var (
@@ -43,6 +45,7 @@ var (
 	lineWidth, signatureLineWidth            float32
 	winTxtWidth, winTxtHeight                float32
 	charWidth, charHeight                    float32
+	looseTxtWidth, looseTxtHeight            float32
 )
 
 type Game struct {
@@ -88,6 +91,8 @@ func computeSizes() {
 	winTxtHeight = compute(WinTxtHeight, widthFactor)
 	charWidth = compute(CharWidth, widthFactor)
 	charHeight = compute(CharHeight, widthFactor)
+	looseTxtWidth = compute(LooseTxtWidth, widthFactor)
+	looseTxtHeight = compute(LooseTxtHeight, widthFactor)
 }
 
 func (g *Game) Stop() {

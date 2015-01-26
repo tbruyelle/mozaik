@@ -122,6 +122,20 @@ func (w *World) LoadScene() {
 			Action: ActionFunc(winTxtPop),
 		}
 	}
+
+	// The loose text node
+	{
+		n := w.newNode()
+		w.scene.AppendChild(n)
+		n.Arranger = &Object{
+			X:      windowWidth/2 - looseTxtWidth/2,
+			Y:      windowHeight/2 - looseTxtHeight/2,
+			Width:  looseTxtHeight,
+			Height: looseTxtHeight,
+			Sprite: w.texs[texLooseTxt],
+			Action: ActionFunc(looseTxtPop),
+		}
+	}
 }
 
 func (w *World) Draw(t clock.Time) {
@@ -211,6 +225,7 @@ const (
 	tex8
 	tex9
 	texSlash
+	texLooseTxt
 	texEmpty
 )
 
@@ -269,6 +284,8 @@ func (w *World) loadTextures() {
 		texSwitch9: sprite.SubTex{t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9-1, TexBlockSize*2+TexSwitchSize)},
 		// Win text texture
 		texWinTxt: sprite.SubTex{t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
+		// Loose text texture
+		texLooseTxt: sprite.SubTex{t, image.Rect(0, 394, 338, 394+307)},
 	}
 
 	// Load the number textures
