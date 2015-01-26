@@ -29,6 +29,8 @@ const (
 	BgSegments           = 24
 	WinTxtWidth          = 300
 	WinTxtHeight         = 90
+	CharWidth            = 40
+	CharHeight           = 54
 )
 
 var (
@@ -40,6 +42,7 @@ var (
 	signatureBlockSize, signatureBlockRadius float32
 	lineWidth, signatureLineWidth            float32
 	winTxtWidth, winTxtHeight                float32
+	charWidth, charHeight                    float32
 )
 
 type Game struct {
@@ -83,6 +86,8 @@ func computeSizes() {
 	lineWidth = compute(LineWidth, widthFactor)
 	winTxtWidth = compute(WinTxtWidth, widthFactor)
 	winTxtHeight = compute(WinTxtHeight, widthFactor)
+	charWidth = compute(CharWidth, widthFactor)
+	charHeight = compute(CharHeight, widthFactor)
 }
 
 func (g *Game) Stop() {

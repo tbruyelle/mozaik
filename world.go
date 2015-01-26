@@ -95,15 +95,18 @@ func (w *World) LoadScene() {
 	}
 
 	// The move counter
-	startTxtX := windowWidth/2 - 100
+	startTxtX := windowWidth/2 - charWidth*5/2
 	for i := 0; i < 5; i++ {
 		n := w.newNode()
 		w.scene.AppendChild(n)
-		w.moveCounter[i] = new(Char)
-		n.Arranger = w.moveCounter[i]
-		w.moveCounter[i].X = startTxtX
-		w.moveCounter[i].Y = windowHeight - 60
-		startTxtX += 40
+		c := new(Char)
+		w.moveCounter[i] = c
+		n.Arranger = c
+		c.X = startTxtX
+		c.Y = windowHeight - charHeight - 8
+		c.Width = charWidth
+		c.Height = charHeight
+		startTxtX += charWidth
 	}
 
 	// Add the win text node
@@ -162,8 +165,6 @@ type Char struct {
 }
 
 func (c *Char) Set(w *World, val rune) {
-	c.Width = 40
-	c.Height = 54
 	if val == '/' {
 		c.Sprite = w.texs[texSlash]
 	} else {
@@ -216,6 +217,8 @@ const (
 const (
 	TexBlockSize  = 128
 	TexSwitchSize = 48
+	TexCharWidth  = 40
+	TexCharHeight = 54
 )
 
 func (w *World) loadTextures() {
@@ -271,12 +274,12 @@ func (w *World) loadTextures() {
 	// Load the number textures
 	numStartX := 320
 	numStartY := 320
-	numEndY := 374
+	numEndY := 320 + TexCharHeight
 
 	texId := tex0
 	for i := 0; i < 11; i++ {
 		w.texs[texId] = sprite.SubTex{t, image.Rect(numStartX, numStartY, numStartX+40, numEndY)}
-		numStartX += 40
+		numStartX += TexCharWidth
 		texId++
 	}
 }
