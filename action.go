@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"golang.org/x/mobile/sprite/clock"
+	"golang.org/x/mobile/exp/sprite/clock"
 )
 
 func init() {

@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"golang.org/x/mobile/event/size"
 	_ "image/png"
 	"math"
-
-	"golang.org/x/mobile/geom"
 )
 
 const (
@@ -55,16 +54,16 @@ type Game struct {
 	world        *World
 }
 
-func NewGame() {
+func NewGame(sz size.Event) {
 	g = &Game{currentLevel: 1, listen: true}
-	computeSizes()
+	computeSizes(sz)
 	g.level = LoadLevel(g.currentLevel)
 	g.world = NewWorld()
 }
 
-func computeSizes() {
+func computeSizes(sz size.Event) {
 	// Compute dimensions according to current window size
-	windowWidth, windowHeight = float32(geom.Width), float32(geom.Height)
+	windowWidth, windowHeight = float32(sz.WidthPt), float32(sz.HeightPt)
 
 	fmt.Println("window", windowWidth, windowHeight)
 	widthFactor := windowWidth / WindowWidth

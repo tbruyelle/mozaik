@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync"
 
-	"golang.org/x/mobile/app"
-	"golang.org/x/mobile/sprite/clock"
+	"golang.org/x/mobile/asset"
+	"golang.org/x/mobile/exp/sprite/clock"
 )
 
 type Level struct {
@@ -279,7 +279,7 @@ func ctoa(c Color) string {
 
 // LoadLevel loads the level number in parameter
 func LoadLevel(level int) Level {
-	f, err := app.Open(fmt.Sprintf("levels/%d", level))
+	f, err := asset.Open(fmt.Sprintf("levels/%d", level))
 	if err != nil {
 		panic(err)
 	}

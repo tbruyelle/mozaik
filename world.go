@@ -5,11 +5,12 @@ import (
 	"image"
 	"log"
 
-	"golang.org/x/mobile/app"
-	"golang.org/x/mobile/f32"
-	"golang.org/x/mobile/sprite"
-	"golang.org/x/mobile/sprite/clock"
-	"golang.org/x/mobile/sprite/glsprite"
+	"golang.org/x/mobile/asset"
+	"golang.org/x/mobile/event/size"
+	"golang.org/x/mobile/exp/f32"
+	"golang.org/x/mobile/exp/sprite"
+	"golang.org/x/mobile/exp/sprite/clock"
+	"golang.org/x/mobile/exp/sprite/glsprite"
 )
 
 type World struct {
@@ -138,13 +139,13 @@ func (w *World) LoadScene() {
 	}
 }
 
-func (w *World) Draw(t clock.Time) {
+func (w *World) Draw(t clock.Time, sz size.Event) {
 	// Background
 	w.background.Draw()
 	// the move counter
 	w.printMoves(g.level)
 	// The scene
-	w.eng.Render(w.scene, t)
+	w.eng.Render(w.scene, t, sz)
 }
 
 func (w *World) newNode() *sprite.Node {
@@ -237,7 +238,7 @@ const (
 )
 
 func (w *World) loadTextures() {
-	a, err := app.Open("textures/tiles.png")
+	a, err := asset.Open("textures/tiles.png")
 	if err != nil {
 		log.Fatal(err)
 	}

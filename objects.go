@@ -4,10 +4,10 @@ import (
 	"encoding/binary"
 	"math"
 
-	"golang.org/x/mobile/f32"
+	"golang.org/x/mobile/exp/f32"
+	"golang.org/x/mobile/exp/sprite"
+	"golang.org/x/mobile/exp/sprite/clock"
 	"golang.org/x/mobile/gl"
-	"golang.org/x/mobile/sprite"
-	"golang.org/x/mobile/sprite/clock"
 )
 
 type Object struct {

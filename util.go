@@ -1,6 +1,6 @@
 package main
 
-import "golang.org/x/mobile/f32"
+import "golang.org/x/mobile/exp/f32"
 
 func identity() *f32.Mat4 {
 	id := &f32.Mat4{}

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"golang.org/x/mobile/f32"
+	"golang.org/x/mobile/exp/f32"
+	"golang.org/x/mobile/exp/gl/glutil"
 	"golang.org/x/mobile/gl"
-	"golang.org/x/mobile/gl/glutil"
 )
 
 type Model interface {
@@ -47,9 +47,9 @@ func (t *ModelBase) Init(mode gl.Enum, data []byte, vshaderf, fshaderf string) {
 		panic(err)
 	}
 
-	t.buf = gl.GenBuffer()
+	t.buf = gl.CreateBuffer()
 	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
-	gl.BufferData(gl.ARRAY_BUFFER, gl.STATIC_DRAW, data)
+	gl.BufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
 
 	t.position = gl.GetAttribLocation(t.prg, "position")
 	t.color = gl.GetAttribLocation(t.prg, "color")
