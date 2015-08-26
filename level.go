@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -173,7 +174,7 @@ func (l *Level) addSwitch(line, col int) {
 		Data:   s,
 	}
 	l.switches = append(l.switches, s)
-	//fmt.Println("Switch added", s.X, s.Y)
+	log.Println("Switch added", s.X, s.Y)
 }
 
 func determineName(line, col int) string {
@@ -287,7 +288,9 @@ func LoadLevel(level int) Level {
 	if err != nil {
 		panic(err)
 	}
-	return ParseLevel(string(b))
+	l := ParseLevel(string(b))
+	log.Printf("Level loaded %d\n", level)
+	return l
 }
 
 // ParseLevel reads level information
@@ -328,14 +331,13 @@ func ParseLevel(str string) Level {
 			l.solution = lines[i]
 		}
 	}
-	//fmt.Printf("Level loaded %+v\n", l)
 	return l
 }
 
 // RotateSwitch swaps bocks according to the 90d rotation
 func (l *Level) RotateSwitch(s *Switch) {
 	li, co := s.line, s.col
-	//fmt.Println("Swap from", s.name, li, co)
+	log.Println("Swap from", s.name, li, co)
 	color := l.blocks[li][co].Color
 	l.blocks[li][co].Color = l.blocks[li+1][co].Color
 	l.blocks[li+1][co].Color = l.blocks[li+1][co+1].Color

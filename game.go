@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"golang.org/x/mobile/event/size"
 	_ "image/png"
+	"log"
 	"math"
 )
 
@@ -65,18 +65,19 @@ func computeSizes(sz size.Event) {
 	// Compute dimensions according to current window size
 	windowWidth, windowHeight = float32(sz.WidthPt), float32(sz.HeightPt)
 
-	fmt.Println("window", windowWidth, windowHeight)
+	log.Println("window", windowWidth, windowHeight)
 	widthFactor := windowWidth / WindowWidth
 	heightFactor := windowHeight / WindowHeight
+	log.Println("factors", widthFactor, heightFactor)
 
 	windowRadius = math.Sqrt(math.Pow(float64(windowHeight), 2) + math.Pow(float64(windowWidth), 2))
 
 	blockSize = compute(BlockSize, widthFactor)
-	fmt.Println("size", BlockSize, blockSize)
+	log.Println("block size", BlockSize, blockSize)
 	blockRadius = compute(BlockRadius, widthFactor)
 	blockPadding = compute(BlockPadding, widthFactor)
 	switchSize = compute(SwitchSize, widthFactor)
-	fmt.Println("switch", SwitchSize, switchSize)
+	log.Println("switch size", SwitchSize, switchSize)
 	dashboardHeight = compute(DashboardHeight, heightFactor)
 	xMin = compute(XMin, widthFactor)
 	yMin = compute(YMin, heightFactor)
