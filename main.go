@@ -35,7 +35,7 @@ func main() {
 				draw(sz)
 				a.EndPaint(e)
 			case touch.Event:
-				touch_(e)
+				touch_(sz, e)
 			}
 		}
 	})
@@ -68,10 +68,10 @@ func draw(sz size.Event) {
 	debug.DrawFPS(sz)
 }
 
-func touch_(t touch.Event) {
+func touch_(sz size.Event, t touch.Event) {
 	log.Printf("TOUCH %+v", t)
 	if t.Type == touch.TypeEnd {
 
-		g.Click(float32(t.X), float32(t.Y))
+		g.Click(float32(t.X)/sz.PixelsPerPt, float32(t.Y)/sz.PixelsPerPt)
 	}
 }
