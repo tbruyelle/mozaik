@@ -28,12 +28,12 @@ func main() {
 	app.Main(func(a app.App) {
 		var sz size.Event
 		for e := range a.Events() {
-			switch e := app.Filter(e).(type) {
+			switch e := a.Filter(e).(type) {
 			case size.Event:
 				sz = e
 			case paint.Event:
 				draw(sz)
-				a.EndPaint(e)
+				a.Publish()
 			case touch.Event:
 				touch_(sz, e)
 			}
