@@ -40,17 +40,21 @@ func main() {
 			case lifecycle.Event:
 				switch e.Crosses(lifecycle.StageVisible) {
 				case lifecycle.CrossOn:
+					log.Print("lifecycle.Crosson")
 					glctx, _ = e.DrawContext.(gl.Context)
 					onStart(glctx)
 					a.Send(paint.Event{})
 				case lifecycle.CrossOff:
+					log.Print("lifecycle.CrossOff")
 					onStop()
 					glctx = nil
 				}
 			case size.Event:
+				log.Print("size.Event")
 				sz = e
 			case paint.Event:
 				if glctx == nil || e.External {
+					log.Print("paint not ready")
 					// Not ready yet
 					continue
 				}
