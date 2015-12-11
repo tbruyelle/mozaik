@@ -52,6 +52,11 @@ func main() {
 			case size.Event:
 				log.Print("size.Event")
 				sz = e
+				computeSizes(sz)
+				if g == nil {
+					NewGame(glctx)
+				}
+				initWorld(glctx)
 			case paint.Event:
 				if glctx == nil || e.External {
 					log.Print("paint not ready")
@@ -74,6 +79,7 @@ func onStart(glctx gl.Context) {
 	images = glutil.NewImages(glctx)
 	fps = debug.NewFPS(images)
 	eng = glsprite.Engine(images)
+	glInit(glctx)
 }
 
 func onStop() {
@@ -82,21 +88,14 @@ func onStop() {
 	images.Release()
 }
 
-func initialize(glctx gl.Context, sz size.Event) {
+func glInit(glctx gl.Context) {
 	glctx.Disable(gl.DEPTH_TEST)
 	// antialiasing
 	glctx.Enable(gl.BLEND)
 	glctx.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-	NewGame(glctx, sz)
 }
 
 func draw(glctx gl.Context, sz size.Event) {
-	// Keep until golang.org/x/mogile/x11.go handle Start callback
-	if g == nil {
-		initialize(glctx, sz)
-	}
-
 	now := clock.Time(time.Since(start) * FPS / time.Second)
 	if now == lastClock {
 		return

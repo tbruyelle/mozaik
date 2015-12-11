@@ -55,10 +55,12 @@ type Game struct {
 	world        *World
 }
 
-func NewGame(glctx gl.Context, sz size.Event) {
+func NewGame(glctx gl.Context) {
 	g = &Game{currentLevel: 1, listen: true}
-	computeSizes(sz)
 	g.level = LoadLevel(g.currentLevel)
+}
+
+func initWorld(glctx gl.Context) {
 	g.world = NewWorld(glctx)
 }
 
