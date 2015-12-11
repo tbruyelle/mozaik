@@ -51,6 +51,7 @@ func (w *World) LoadScene() {
 		for j := range g.level.blocks[i] {
 			b := g.level.blocks[i][j]
 			n := w.newNode()
+			b.Layout(i, j, blockSize, blockPadding, xMin, yMin)
 			n.Arranger = &b.Object
 			w.scene.AppendChild(n)
 		}
@@ -58,6 +59,7 @@ func (w *World) LoadScene() {
 	// Create the switches
 	for _, sw := range g.level.switches {
 		n := w.newNode()
+		sw.Layout(switchSize)
 		n.Arranger = &sw.Object
 		w.scene.AppendChild(n)
 	}
@@ -85,8 +87,9 @@ func (w *World) LoadScene() {
 			if c != Empty {
 				n := w.newNode()
 				signature.AppendChild(n)
-				b := newBlock(c, line, col, signatureBlockSize, 0)
+				b := &Block{Color: c}
 				b.Action = ActionFunc(signatureBlockIdle)
+				b.Layout(line, col, signatureBlockSize, 0, 0, 0)
 				n.Arranger = &b.Object
 			}
 			col++

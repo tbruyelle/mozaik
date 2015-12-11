@@ -135,23 +135,17 @@ func (l *Level) PopLastRotated() *Switch {
 	return l.switches[res]
 }
 
-func newBlock(color Color, line, col int, size, padding float32) *Block {
-	colf, linef := float32(col), float32(line)
-	b := &Block{Color: color}
-	b.Object = Object{
-		X:      colf * (size + padding),
-		Y:      linef * (size + padding),
-		Width:  size,
-		Height: size,
-		Data:   b,
-	}
-	return b
+func (b *Block) Layout(line, col int, size, padding float32, dx, dy float32) {
+	linef, colf := float32(line), float32(col)
+	b.X = colf*(size+padding) + dx
+	b.Y = linef*(size+padding) + dy
+	b.Width = size
+	b.Height = size
+	b.Data = b
 }
 
 func (l *Level) addBlock(color Color, line, col int) {
-	b := newBlock(color, line, col, blockSize, blockPadding)
-	b.X += xMin
-	b.Y += yMin
+	b := &Block{Color: color}
 	b.Action = wait{until: clock.Time(line*10 + col*5), next: ActionFunc(blockPopIn)}
 	l.blocks[line][col] = b
 }
@@ -159,22 +153,25 @@ func (l *Level) addBlock(color Color, line, col int) {
 // addSwitch appends a new switch at the bottom right
 // of the coordinates in parameters.
 func (l *Level) addSwitch(line, col int) {
-	v := switchSize / 2
-	colf, linef := float32(col), float32(line)
 	s := &Switch{
 		line: line, col: col,
 		name: determineName(line, col),
 	}
 	s.Object = Object{
-		X:      xMin + (colf+1)*blockSize + colf*blockPadding*2 - v,
-		Y:      yMin + (linef+1)*blockSize + linef*blockPadding*2 - v,
-		Width:  switchSize,
-		Height: switchSize,
 		Action: wait{until: 70, next: ActionFunc(switchPopIn)},
 		Data:   s,
 	}
 	l.switches = append(l.switches, s)
 	log.Println("Switch added", s.X, s.Y)
+}
+
+func (s *Switch) Layout(size float32) {
+	v := switchSize / 2
+	linef, colf := float32(s.line), float32(s.col)
+	s.X = xMin + (colf+1)*blockSize + colf*blockPadding*2 - v
+	s.Y = yMin + (linef+1)*blockSize + linef*blockPadding*2 - v
+	s.Width = switchSize
+	s.Height = switchSize
 }
 
 func determineName(line, col int) string {
