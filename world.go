@@ -10,7 +10,7 @@ import (
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/exp/sprite"
 	"golang.org/x/mobile/exp/sprite/clock"
-	"golang.org/x/mobile/exp/sprite/glsprite"
+	"golang.org/x/mobile/gl"
 )
 
 type World struct {
@@ -25,15 +25,15 @@ func compute(val float32, factor float32) float32 {
 	return val * factor
 }
 
-func NewWorld() *World {
+func NewWorld(glctx gl.Context) *World {
 
 	// Clean
 	// TODO
 	w := &World{}
 
-	w.background = NewBackground()
+	w.background = NewBackground(glctx)
 
-	w.eng = glsprite.Engine()
+	w.eng = eng
 	w.loadTextures()
 	w.LoadScene()
 	return w
@@ -139,7 +139,7 @@ func (w *World) LoadScene() {
 	}
 }
 
-func (w *World) Draw(t clock.Time, sz size.Event) {
+func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {
 	// Background
 	w.background.Draw()
 	// the move counter

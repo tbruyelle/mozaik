@@ -2,6 +2,7 @@ package main
 
 import (
 	"golang.org/x/mobile/event/size"
+	"golang.org/x/mobile/gl"
 	_ "image/png"
 	"log"
 	"math"
@@ -54,11 +55,11 @@ type Game struct {
 	world        *World
 }
 
-func NewGame(sz size.Event) {
+func NewGame(glctx gl.Context, sz size.Event) {
 	g = &Game{currentLevel: 1, listen: true}
 	computeSizes(sz)
 	g.level = LoadLevel(g.currentLevel)
-	g.world = NewWorld()
+	g.world = NewWorld(glctx)
 }
 
 func computeSizes(sz size.Event) {

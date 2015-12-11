@@ -14,6 +14,7 @@ type Model interface {
 }
 
 type ModelBase struct {
+	glctx       gl.Context
 	mode        gl.Enum
 	buf         gl.Buffer
 	vertexCount int
@@ -31,29 +32,30 @@ type ModelGroup struct {
 	modelView, projection *f32.Mat4
 }
 
-func (t *ModelGroup) Add(mode gl.Enum, data []byte, vshaderf, fshaderf string) {
+func (t *ModelGroup) Add(glctx gl.Context, mode gl.Enum, data []byte, vshaderf, fshaderf string) {
 	m := &ModelBase{}
-	m.Init(mode, data, vshaderf, fshaderf)
+	m.Init(glctx, mode, data, vshaderf, fshaderf)
 	t.models = append(t.models, m)
 }
 
-func (t *ModelBase) Init(mode gl.Enum, data []byte, vshaderf, fshaderf string) {
+func (t *ModelBase) Init(glctx gl.Context, mode gl.Enum, data []byte, vshaderf, fshaderf string) {
+	t.glctx = glctx
 	t.mode = mode
 
 	// Shaders
 	var err error
-	t.prg, err = glutil.CreateProgram(vshaderf, fshaderf)
+	t.prg, err = glutil.CreateProgram(glctx, vshaderf, fshaderf)
 	if err != nil {
 		panic(err)
 	}
 
-	t.buf = gl.CreateBuffer()
-	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
-	gl.BufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
+	t.buf = glctx.CreateBuffer()
+	glctx.BindBuffer(gl.ARRAY_BUFFER, t.buf)
+	glctx.BufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
 
-	t.position = gl.GetAttribLocation(t.prg, "position")
-	t.color = gl.GetAttribLocation(t.prg, "color")
-	t.uniformMVP = gl.GetUniformLocation(t.prg, "modelViewProjection")
+	t.position = glctx.GetAttribLocation(t.prg, "position")
+	t.color = glctx.GetAttribLocation(t.prg, "color")
+	t.uniformMVP = glctx.GetUniformLocation(t.prg, "modelViewProjection")
 
 	// the projection matrix
 	t.projection = identity()
@@ -95,21 +97,21 @@ func flatten(m *f32.Mat4) []float32 {
 }
 
 func (t *ModelBase) Draw() {
-	gl.UseProgram(t.prg)
+	t.glctx.UseProgram(t.prg)
 
-	gl.UniformMatrix4fv(t.uniformMVP, flatten(t.modelView))
+	t.glctx.UniformMatrix4fv(t.uniformMVP, flatten(t.modelView))
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, t.buf)
+	t.glctx.BindBuffer(gl.ARRAY_BUFFER, t.buf)
 
-	gl.EnableVertexAttribArray(t.position)
-	gl.VertexAttribPointer(t.position, 4, gl.FLOAT, false, 32, 0)
-	gl.EnableVertexAttribArray(t.color)
-	gl.VertexAttribPointer(t.color, 4, gl.FLOAT, false, 32, 16)
+	t.glctx.EnableVertexAttribArray(t.position)
+	t.glctx.VertexAttribPointer(t.position, 4, gl.FLOAT, false, 32, 0)
+	t.glctx.EnableVertexAttribArray(t.color)
+	t.glctx.VertexAttribPointer(t.color, 4, gl.FLOAT, false, 32, 16)
 
-	gl.DrawArrays(t.mode, 0, t.vertexCount)
+	t.glctx.DrawArrays(t.mode, 0, t.vertexCount)
 
-	gl.DisableVertexAttribArray(t.position)
-	gl.DisableVertexAttribArray(t.color)
+	t.glctx.DisableVertexAttribArray(t.position)
+	t.glctx.DisableVertexAttribArray(t.color)
 }
 
 func (t *ModelGroup) Draw() {
@@ -120,9 +122,9 @@ func (t *ModelGroup) Draw() {
 }
 
 func (t *ModelBase) Destroy() {
-	gl.DeleteBuffer(t.buf)
+	t.glctx.DeleteBuffer(t.buf)
 	//t.vao.Delete()
-	gl.DeleteProgram(t.prg)
+	t.glctx.DeleteProgram(t.prg)
 }
 
 func (t *ModelGroup) Destroy() {

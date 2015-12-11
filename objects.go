@@ -122,7 +122,7 @@ type Background struct {
 	angle float32
 }
 
-func NewBackground() *Background {
+func NewBackground(glctx gl.Context) *Background {
 	b := &Background{}
 
 	vertices := make([]float32, 0)
@@ -143,7 +143,7 @@ func NewBackground() *Background {
 	}
 	data := f32.Bytes(binary.LittleEndian, vertices...)
 
-	b.Init(gl.TRIANGLES, data, VShaderBasic, FShaderBasic)
+	b.Init(glctx, gl.TRIANGLES, data, VShaderBasic, FShaderBasic)
 	return b
 }
 
