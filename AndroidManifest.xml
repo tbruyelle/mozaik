@@ -3,9 +3,18 @@
   package="com.kamosoft.mozaik"
   android:versionCode="1"
   android:versionName="1.0">
-  <application android:label="Mozaik" android:debuggable="true">
-    <activity android:name="org.golang.app.GoNativeActivity"
-      android:configChanges="orientation|keyboardHidden">
+  <!--uses-sdk
+    android:minSdkVersion="14"
+    android:targetSdkVersion="22"
+    /-->
+  <application
+    android:label="Mozaik"
+    android:debuggable="true"
+    >
+    <activity
+      android:name="org.golang.app.GoNativeActivity"
+      android:configChanges="orientation|keyboardHidden"
+      >
       <meta-data android:name="android.app.lib_name" android:value="mozaik" />
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
