@@ -67,9 +67,17 @@ func (w *World) LoadScene() {
 	// The bottom dashboard
 	dashboard := w.newNode()
 	//w.scene.AppendChild(dashboard)
+	var dashboardX, dashboardY float32
+	if portrait {
+		dashboardX = 0
+		dashboardY = windowHeight - dashboardSize
+	} else {
+		dashboardX = windowWidth - dashboardSize
+		dashboardY = 0
+	}
 	w.eng.SetTransform(dashboard, f32.Affine{
-		{1, 0, 0},
-		{0, 1, windowHeight - dashboardHeight},
+		{1, 0, dashboardX},
+		{0, 1, dashboardY},
 	})
 
 	// Add the win block signature
@@ -77,8 +85,8 @@ func (w *World) LoadScene() {
 	w.scene.AppendChild(signature)
 	signSize := signatureBlockSize * 4
 	w.eng.SetTransform(signature, f32.Affine{
-		{1, 0, windowWidth - signSize},
-		{0, 1, windowHeight - signSize},
+		{1, 0, windowWidth - signSize - padding},
+		{0, 1, windowHeight - signSize - padding},
 	})
 	line, col := 0, 0
 	for i := range g.level.winSignature {
@@ -99,18 +107,25 @@ func (w *World) LoadScene() {
 	}
 
 	// The move counter
-	startTxtX := windowWidth/2 - charWidth*5/2
+	var counterX, counterY float32
+	if portrait {
+		counterX = windowWidth/2 - charWidth*5/2
+		counterY = windowHeight - charHeight - padding
+	} else {
+		counterX = windowWidth - charWidth*5 - padding
+		counterY = windowHeight/2 - charWidth*5/2
+	}
 	for i := 0; i < 5; i++ {
 		n := w.newNode()
 		w.scene.AppendChild(n)
 		c := new(Char)
 		w.moveCounter[i] = c
 		n.Arranger = c
-		c.X = startTxtX
-		c.Y = windowHeight - charHeight - 8
+		c.X = counterX
+		c.Y = counterY
 		c.Width = charWidth
 		c.Height = charHeight
-		startTxtX += charWidth
+		counterX += charWidth
 	}
 
 	// Add the win text node

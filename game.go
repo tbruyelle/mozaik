@@ -9,19 +9,20 @@ import (
 )
 
 const (
-	WindowWidth          = 576
-	WindowHeight         = 704
+	PortraitWidth        = 576
+	PortraitHeight       = 704
+	LandscapeWidth       = PortraitHeight
+	LandscapeHeight      = PortraitWidth
 	BlockSize            = 128
 	BlockRadius          = 10
 	BlockPadding         = 0
 	BlockCornerSegments  = 6
 	SwitchSize           = 48
 	SwitchSegments       = 20
-	DashboardHeight      = 144
-	XMin                 = 32
-	YMin                 = 32
-	XMax                 = WindowHeight - 32
-	YMax                 = WindowWidth - 32 - DashboardHeight
+	DashboardSize        = 144
+	Padding              = 24
+	XMin                 = Padding
+	YMin                 = Padding
 	SignatureBlockSize   = 32
 	SignatureBlockRadius = 6
 	LineWidth            = 2
@@ -36,10 +37,11 @@ const (
 )
 
 var (
-	windowWidth, windowHeight                float32
+	portrait                                 bool
+	windowWidth, windowHeight, padding       float32
 	blockSize, blockRadius, blockPadding     float32
 	switchSize                               float32
-	dashboardHeight                          float32
+	dashboardSize                            float32
 	xMin, yMin, xMax, yMax                   float32
 	signatureBlockSize, signatureBlockRadius float32
 	lineWidth, signatureLineWidth            float32
@@ -67,35 +69,54 @@ func initWorld(glctx gl.Context) {
 func computeSizes(sz size.Event) {
 	// Compute dimensions according to current window size
 	windowWidth, windowHeight = float32(sz.WidthPt), float32(sz.HeightPt)
+	portrait = windowHeight >= windowWidth
+	log.Println("window", windowWidth, windowHeight, "portrait", portrait)
 
-	log.Println("window", windowWidth, windowHeight)
-	widthFactor := windowWidth / WindowWidth
-	heightFactor := windowHeight / WindowHeight
+	var widthFactor, heightFactor float32
+	if portrait {
+		widthFactor = windowWidth / PortraitWidth
+		heightFactor = windowHeight / PortraitHeight
+	} else {
+		widthFactor = windowWidth / LandscapeWidth
+		heightFactor = windowHeight / LandscapeHeight
+	}
 	log.Println("factors", widthFactor, heightFactor)
+	var minFactor float32
+	if widthFactor < heightFactor {
+		minFactor = widthFactor
+	} else {
+		minFactor = heightFactor
+	}
 
 	windowRadius = math.Sqrt(math.Pow(float64(windowHeight), 2) + math.Pow(float64(windowWidth), 2))
 
-	blockSize = compute(BlockSize, widthFactor)
+	padding = compute(Padding, minFactor)
+	blockSize = compute(BlockSize, minFactor)
 	log.Println("block size", BlockSize, blockSize)
-	blockRadius = compute(BlockRadius, widthFactor)
-	blockPadding = compute(BlockPadding, widthFactor)
-	switchSize = compute(SwitchSize, widthFactor)
+	blockRadius = compute(BlockRadius, minFactor)
+	blockPadding = compute(BlockPadding, minFactor)
+	switchSize = compute(SwitchSize, minFactor)
 	log.Println("switch size", SwitchSize, switchSize)
-	dashboardHeight = compute(DashboardHeight, heightFactor)
-	xMin = compute(XMin, widthFactor)
-	yMin = compute(YMin, heightFactor)
-	xMax = compute(XMax, widthFactor)
-	yMax = compute(YMax, heightFactor)
-	signatureBlockSize = compute(SignatureBlockSize, widthFactor)
-	signatureBlockRadius = compute(SignatureBlockRadius, widthFactor)
-	signatureLineWidth = compute(SignatureLineWidth, widthFactor)
-	lineWidth = compute(LineWidth, widthFactor)
-	winTxtWidth = compute(WinTxtWidth, widthFactor)
-	winTxtHeight = compute(WinTxtHeight, widthFactor)
-	charWidth = compute(CharWidth, widthFactor)
-	charHeight = compute(CharHeight, widthFactor)
-	looseTxtWidth = compute(LooseTxtWidth, widthFactor)
-	looseTxtHeight = compute(LooseTxtHeight, widthFactor)
+	dashboardSize = compute(DashboardSize, minFactor)
+	xMin = compute(XMin, minFactor)
+	yMin = compute(YMin, minFactor)
+	if portrait {
+		xMax = compute(PortraitWidth-Padding, widthFactor)
+		yMax = compute(PortraitHeight-Padding-DashboardSize, heightFactor)
+	} else {
+		xMax = compute(LandscapeWidth-Padding-DashboardSize, widthFactor)
+		yMax = compute(LandscapeHeight-Padding, heightFactor)
+	}
+	signatureBlockSize = compute(SignatureBlockSize, minFactor)
+	signatureBlockRadius = compute(SignatureBlockRadius, minFactor)
+	signatureLineWidth = compute(SignatureLineWidth, minFactor)
+	lineWidth = compute(LineWidth, minFactor)
+	winTxtWidth = compute(WinTxtWidth, minFactor)
+	winTxtHeight = compute(WinTxtHeight, minFactor)
+	charWidth = compute(CharWidth, minFactor)
+	charHeight = compute(CharHeight, minFactor)
+	looseTxtWidth = compute(LooseTxtWidth, minFactor)
+	looseTxtHeight = compute(LooseTxtHeight, minFactor)
 }
 
 func (g *Game) Stop() {
