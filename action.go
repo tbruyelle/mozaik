@@ -72,8 +72,8 @@ func blockSprite(o *Object) {
 func blockIdle(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		// Ensure no transformation in the idle action
-		o.Time = t
 		o.Reset()
+		o.Time = t
 	}
 	blockSprite(o)
 	if g.level.Win() {
@@ -81,7 +81,6 @@ func blockIdle(o *Object, t clock.Time) {
 		o.Action = wait{until: clock.Time((o.X + o.Y) / 20), next: ActionFunc(blockPopOut)}
 		return
 	}
-	o.Angle, o.Sx, o.Sy = 0, 0, 0
 }
 
 func signatureBlockIdle(o *Object, t clock.Time) {
@@ -104,9 +103,16 @@ func blockRotate(o *Object, t clock.Time) {
 		}
 		g.level.rotating = nil
 		g.level.Unlock()
-		// Return to the idle action
-		o.Time = 0
-		o.Action = ActionFunc(blockIdle)
+		// Apply the new sprite
+		blockSprite(o)
+		// After that rotation, the block appear flipped, so first
+		// apply this transformation
+		o.Reset()
+		center := blockSize / 2
+		o.Rx, o.Ry = o.X+center, o.Y+center
+		o.Angle = math.Pi / 2
+		// Now rotate again to go back in law
+		o.Action = ActionFunc(blockInLaw)
 		return
 	}
 	blockSprite(o)
@@ -117,6 +123,20 @@ func blockRotate(o *Object, t clock.Time) {
 	} else {
 		f = f / .5
 		o.Scale = 1 - .2*f
+	}
+}
+
+func blockInLaw(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+	}
+	f := clock.EaseOut(o.Time, o.Time+8, t)
+	o.Angle = o.Angle - o.Angle*f
+	if f == 1 {
+		// Animation over go back to idle
+		o.Reset()
+		o.Action = ActionFunc(blockIdle)
+		return
 	}
 }
 
@@ -136,8 +156,16 @@ func blockRotateInverse(o *Object, t clock.Time) {
 		}
 		g.level.rotating = nil
 		g.level.Unlock()
-		// Return to the idle action
-		o.Action = ActionFunc(blockIdle)
+		// Apply new sprite
+		blockSprite(o)
+		// After that rotation, the block appear flipped, so first
+		// apply this transformation
+		o.Reset()
+		center := blockSize / 2
+		o.Rx, o.Ry = o.X+center, o.Y+center
+		o.Angle = -math.Pi / 2
+		// Now rotate again to go back in law
+		o.Action = ActionFunc(blockInLaw)
 		return
 	}
 	blockSprite(o)
