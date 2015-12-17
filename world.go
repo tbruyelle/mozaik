@@ -179,6 +179,7 @@ func (w *World) printMoves(l Level) {
 	moves := fmt.Sprintf("%d", remain)
 	if remain < 10 {
 		if !w.moveCounter[0].Dead {
+			// Center the unique number only once.
 			if portrait {
 				w.moveCounter[1].X -= charWidth / 2
 			} else {
