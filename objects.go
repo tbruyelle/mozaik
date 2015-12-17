@@ -16,7 +16,7 @@ type Object struct {
 	// Speed
 	Vx, Vy float32
 	// Rotation
-	Rx, Ry, Angle float32
+	Rx, Ry, Angle, AngleCenter float32
 	// Translation
 	Tx, Ty float32
 	// Scale
@@ -28,6 +28,8 @@ type Object struct {
 	Time          clock.Time
 	// Data contains any relevant information needed about the object
 	Data interface{}
+	// Object center
+	cx, cy float32
 }
 
 type Action interface {
@@ -37,8 +39,18 @@ type Action interface {
 func (o *Object) Reset() {
 	o.Tx, o.Ty = 0, 0
 	o.Sx, o.Sy, o.Scale = 0, 0, 0
-	o.Rx, o.Ry, o.Angle = 0, 0, 0
+	o.Rx, o.Ry, o.Angle, o.AngleCenter = 0, 0, 0, 0
 	o.Time = 0
+}
+
+func (o *Object) Center() (float32, float32) {
+	if o.cx == 0 {
+		o.cx = o.X + o.Width/2
+	}
+	if o.cy == 0 {
+		o.cy = o.Y + o.Height/2
+	}
+	return o.cx, o.cy
 }
 
 func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
@@ -77,6 +89,12 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 			mv.Scale(mv, o.Scale, o.Scale)
 			mv.Translate(mv, -o.Sx-o.Tx, -o.Sy-o.Ty)
 		}
+	}
+	if o.AngleCenter != 0 {
+		cx, cy := o.Center()
+		mv.Translate(mv, cx, cy)
+		mv.Rotate(mv, -o.AngleCenter)
+		mv.Translate(mv, -cx, -cy)
 	}
 	mv.Translate(mv, o.X+o.Tx, o.Y+o.Ty)
 	mv.Mul(mv, &f32.Affine{

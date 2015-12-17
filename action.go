@@ -93,6 +93,7 @@ func blockRotate(o *Object, t clock.Time) {
 	}
 	f := clock.EaseOut(o.Time, o.Time+16, t)
 	o.Angle = math.Pi / 2 * f
+	o.AngleCenter = -o.Angle
 	if f == 1 {
 		// The rotation is over
 		// First apply the rotation to the level struct
@@ -105,14 +106,9 @@ func blockRotate(o *Object, t clock.Time) {
 		g.level.Unlock()
 		// Apply the new sprite
 		blockSprite(o)
-		// After that rotation, the block appear flipped, so first
-		// apply this transformation
 		o.Reset()
-		center := blockSize / 2
-		o.Rx, o.Ry = o.X+center, o.Y+center
-		o.Angle = math.Pi / 2
-		// Now rotate again to go back in law
-		o.Action = ActionFunc(blockInLaw)
+		// Now idle
+		o.Action = ActionFunc(blockIdle)
 		return
 	}
 	blockSprite(o)
@@ -146,6 +142,7 @@ func blockRotateInverse(o *Object, t clock.Time) {
 	}
 	f := clock.EaseOut(o.Time, o.Time+12, t)
 	o.Angle = -math.Pi / 2 * f
+	o.AngleCenter = -o.Angle
 	if f == 1 {
 		// The rotation is over
 		// First apply the rotation to the level struct
@@ -158,14 +155,9 @@ func blockRotateInverse(o *Object, t clock.Time) {
 		g.level.Unlock()
 		// Apply new sprite
 		blockSprite(o)
-		// After that rotation, the block appear flipped, so first
-		// apply this transformation
 		o.Reset()
-		center := blockSize / 2
-		o.Rx, o.Ry = o.X+center, o.Y+center
-		o.Angle = -math.Pi / 2
-		// Now rotate again to go back in law
-		o.Action = ActionFunc(blockInLaw)
+		// Now idle
+		o.Action = ActionFunc(blockIdle)
 		return
 	}
 	blockSprite(o)
