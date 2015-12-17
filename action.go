@@ -189,11 +189,9 @@ func blockPopIn(o *Object, t clock.Time) {
 func blockPopOut(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
-		o.Rx = o.X + blockSize/2
-		o.Ry = o.Y + blockSize/2
 	}
 	f := clock.EaseIn(o.Time, o.Time+100, t)
-	o.Angle += f
+	o.AngleCenter += f
 	if f >= .3 {
 		// Start moving
 		if o.X < windowWidth/2 {

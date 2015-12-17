@@ -92,9 +92,9 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 	}
 	if o.AngleCenter != 0 {
 		cx, cy := o.Center()
-		mv.Translate(mv, cx, cy)
+		mv.Translate(mv, cx+o.Tx, cy+o.Ty)
 		mv.Rotate(mv, -o.AngleCenter)
-		mv.Translate(mv, -cx, -cy)
+		mv.Translate(mv, -cx-o.Tx, -cy-o.Ty)
 	}
 	mv.Translate(mv, o.X+o.Tx, o.Y+o.Ty)
 	mv.Mul(mv, &f32.Affine{
