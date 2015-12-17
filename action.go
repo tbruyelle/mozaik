@@ -241,31 +241,33 @@ func switchIdle(o *Object, t clock.Time) {
 }
 
 func switchSprite(o *Object) {
-	sw, ok := o.Data.(*Switch)
+	_, ok := o.Data.(*Switch)
 	if !ok {
 		log.Println("Invalid type assertion", o.Data)
 		return
 	}
-	switch sw.name {
-	case "1":
-		o.Sprite = g.world.texs[texSwitch1]
-	case "2":
-		o.Sprite = g.world.texs[texSwitch2]
-	case "3":
-		o.Sprite = g.world.texs[texSwitch3]
-	case "4":
-		o.Sprite = g.world.texs[texSwitch4]
-	case "5":
-		o.Sprite = g.world.texs[texSwitch5]
-	case "6":
-		o.Sprite = g.world.texs[texSwitch6]
-	case "7":
-		o.Sprite = g.world.texs[texSwitch7]
-	case "8":
-		o.Sprite = g.world.texs[texSwitch8]
-	case "9":
-		o.Sprite = g.world.texs[texSwitch9]
-	}
+	o.Sprite = g.world.texs[texSwitch1]
+
+	//switch sw.name {
+	//case "1":
+	//	o.Sprite = g.world.texs[texSwitch1]
+	//case "2":
+	//	o.Sprite = g.world.texs[texSwitch2]
+	//case "3":
+	//	o.Sprite = g.world.texs[texSwitch3]
+	//case "4":
+	//	o.Sprite = g.world.texs[texSwitch4]
+	//case "5":
+	//	o.Sprite = g.world.texs[texSwitch5]
+	//case "6":
+	//	o.Sprite = g.world.texs[texSwitch6]
+	//case "7":
+	//	o.Sprite = g.world.texs[texSwitch7]
+	//case "8":
+	//	o.Sprite = g.world.texs[texSwitch8]
+	//case "9":
+	//	o.Sprite = g.world.texs[texSwitch9]
+	//}
 }
 
 func looseTxtPop(o *Object, t clock.Time) {

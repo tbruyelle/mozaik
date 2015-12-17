@@ -28,12 +28,12 @@ const (
 	LineWidth            = 2
 	SignatureLineWidth   = 1
 	BgSegments           = 24
-	WinTxtWidth          = 300
-	WinTxtHeight         = 90
+	WinTxtWidth          = TexWinWidth
+	WinTxtHeight         = TexWinHeight
 	CharWidth            = 40
 	CharHeight           = 54
-	LooseTxtWidth        = 338
-	LooseTxtHeight       = 307
+	GameoverTxtWidth     = TexGameoverWidth
+	GameoverTxtHeight    = TexGameoverHeight
 )
 
 var (
@@ -47,7 +47,7 @@ var (
 	lineWidth, signatureLineWidth            float32
 	winTxtWidth, winTxtHeight                float32
 	charWidth, charHeight                    float32
-	looseTxtWidth, looseTxtHeight            float32
+	gameoverTxtWidth, gameoverTxtHeight      float32
 )
 
 type Game struct {
@@ -115,8 +115,8 @@ func computeSizes(sz size.Event) {
 	winTxtHeight = compute(WinTxtHeight, minFactor)
 	charWidth = compute(CharWidth, minFactor)
 	charHeight = compute(CharHeight, minFactor)
-	looseTxtWidth = compute(LooseTxtWidth, minFactor)
-	looseTxtHeight = compute(LooseTxtHeight, minFactor)
+	gameoverTxtWidth = compute(GameoverTxtWidth, minFactor)
+	gameoverTxtHeight = compute(GameoverTxtHeight, minFactor)
 }
 
 func (g *Game) Stop() {

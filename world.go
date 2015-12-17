@@ -147,10 +147,10 @@ func (w *World) LoadScene() {
 		n := w.newNode()
 		w.scene.AppendChild(n)
 		n.Arranger = &Object{
-			X:      windowWidth/2 - looseTxtWidth/2,
-			Y:      windowHeight/2 - looseTxtHeight/2,
-			Width:  looseTxtHeight,
-			Height: looseTxtHeight,
+			X:      windowWidth/2 - gameoverTxtWidth/2,
+			Y:      windowHeight/2 - gameoverTxtHeight/2,
+			Width:  gameoverTxtWidth,
+			Height: gameoverTxtHeight,
 			Sprite: w.texs[texLooseTxt],
 			Action: ActionFunc(looseTxtPop),
 		}
@@ -249,10 +249,14 @@ const (
 )
 
 const (
-	TexBlockSize  = 128
-	TexSwitchSize = 48
-	TexCharWidth  = 40
-	TexCharHeight = 54
+	TexBlockSize      = 128
+	TexSwitchSize     = 50
+	TexCharWidth      = 40
+	TexCharHeight     = 54
+	TexWinWidth       = 470
+	TexWinHeight      = 106
+	TexGameoverWidth  = 560
+	TexGameoverHeight = 106
 )
 
 func (w *World) loadTextures() {
@@ -302,9 +306,9 @@ func (w *World) loadTextures() {
 		texSwitch8: {t, image.Rect(TexSwitchSize*7, TexBlockSize*2, TexSwitchSize*8-1, TexBlockSize*2+TexSwitchSize)},
 		texSwitch9: {t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9-1, TexBlockSize*2+TexSwitchSize)},
 		// Win text texture
-		texWinTxt: {t, image.Rect(0, TexBlockSize*2+TexSwitchSize, 300, TexBlockSize*2+TexSwitchSize+90)},
-		// Loose text texture
-		texLooseTxt: {t, image.Rect(0, 394, 338, 394+307)},
+		texWinTxt: {t, image.Rect(0, TexBlockSize*2+TexSwitchSize, TexWinWidth, TexBlockSize*2+TexSwitchSize+TexWinHeight)},
+		// Gameover text texture
+		texLooseTxt: {t, image.Rect(0, TexBlockSize*2+TexSwitchSize+TexWinHeight, TexGameoverWidth, TexBlockSize*2+TexSwitchSize+TexWinHeight+TexGameoverHeight)},
 	}
 
 	// Load the number textures
