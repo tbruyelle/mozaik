@@ -109,13 +109,13 @@ func (w *World) LoadScene() {
 	// The move counter
 	var counterX, counterY float32
 	if portrait {
-		counterX = windowWidth/2 - charWidth*5/2
-		counterY = windowHeight - charHeight - padding
+		counterX = padding * 2
+		counterY = windowHeight - dashboardSize + (dashboardSize-charHeight)/2
 	} else {
-		counterX = windowWidth - charWidth*5 - padding
-		counterY = windowHeight/2 - charWidth*5/2
+		counterX = windowWidth - dashboardSize + (dashboardSize-charWidth*2)/2
+		counterY = padding * 2
 	}
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 2; i++ {
 		n := w.newNode()
 		w.scene.AppendChild(n)
 		c := new(Char)
@@ -172,21 +172,26 @@ func (w *World) newNode() *sprite.Node {
 	return n
 }
 
-type MoveCounter [5]*Char
+type MoveCounter [2]*Char
 
 func (w *World) printMoves(l Level) {
-	moves := fmt.Sprintf("%d", l.moves)
-	if g.level.moves < 10 {
-		w.moveCounter[0].Set(w, '0')
+	remain := l.maxMoves - l.moves
+	moves := fmt.Sprintf("%d", remain)
+	if remain < 10 {
+		if !w.moveCounter[0].Dead {
+			if portrait {
+				w.moveCounter[1].X -= charWidth / 2
+			} else {
+				w.moveCounter[1].Y -= charHeight / 2
+			}
+		}
+		w.moveCounter[0].Sprite = w.texs[texEmpty]
+		w.moveCounter[0].Dead = true
 		w.moveCounter[1].Set(w, rune(moves[0]))
-	} else {
-		w.moveCounter[0].Set(w, rune(moves[0]))
-		w.moveCounter[1].Set(w, rune(moves[1]))
+		return
 	}
-	w.moveCounter[2].Set(w, '/')
-	maxMoves := fmt.Sprintf("%d", l.maxMoves)
-	w.moveCounter[3].Set(w, rune(maxMoves[0]))
-	w.moveCounter[4].Set(w, rune(maxMoves[1]))
+	w.moveCounter[0].Set(w, rune(moves[0]))
+	w.moveCounter[1].Set(w, rune(moves[1]))
 }
 
 func (w *World) decMoves() {
@@ -198,12 +203,8 @@ type Char struct {
 }
 
 func (c *Char) Set(w *World, val rune) {
-	if val == '/' {
-		c.Sprite = w.texs[texSlash]
-	} else {
-		// convert the rune to int
-		c.Sprite = w.texs[tex0+val-48]
-	}
+	// convert the rune to int
+	c.Sprite = w.texs[tex0+val-48]
 }
 
 const (
@@ -243,7 +244,6 @@ const (
 	tex7
 	tex8
 	tex9
-	texSlash
 	texLooseTxt
 	texEmpty
 )
@@ -251,8 +251,8 @@ const (
 const (
 	TexBlockSize      = 128
 	TexSwitchSize     = 50
-	TexCharWidth      = 40
-	TexCharHeight     = 54
+	TexCharWidth      = 38
+	TexCharHeight     = 60
 	TexWinWidth       = 470
 	TexWinHeight      = 106
 	TexGameoverWidth  = 560
@@ -312,13 +312,13 @@ func (w *World) loadTextures() {
 	}
 
 	// Load the number textures
-	numStartX := 320
-	numStartY := 320
-	numEndY := 320 + TexCharHeight
+	numStartX := 0
+	numStartY := TexBlockSize*2 + TexSwitchSize + TexWinHeight + TexGameoverHeight
+	numEndY := numStartY + TexCharHeight
 
 	texId := tex0
-	for i := 0; i < 11; i++ {
-		w.texs[texId] = sprite.SubTex{t, image.Rect(numStartX, numStartY, numStartX+40, numEndY)}
+	for i := 0; i < 10; i++ {
+		w.texs[texId] = sprite.SubTex{t, image.Rect(numStartX, numStartY, numStartX+TexCharWidth, numEndY)}
 		numStartX += TexCharWidth
 		texId++
 	}

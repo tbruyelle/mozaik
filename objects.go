@@ -59,13 +59,13 @@ func (o *Object) Arrange(e sprite.Engine, n *sprite.Node, t clock.Time) {
 		o.Action.Do(o, t)
 	}
 
+	// Set the texture
+	e.SetSubTex(n, o.Sprite)
+
 	if o.Dead {
 		// Do nothing if dead object
 		return
 	}
-
-	// Set the texture
-	e.SetSubTex(n, o.Sprite)
 
 	// Compute affine transformations
 	mv := &f32.Affine{}

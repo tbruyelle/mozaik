@@ -17,21 +17,21 @@ const (
 	BlockRadius          = 10
 	BlockPadding         = 0
 	BlockCornerSegments  = 6
-	SwitchSize           = 48
+	SwitchSize           = 50
 	SwitchSegments       = 20
 	DashboardSize        = 144
 	Padding              = 24
 	XMin                 = Padding
 	YMin                 = Padding
-	SignatureBlockSize   = 32
+	SignatureBlockSize   = 64
 	SignatureBlockRadius = 6
 	LineWidth            = 2
 	SignatureLineWidth   = 1
 	BgSegments           = 24
 	WinTxtWidth          = TexWinWidth
 	WinTxtHeight         = TexWinHeight
-	CharWidth            = 40
-	CharHeight           = 54
+	CharWidth            = 38
+	CharHeight           = 60
 	GameoverTxtWidth     = TexGameoverWidth
 	GameoverTxtHeight    = TexGameoverHeight
 )
