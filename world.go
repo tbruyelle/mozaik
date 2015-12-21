@@ -247,6 +247,7 @@ const (
 	tex8
 	tex9
 	texLooseTxt
+	texLeveltxt
 	texEmpty
 )
 
@@ -259,6 +260,8 @@ const (
 	TexWinHeight      = 106
 	TexGameoverWidth  = 560
 	TexGameoverHeight = 106
+	TexLevelWidth     = 325
+	TexLevelHeight    = 106
 )
 
 func (w *World) loadTextures() {
@@ -309,6 +312,8 @@ func (w *World) loadTextures() {
 		texSwitch9: {t, image.Rect(TexSwitchSize*8, TexBlockSize*2, TexSwitchSize*9-1, TexBlockSize*2+TexSwitchSize)},
 		// Win text texture
 		texWinTxt: {t, image.Rect(0, TexBlockSize*2+TexSwitchSize, TexWinWidth, TexBlockSize*2+TexSwitchSize+TexWinHeight)},
+		// Level text texture
+		texLeveltxt: {t, image.Rect(TexWinWidth, TexBlockSize*2+TexSwitchSize, TexWinWidth+TexLevelWidth, TexBlockSize*2+TexSwitchSize+TexLevelHeight)},
 		// Gameover text texture
 		texLooseTxt: {t, image.Rect(0, TexBlockSize*2+TexSwitchSize+TexWinHeight, TexGameoverWidth, TexBlockSize*2+TexSwitchSize+TexWinHeight+TexGameoverHeight)},
 	}
