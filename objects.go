@@ -152,7 +152,7 @@ func NewBackground(glctx gl.Context) *Background {
 			vertices = append(vertices, .11, .03, .81, 1)
 			b.vertexCount++
 		}
-		a := 2 * math.Pi * i / BgSegments
+		a := TwoPi * i / BgSegments
 		// position
 		vertices = append(vertices, float32(math.Sin(a)*windowRadius), float32(math.Cos(a)*windowRadius), 0, 1)
 		// color

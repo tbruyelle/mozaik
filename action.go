@@ -9,6 +9,11 @@ import (
 	"golang.org/x/mobile/exp/sprite/clock"
 )
 
+const (
+	TwoPi  = math.Pi * 2
+	HalfPi = math.Pi / 2
+)
+
 func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
@@ -92,7 +97,7 @@ func switchRotate(o *Object, t clock.Time) {
 		o.Time = t
 	}
 	f := clock.EaseOut(o.Time, o.Time+15, t)
-	o.AngleCenter = math.Pi * 2 * f
+	o.AngleCenter = TwoPi * f
 	if f == 1 {
 		o.Reset()
 		o.Action = ActionFunc(switchIdle)
@@ -104,7 +109,7 @@ func blockRotate(o *Object, t clock.Time) {
 		o.Time = t
 	}
 	f := clock.EaseOut(o.Time, o.Time+15, t)
-	o.Angle = math.Pi / 2 * f
+	o.Angle = HalfPi * f
 	o.AngleCenter = -o.Angle
 	if f == 1 {
 		// The rotation is over
@@ -153,7 +158,7 @@ func blockRotateInverse(o *Object, t clock.Time) {
 		o.Time = t
 	}
 	f := clock.EaseOut(o.Time, o.Time+12, t)
-	o.Angle = -math.Pi / 2 * f
+	o.Angle = -HalfPi * f
 	o.AngleCenter = -o.Angle
 	if f == 1 {
 		// The rotation is over
