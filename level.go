@@ -93,7 +93,7 @@ func (l *Level) Copy() Level {
 	return *lcp
 }
 
-// Win returns true if player has win
+// Win returns true if player has win.
 func (l *Level) Win() bool {
 	for i := range l.winSignature {
 		for j := range l.winSignature[i] {
@@ -103,6 +103,11 @@ func (l *Level) Win() bool {
 		}
 	}
 	return true
+}
+
+// Loose returns true if player has loose.
+func (l *Level) Loose() bool {
+	return !l.Win() && l.moves >= l.maxMoves
 }
 
 // UndoLastMove cancels the last player move

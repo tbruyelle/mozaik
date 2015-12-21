@@ -271,8 +271,60 @@ func switchSprite(o *Object) {
 }
 
 func looseTxtPop(o *Object, t clock.Time) {
-	o.Dead = g.level.Win() || g.level.moves < g.level.maxMoves
+	o.Dead = !g.level.Loose()
 	if !o.Dead {
+		g.listen = false
+		if o.Time == 0 {
+			o.Time = t
+			o.Sx = o.X + o.Width/2
+			o.Sy = o.Y + o.Height/2
+			o.Scale = 0
+		}
+		f := clock.EaseInOut(o.Time, o.Time+40, t)
+		o.Scale = f
+		if f == 1 {
+			o.Reset()
+			o.Action = &swing{}
+			go func() {
+				time.Sleep(time.Second)
+				g.listen = true
+			}()
+		}
+
+	}
+}
+
+type swing struct {
+	// Direction indicates the swing direction.
+	// Must be 1 or -1.
+	// No need to initialize it.
+	direction float32
+	// Max represents the max swing angle.
+	max      float32
+	current  float32
+	duration clock.Time
+}
+
+func (s *swing) Do(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+		// Initialize direction
+		s.direction = 1
+		s.max = math.Pi / 40
+		s.duration = 40
+	}
+	f := clock.Linear(o.Time, o.Time+s.duration, t)
+	o.AngleCenter = s.current + f*s.max*s.direction
+	if f == 1 {
+		o.Time = t
+		if s.current == 0 {
+			// First animation change
+			s.duration = s.duration * 2
+			s.max = s.max * 2
+		}
+		s.current = o.AngleCenter
+		// Reverse direction
+		s.direction = -s.direction
 	}
 }
 
