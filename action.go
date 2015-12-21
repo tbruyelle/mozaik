@@ -87,11 +87,23 @@ func signatureBlockIdle(o *Object, t clock.Time) {
 	blockSprite(o)
 }
 
+func switchRotate(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+	}
+	f := clock.EaseOut(o.Time, o.Time+15, t)
+	o.AngleCenter = math.Pi * 2 * f
+	if f == 1 {
+		o.Reset()
+		o.Action = ActionFunc(switchIdle)
+	}
+}
+
 func blockRotate(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
 	}
-	f := clock.EaseOut(o.Time, o.Time+16, t)
+	f := clock.EaseOut(o.Time, o.Time+15, t)
 	o.Angle = math.Pi / 2 * f
 	o.AngleCenter = -o.Angle
 	if f == 1 {

@@ -245,6 +245,7 @@ func (l *Level) triggerSwitch(i int) {
 		b.Time = 0
 		b.Action = ActionFunc(blockRotate)
 	}
+	sw.Action = ActionFunc(switchRotate)
 	l.rotated = append(l.rotated, i)
 }
 
