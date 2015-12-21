@@ -180,11 +180,7 @@ func (w *World) printMoves(l Level) {
 	if remain < 10 {
 		if !w.moveCounter[0].Dead {
 			// Center the unique number only once.
-			if portrait {
-				w.moveCounter[1].X -= charWidth / 2
-			} else {
-				w.moveCounter[1].Y -= charHeight / 2
-			}
+			w.moveCounter[1].X -= charWidth / 2
 		}
 		w.moveCounter[0].Sprite = w.texs[texEmpty]
 		w.moveCounter[0].Dead = true
@@ -194,11 +190,7 @@ func (w *World) printMoves(l Level) {
 	if w.moveCounter[0].Dead {
 		w.moveCounter[0].Dead = false
 		// Center the unique number only once.
-		if portrait {
-			w.moveCounter[1].X += charWidth / 2
-		} else {
-			w.moveCounter[1].Y += charHeight / 2
-		}
+		w.moveCounter[1].X += charWidth / 2
 	}
 	w.moveCounter[0].Set(w, rune(moves[0]))
 	w.moveCounter[1].Set(w, rune(moves[1]))
