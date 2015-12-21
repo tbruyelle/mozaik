@@ -293,7 +293,11 @@ func winTxtPop(o *Object, t clock.Time) {
 			// First animation is over
 			o.Reset()
 			o.Action = ActionFunc(winTxtZoomIn)
-			g.listen = true
+			go func() {
+				// Wait before let the user go forward.
+				time.Sleep(time.Second)
+				g.listen = true
+			}()
 		}
 	}
 }
