@@ -235,6 +235,7 @@ func switchPopIn(o *Object, t clock.Time) {
 	if o.Scale == 1 {
 		o.Reset()
 		o.Action = ActionFunc(switchIdle)
+		g.listen = true
 	}
 }
 

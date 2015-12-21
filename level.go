@@ -288,6 +288,7 @@ func ctoa(c Color) string {
 
 // LoadLevel loads the level number in parameter
 func LoadLevel(level int) Level {
+	g.listen = false
 	f, err := asset.Open(fmt.Sprintf("levels/%d", level))
 	if err != nil {
 		panic(err)

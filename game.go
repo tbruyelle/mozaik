@@ -58,7 +58,7 @@ type Game struct {
 }
 
 func NewGame(glctx gl.Context) {
-	g = &Game{currentLevel: 1, listen: true}
+	g = &Game{currentLevel: 1}
 	g.level = LoadLevel(g.currentLevel)
 }
 
