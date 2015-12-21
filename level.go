@@ -248,9 +248,14 @@ func (l *Level) triggerSwitch(i int) {
 	l.rotated = append(l.rotated, i)
 }
 
+const touchDelta = 8
+
 func (l *Level) findSwitch(x, y float32) (int, *Switch) {
 	for i, s := range l.switches {
-		if x >= s.X && x <= s.X+switchSize && y >= s.Y && y <= s.Y+switchSize {
+		if x >= s.X-touchDelta &&
+			x <= s.X+switchSize+touchDelta &&
+			y >= s.Y-touchDelta &&
+			y <= s.Y+switchSize+touchDelta {
 			return i, s
 		}
 	}

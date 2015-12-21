@@ -111,7 +111,6 @@ func draw(glctx gl.Context, sz size.Event) {
 func touch_(sz size.Event, t touch.Event) {
 	log.Printf("TOUCH %+v", t)
 	if t.Type == touch.TypeEnd {
-
 		g.Click(float32(t.X)/sz.PixelsPerPt, float32(t.Y)/sz.PixelsPerPt)
 	}
 }

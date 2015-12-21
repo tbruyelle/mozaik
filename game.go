@@ -129,11 +129,10 @@ func (g *Game) Click(x, y float32) {
 			// Next level
 			g.Warp()
 
-		case g.level.moves >= g.level.maxMoves:
+		case g.level.Loose():
 			// Loose, restart
 			g.currentLevel = 1
 			g.level = LoadLevel(g.currentLevel)
-			//FIXME clean resources
 			g.world.LoadScene()
 
 		case x < 30 && y < 30:
