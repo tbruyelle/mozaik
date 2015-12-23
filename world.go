@@ -148,7 +148,6 @@ func (w *World) LoadScene() {
 
 	// The level text node
 	w.levelLabel = w.newLevelLabel()
-	w.levelLabel.SetNumber(w, 1)
 }
 
 func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {
@@ -176,7 +175,6 @@ func (w *World) newLevelLabel() *LevelLabel {
 	w.scene.AppendChild(node)
 	l := &LevelLabel{
 		Object: Object{
-			X:      windowWidth/2 - (levelTxtWidth+charWidth*2)/2,
 			Y:      windowHeight/2 - levelTxtHeight/2,
 			Width:  1,
 			Height: 1,
@@ -196,6 +194,10 @@ func (w *World) newLevelLabel() *LevelLabel {
 }
 
 func (l *LevelLabel) SetNumber(w *World, n int) {
+	l.X = windowWidth/2 - (levelTxtWidth+charWidth)/2
+	if n > 9 {
+		l.X -= charWidth / 2
+	}
 	l.number.Set(w, n)
 }
 
