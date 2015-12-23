@@ -16,6 +16,7 @@ import (
 type World struct {
 	background  *Background
 	moveCounter *Number
+	levelNumber *Number
 	scene       *sprite.Node
 	eng         sprite.Engine
 	texs        []sprite.SubTex
@@ -161,6 +162,8 @@ func (w *World) LoadScene() {
 		X: 0, Y: 0, Width: levelTxtWidth, Height: levelTxtHeight,
 		Sprite: w.texs[texLeveltxt],
 	}
+	w.levelNumber = w.newNumber(levelTxt, levelTxtWidth, 0)
+	w.levelNumber.Set(w, 1)
 }
 
 func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {
