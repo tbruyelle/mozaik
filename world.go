@@ -16,7 +16,7 @@ import (
 type World struct {
 	background  *Background
 	moveCounter *Number
-	levelNumber *Number
+	levelLabel  *LevelLabel
 	scene       *sprite.Node
 	eng         sprite.Engine
 	texs        []sprite.SubTex
@@ -147,24 +147,8 @@ func (w *World) LoadScene() {
 	}
 
 	// The level text node
-	levelTxt := w.newNode()
-	w.scene.AppendChild(levelTxt)
-	levelTxt.Arranger = &Object{
-		X:      windowWidth/2 - (levelTxtWidth+charWidth*2)/2,
-		Y:      windowHeight/2 - levelTxtHeight/2,
-		Width:  1,
-		Height: 1,
-		Action: ActionFunc(levelTxtPop),
-	}
-	txt := w.newNode()
-	levelTxt.AppendChild(txt)
-	txt.Arranger = &Object{
-		X: 0, Y: 0, Width: levelTxtWidth, Height: levelTxtHeight,
-		Sprite: w.texs[texLeveltxt],
-	}
-	w.levelNumber = w.newNumber(levelTxt, levelTxtWidth, 0)
-	w.levelNumber.alignLeft = true
-	w.levelNumber.Set(w, 1)
+	w.levelLabel = w.newLevelLabel()
+	w.levelLabel.SetNumber(w, 1)
 }
 
 func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {
@@ -180,6 +164,39 @@ func (w *World) newNode() *sprite.Node {
 	n := &sprite.Node{}
 	w.eng.Register(n)
 	return n
+}
+
+type LevelLabel struct {
+	Object
+	number *Number
+}
+
+func (w *World) newLevelLabel() *LevelLabel {
+	node := w.newNode()
+	w.scene.AppendChild(node)
+	l := &LevelLabel{
+		Object: Object{
+			X:      windowWidth/2 - (levelTxtWidth+charWidth*2)/2,
+			Y:      windowHeight/2 - levelTxtHeight/2,
+			Width:  1,
+			Height: 1,
+			Action: ActionFunc(levelTxtPop),
+		},
+	}
+	node.Arranger = &l.Object
+	txt := w.newNode()
+	node.AppendChild(txt)
+	txt.Arranger = &Object{
+		X: 0, Y: 0, Width: levelTxtWidth, Height: levelTxtHeight,
+		Sprite: w.texs[texLeveltxt],
+	}
+	l.number = w.newNumber(node, levelTxtWidth, 0)
+	l.number.alignLeft = true
+	return l
+}
+
+func (l *LevelLabel) SetNumber(w *World, n int) {
+	l.number.Set(w, n)
 }
 
 type Number struct {
