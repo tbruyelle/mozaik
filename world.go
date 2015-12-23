@@ -163,6 +163,7 @@ func (w *World) LoadScene() {
 		Sprite: w.texs[texLeveltxt],
 	}
 	w.levelNumber = w.newNumber(levelTxt, levelTxtWidth, 0)
+	w.levelNumber.alignLeft = true
 	w.levelNumber.Set(w, 1)
 }
 
@@ -181,6 +182,14 @@ func (w *World) newNode() *sprite.Node {
 	return n
 }
 
+type Number struct {
+	Object
+	node      *sprite.Node
+	val       int
+	chars     []Char
+	alignLeft bool
+}
+
 func (w *World) newNumber(parent *sprite.Node, x, y float32) *Number {
 	n := w.newNode()
 	parent.AppendChild(n)
@@ -189,22 +198,13 @@ func (w *World) newNumber(parent *sprite.Node, x, y float32) *Number {
 
 	nbChar := 2
 	it.chars = make([]Char, nbChar)
-	var cx float32
 	for i := 0; i < nbChar; i++ {
 		child := w.newNode()
 		n.AppendChild(child)
-		it.chars[i] = Char{Object: Object{X: cx, Y: 0, Width: charWidth, Height: charHeight}}
+		it.chars[i] = Char{Object: Object{Width: charWidth, Height: charHeight}}
 		child.Arranger = &it.chars[i].Object
-		cx += charWidth
 	}
 	return it
-}
-
-type Number struct {
-	Object
-	node  *sprite.Node
-	val   int
-	chars []Char
 }
 
 func (n *Number) Set(w *World, val int) {
@@ -222,6 +222,18 @@ func (n *Number) Set(w *World, val int) {
 		n.chars[charIdx].Dead = true
 		n.chars[charIdx].Sprite = w.texs[texEmpty]
 		charIdx--
+	}
+	// Compute char positions
+	var cx float32
+	for i := 0; i < len(n.chars); i++ {
+		if n.chars[i].Dead {
+			if !n.alignLeft {
+				cx += charWidth
+			}
+			continue
+		}
+		n.chars[i].X = cx
+		cx += charWidth
 	}
 }
 
