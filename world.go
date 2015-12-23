@@ -149,7 +149,11 @@ func (w *World) LoadScene() {
 	// The level text node
 	w.levelLabel = w.newLevelLabel()
 	w.levelLabel.SetNumber(w, g.currentLevel)
-	w.levelLabel.Action = wait{until: clock.Time(20), next: ActionFunc(levelLabelPop)}
+	if g.level.moves == 0 {
+		// Animate only if no movement
+		// This prevent the level label to pop on hot start.
+		w.levelLabel.Action = wait{until: clock.Time(20), next: ActionFunc(levelLabelPop)}
+	}
 }
 
 func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {
