@@ -33,7 +33,8 @@ type wait struct {
 func (w wait) Do(o *Object, t clock.Time) {
 	if o.Time == 0 {
 		o.Time = t
-		o.Dead = true
+		// Commented because currentlyu not working on a parent node.
+		//o.Dead = true
 		return
 	}
 	if t > o.Time+w.until {
@@ -397,5 +398,27 @@ func winTxtZoomOut(o *Object, t clock.Time) {
 	}
 }
 
-func levelTxtPop(o *Object, t clock.Time) {
+func levelLabelPop(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+		o.Tx = -windowWidth
+	}
+	f := clock.EaseIn(o.Time, o.Time+80, t)
+	o.Tx = o.Tx * (1 - f)
+	if f == 1 {
+		o.Reset()
+		o.Action = wait{until: clock.Time(60), next: ActionFunc(levelLabelPopOut)}
+	}
+}
+
+func levelLabelPopOut(o *Object, t clock.Time) {
+	if o.Time == 0 {
+		o.Time = t
+	}
+	f := clock.EaseIn(o.Time, o.Time+10, t)
+	o.Tx = windowWidth * f
+	if f == 1 {
+		o.Action = nil
+	}
+
 }

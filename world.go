@@ -148,6 +148,8 @@ func (w *World) LoadScene() {
 
 	// The level text node
 	w.levelLabel = w.newLevelLabel()
+	w.levelLabel.SetNumber(w, g.currentLevel)
+	w.levelLabel.Action = wait{until: clock.Time(20), next: ActionFunc(levelLabelPop)}
 }
 
 func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {
@@ -175,10 +177,11 @@ func (w *World) newLevelLabel() *LevelLabel {
 	w.scene.AppendChild(node)
 	l := &LevelLabel{
 		Object: Object{
-			Y:      windowHeight/2 - levelTxtHeight/2,
+			Y: windowHeight/2 - levelTxtHeight/2,
+			// Start hidden
+			Tx:     -windowWidth,
 			Width:  1,
 			Height: 1,
-			Action: ActionFunc(levelTxtPop),
 		},
 	}
 	node.Arranger = &l.Object
