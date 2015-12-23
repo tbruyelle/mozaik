@@ -155,6 +155,23 @@ func (w *World) LoadScene() {
 			Action: ActionFunc(looseTxtPop),
 		}
 	}
+
+	// The level text node
+	levelTxt := w.newNode()
+	w.scene.AppendChild(levelTxt)
+	levelTxt.Arranger = &Object{
+		X:      windowWidth/2 - (levelTxtWidth+charWidth*2)/2,
+		Y:      windowHeight/2 - levelTxtHeight/2,
+		Width:  1,
+		Height: 1,
+		Action: ActionFunc(levelTxtPop),
+	}
+	txt := w.newNode()
+	levelTxt.AppendChild(txt)
+	txt.Arranger = &Object{
+		X: 0, Y: 0, Width: levelTxtWidth, Height: levelTxtHeight,
+		Sprite: w.texs[texLeveltxt],
+	}
 }
 
 func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {

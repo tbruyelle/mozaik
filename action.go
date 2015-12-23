@@ -396,3 +396,6 @@ func winTxtZoomOut(o *Object, t clock.Time) {
 		o.Action = ActionFunc(winTxtZoomIn)
 	}
 }
+
+func levelTxtPop(o *Object, t clock.Time) {
+}
