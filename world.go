@@ -279,8 +279,8 @@ const (
 const (
 	TexBlockSize      = 128
 	TexSwitchSize     = 50
-	TexCharWidth      = 47
-	TexCharHeight     = 74
+	TexCharWidth      = 62
+	TexCharHeight     = 106
 	TexWinWidth       = 470
 	TexWinHeight      = 106
 	TexGameoverWidth  = 560

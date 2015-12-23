@@ -30,8 +30,8 @@ const (
 	BgSegments           = 24
 	WinTxtWidth          = TexWinWidth
 	WinTxtHeight         = TexWinHeight
-	CharWidth            = 47
-	CharHeight           = 74
+	CharWidth            = TexCharWidth
+	CharHeight           = TexCharHeight
 	GameoverTxtWidth     = TexGameoverWidth
 	GameoverTxtHeight    = TexGameoverHeight
 	LevelTxtWidth        = TexLevelWidth
