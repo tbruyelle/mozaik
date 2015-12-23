@@ -15,7 +15,7 @@ import (
 
 type World struct {
 	background  *Background
-	moveCounter MoveCounter
+	moveCounter *Number
 	scene       *sprite.Node
 	eng         sprite.Engine
 	texs        []sprite.SubTex
@@ -115,18 +115,7 @@ func (w *World) LoadScene() {
 		counterX = windowWidth - dashboardSize + (dashboardSize-charWidth*2)/2
 		counterY = padding * 2
 	}
-	for i := 0; i < 2; i++ {
-		n := w.newNode()
-		w.scene.AppendChild(n)
-		c := new(Char)
-		w.moveCounter[i] = c
-		n.Arranger = c
-		c.X = counterX
-		c.Y = counterY
-		c.Width = charWidth
-		c.Height = charHeight
-		counterX += charWidth
-	}
+	w.moveCounter = w.newNumber(w.scene, counterX, counterY)
 
 	// Add the win text node
 	{
@@ -178,7 +167,7 @@ func (w *World) Draw(glctx gl.Context, t clock.Time, sz size.Event) {
 	// Background
 	w.background.Draw()
 	// the move counter
-	w.printMoves(g.level)
+	w.moveCounter.Set(w, g.level.RemainMoves())
 	// The scene
 	w.eng.Render(w.scene, t, sz)
 }
@@ -189,39 +178,55 @@ func (w *World) newNode() *sprite.Node {
 	return n
 }
 
-type MoveCounter [2]*Char
+func (w *World) newNumber(parent *sprite.Node, x, y float32) *Number {
+	n := w.newNode()
+	parent.AppendChild(n)
+	it := &Number{node: n, Object: Object{X: x, Y: y, Width: 1, Height: 1}}
+	n.Arranger = &it.Object
 
-func (w *World) printMoves(l Level) {
-	remain := l.maxMoves - l.moves
-	moves := fmt.Sprintf("%d", remain)
-	if remain < 10 {
-		if !w.moveCounter[0].Dead {
-			// Center the unique number only once.
-			w.moveCounter[1].X -= charWidth / 2
-		}
-		w.moveCounter[0].Sprite = w.texs[texEmpty]
-		w.moveCounter[0].Dead = true
-		w.moveCounter[1].Set(w, rune(moves[0]))
-		return
+	nbChar := 2
+	it.chars = make([]Char, nbChar)
+	var cx float32
+	for i := 0; i < nbChar; i++ {
+		child := w.newNode()
+		n.AppendChild(child)
+		it.chars[i] = Char{Object: Object{X: cx, Y: 0, Width: charWidth, Height: charHeight}}
+		child.Arranger = &it.chars[i].Object
+		cx += charWidth
 	}
-	if w.moveCounter[0].Dead {
-		w.moveCounter[0].Dead = false
-		// Center the unique number only once.
-		w.moveCounter[1].X += charWidth / 2
-	}
-	w.moveCounter[0].Set(w, rune(moves[0]))
-	w.moveCounter[1].Set(w, rune(moves[1]))
+	return it
 }
 
-func (w *World) decMoves() {
+type Number struct {
+	Object
+	node  *sprite.Node
+	val   int
+	chars []Char
+}
+
+func (n *Number) Set(w *World, val int) {
+	n.val = val
+	moves := fmt.Sprintf("%d", val)
+	charIdx := len(n.chars) - 1
+	// Starting from the end set the chars
+	for i := len(moves) - 1; i >= 0; i-- {
+		n.chars[charIdx].Dead = false
+		n.chars[charIdx].Set(w, moves[i])
+		charIdx--
+	}
+	// Set empty for remaining chars
+	for charIdx >= 0 {
+		n.chars[charIdx].Dead = true
+		n.chars[charIdx].Sprite = w.texs[texEmpty]
+		charIdx--
+	}
 }
 
 type Char struct {
 	Object
-	val string
 }
 
-func (c *Char) Set(w *World, val rune) {
+func (c *Char) Set(w *World, val byte) {
 	// convert the rune to int
 	c.Sprite = w.texs[tex0+val-48]
 }

@@ -110,6 +110,10 @@ func (l *Level) Loose() bool {
 	return !l.Win() && l.moves >= l.maxMoves
 }
 
+func (l *Level) RemainMoves() int {
+	return l.maxMoves - l.moves
+}
+
 // UndoLastMove cancels the last player move
 func (l *Level) UndoLastMove() {
 	if l.rotating != nil {
