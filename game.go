@@ -34,6 +34,8 @@ const (
 	CharHeight           = 74
 	GameoverTxtWidth     = TexGameoverWidth
 	GameoverTxtHeight    = TexGameoverHeight
+	LevelTxtWidth        = TexLevelWidth
+	LevelTxtHeight       = TexLevelHeight
 )
 
 var (
@@ -48,6 +50,7 @@ var (
 	winTxtWidth, winTxtHeight                float32
 	charWidth, charHeight                    float32
 	gameoverTxtWidth, gameoverTxtHeight      float32
+	levelTxtWidth, levelTxtHeight            float32
 )
 
 type Game struct {
@@ -117,6 +120,8 @@ func computeSizes(sz size.Event) {
 	charHeight = compute(CharHeight, minFactor)
 	gameoverTxtWidth = compute(GameoverTxtWidth, minFactor)
 	gameoverTxtHeight = compute(GameoverTxtHeight, minFactor)
+	levelTxtWidth = compute(LevelTxtWidth, minFactor)
+	levelTxtHeight = compute(LevelTxtHeight, minFactor)
 }
 
 func (g *Game) Stop() {
