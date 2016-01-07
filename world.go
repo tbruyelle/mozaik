@@ -110,11 +110,11 @@ func (w *World) LoadScene() {
 	// The move counter
 	var counterX, counterY float32
 	if portrait {
-		counterX = padding * 2
-		counterY = windowHeight - dashboardSize + (dashboardSize-charHeight)/2
+		counterX = (windowWidth-signSize-padding*2)/2 - charWidth
+		counterY = windowHeight - padding - signSize/2 - charHeight/2
 	} else {
-		counterX = windowWidth - dashboardSize + (dashboardSize-charWidth*2)/2
-		counterY = padding * 2
+		counterX = windowWidth - padding - signSize/2 - charWidth
+		counterY = padding + signSize/2 - charHeight/2
 	}
 	w.moveCounter = w.newNumber(w.scene, counterX, counterY)
 
