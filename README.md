@@ -1,5 +1,9 @@
 # Mozaik
 
-Use the Gomobile project to reproduct Mozaik game from Globz studio
+Use the Gomobile project to reboot an old flash game.
 
-https://www.youtube.com/watch?v=m1e5YH0No5c
+![reboot](/work/screenshot1.png?raw=true)
+
+### Credits
+* [Mozaik game from Globz studio](http://jayisgames.com/review/mozaik.php)
+* Assets from [Kenney assets](http://kenney.nl/assets)
