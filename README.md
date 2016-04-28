@@ -1,6 +1,6 @@
 # Mozaik
 
-Use the Gomobile project to reboot an old flash game.
+Use the [Gomobile](https://github.com/golang/mobile) project to reboot an old flash game.
 
 ![reboot](/work/screenshot1.png?raw=true)
 
